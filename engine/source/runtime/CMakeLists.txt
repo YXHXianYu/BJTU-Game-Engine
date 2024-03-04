@@ -3,7 +3,7 @@
 set(TARGET_NAME BJTU-Game-Engine)
 
 # Source file
-file(GLOB_RECURSE SOURCE_FILE "*.cpp")
+file(GLOB_RECURSE SOURCE_FILE CONFIGURE_DEPENDS "*.cpp")
 
 if(BUILD_RUNTIME_TO_EXECUTABLE)
   add_executable(${TARGET_NAME} ${SOURCE_FILE})
@@ -19,6 +19,7 @@ target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..
 find_package(OpenGL REQUIRED)
 
 # Link
+target_link_libraries(${TARGET_NAME} PUBLIC glad)
 target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC OpenGL::GL)
 

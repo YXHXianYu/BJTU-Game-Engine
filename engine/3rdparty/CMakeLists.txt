@@ -8,3 +8,7 @@ if (NOT TARGET glfw)
     option(GLFW_INSTALL "" OFF)
     add_subdirectory(glfw-3.4)
 endif()
+
+if (NOT TARGET glad)
+    include(glad.cmake)
+endif()

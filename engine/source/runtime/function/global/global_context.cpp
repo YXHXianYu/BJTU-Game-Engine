@@ -6,7 +6,7 @@ RuntimeGlobalContext g_runtime_global_context;
 
 void RuntimeGlobalContext::initialize() {
     m_window_system = std::make_shared<WindowSystem>();
-    m_window_system->initialize();
+    m_window_system->initialize(WindowCreateInfo{});
 
     m_render_system = std::make_shared<RenderSystem>();
     m_render_system->initialize();

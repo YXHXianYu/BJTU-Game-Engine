@@ -1,13 +1,33 @@
 Language: Cpp
 BasedOnStyle:	LLVM
 
+
 PointerAlignment: Left
-ColumnLimit: 140
+ColumnLimit: 100
 
 AccessModifierOffset: -4
 
+# Indent Width
 IndentWidth: 4
 NamespaceIndentation: None
 
+# Tab Width
 TabWidth: 4
 UseTab: Never
+
+# 关闭自动排序头文件
+SortIncludes: false
+
+# 各种对齐
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: true
+
+# 关闭各种压行
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: false
+# AllowShortFunctionsOnASingleLine: None
+
+AllowAllParametersOfDeclarationOnNextLine: true
