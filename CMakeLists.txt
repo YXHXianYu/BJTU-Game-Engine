@@ -4,20 +4,20 @@ project(BJTUGE VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# set(BUILD_SHARED_LIBS OFF)
+set(BUILD_SHARED_LIBS OFF)
 
-# include(CMakeDependentOption)
+# Variables
+set(BUILD_RUNTIME_TO_EXECUTABLE TRUE) # Wait for test
 
-# # include guards
-# if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-#   message(
-#     FATAL_ERROR
-#       "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
-#   )
-# endif()
+# Directories
+set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(BJTUGE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-set(CMAKE_INSTALL_PREFIX "${BJTUGE_ROOT_DIR}/bin")
-set(BINARY_ROOT_DIR "${CMAKE_INSTALL_PREFIX}/")
+set(ENGINE_ROOT_DIR "${ROOT_DIR}/engine")
+set(BINARY_ROOT_DIR "${ROOT_DIR}/bin")
+set(CMAKE_INSTALL_PREFIX "${ROOT_DIR}/bin")
 
+set(THIRD_PARTY_DIR "${ENGINE_ROOT_DIR}/3rdparty")
+# set(ENGINE_ASSET_DIR "${ENGINE_ROOT_DIR}/asset")
+
+# Add Subdirectories
 add_subdirectory(engine)

@@ -10,4 +10,6 @@ void WindowSystem::tick(float delta_time) {}
 
 void WindowSystem::clear() {}
 
+GLFWwindow* WindowSystem::getWindow() const { return nullptr; }
+
 } // namespace BJTUGE

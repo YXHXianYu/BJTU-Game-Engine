@@ -1,14 +1,26 @@
 
-set(TARGET_NAME BjtuGameEngine)
+# Target Name
+set(TARGET_NAME BJTU-Game-Engine)
 
-file(GLOB_RECURSE HEADER_FILES "*.h")
-file(GLOB_RECURSE SOURCE_FILES "*.cpp")
-# For IDE (e.g. Visual Studio) to show the folder structure
-# source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES})
+# Source file
+file(GLOB_RECURSE SOURCE_FILE "*.cpp")
 
-add_executable(${TARGET_NAME} ${SOURCE_FILES})
+if(BUILD_RUNTIME_TO_EXECUTABLE)
+  add_executable(${TARGET_NAME} ${SOURCE_FILE})
+else()
+  list(FILTER SOURCE_FILE EXCLUDE REGEX "main\\.cpp$")
+  add_library(${TARGET_NAME} ${SOURCE_FILE})
+endif()
 
+# Include file
 target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
+# Find Packages outside 3rdparty
+find_package(OpenGL REQUIRED)
+
+# Link
+target_link_libraries(${TARGET_NAME} PUBLIC glfw)
+target_link_libraries(${TARGET_NAME} PUBLIC OpenGL::GL)
 
 # === Post build commands (begin) ===
 set(POST_BUILD_COMMANDS
