@@ -12,3 +12,7 @@ endif()
 if (NOT TARGET glad)
     include(glad.cmake)
 endif()
+
+if (NOT TARGET glm)
+    include(glm.cmake)
+endif()
