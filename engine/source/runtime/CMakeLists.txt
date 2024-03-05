@@ -24,6 +24,10 @@ target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC OpenGL::GL)
 target_link_libraries(${TARGET_NAME} PUBLIC glm)
 
+# Add Shader Dependency
+add_dependencies(${TARGET_NAME} ${SHADER_COMPILE_TARGET})
+target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/shader/generated/cpp>)
+
 # === Post build commands (begin) ===
 set(POST_BUILD_COMMANDS
   COMMAND ${CMAKE_COMMAND} -E make_directory "${BINARY_ROOT_DIR}"

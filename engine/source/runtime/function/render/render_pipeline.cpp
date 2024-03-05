@@ -4,32 +4,22 @@
 #include <GLFW/glfw3.h>
 
 #include <cassert>
+#include <iostream>
+
+#include <basic_vert.h>
+#include <basic_frag.h>
 
 namespace BJTUGE {
 
 void RenderPipeline::initialize() {
-    auto vertex_shader_source = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
-    
-    auto fragment_shader_source = 
-        "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-        "}\0";
-
     uint32_t vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
+
+    glShaderSource(vertex_shader, 1, &BASIC_VERT, NULL);
     glCompileShader(vertex_shader);
     assertShaderCompileSuccess(vertex_shader);
 
     uint32_t fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
+    glShaderSource(fragment_shader, 1, &BASIC_FRAG, NULL);
     glCompileShader(fragment_shader);
     assertShaderCompileSuccess(fragment_shader);
 
@@ -57,6 +47,7 @@ std::optional<std::string> RenderPipeline::getShaderCompileInfo(uint32_t shader)
 }
 
 void RenderPipeline::assertShaderCompileSuccess(uint32_t shader) {
+
     assert(!getShaderCompileInfo(shader));
 }
 
@@ -77,4 +68,4 @@ void RenderPipeline::assertProgramCompileSuccess(uint32_t program) {
     assert(!getProgramCompileInfo(program));
 }
 
-}
+} // namespace BJTUGE

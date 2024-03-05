@@ -38,3 +38,23 @@
     ```
 
   * ② Change OpenGL version to 4.1
+
+### 1.3 Fucking CMake
+
+* Problem
+
+  * shader precompile cmake script cannot produce right result
+  * Correct：![image-20240305232712403](./config_notes/image-20240305232712403.png)
+  * Wrong：![image-20240305232911373](./config_notes/image-20240305232911373.png)
+
+* Cause
+
+  * cmake feature
+
+* Solution
+
+  * delete `VERBATIM`
+
+  * ![image-20240305232954488](./config_notes/image-20240305232954488.png)
+
+    > By ChatGPT4
