@@ -13,7 +13,7 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
     // glfw initialize
     if (!glfwInit()) { assert(false); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -32,16 +32,16 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
 
     // viewport
     glViewport(0, 0, m_width, m_height);
-    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
-        glViewport(0, 0, width, height);
-    });
+    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); });
 }
 
 void WindowSystem::tick(float delta_time) {
     m_window_should_close = glfwWindowShouldClose(m_window);
 }
 
-void WindowSystem::clear() { glfwTerminate(); }
+void WindowSystem::clear() {
+    glfwTerminate();
+}
 
 void WindowSystem::setResizeCallback(GLFWframebuffersizefun callback) {
     glfwSetFramebufferSizeCallback(m_window, callback);

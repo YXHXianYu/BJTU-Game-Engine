@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -27,13 +28,13 @@ public:
 
     /**
      * @brief Set the resize callback object
-     *
      * @param callback the resize callback function, type is void(GLFWwindow*, int, int)
      */
     void setResizeCallback(GLFWframebuffersizefun callback);
 
     /**
      * @brief Check if the window should close
+     * @return int 1 if the window should close, 0 otherwise
      */
     int windowShouldClose() const { return m_window_should_close; }
 

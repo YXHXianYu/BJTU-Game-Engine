@@ -22,6 +22,7 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(${TARGET_NAME} PUBLIC glad)
 target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC OpenGL::GL)
+target_link_libraries(${TARGET_NAME} PUBLIC glm)
 
 # === Post build commands (begin) ===
 set(POST_BUILD_COMMANDS
