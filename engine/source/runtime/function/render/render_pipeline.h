@@ -21,11 +21,9 @@ private:
     uint32_t m_shader_program;
 
     std::optional<std::string> getShaderCompileInfo(uint32_t shader);
-    void assertShaderCompileSuccess(uint32_t shader);
-
+    void                       assertShaderCompileSuccess(uint32_t shader);
     std::optional<std::string> getProgramCompileInfo(uint32_t program);
-    void assertProgramCompileSuccess(uint32_t program);
-
+    void                       assertProgramCompileSuccess(uint32_t program);
 };
 
-}
+} // namespace BJTUGE

@@ -4,14 +4,17 @@ namespace BJTUGE {
 
 void RenderResource::initialize() {
 
-    RenderEntity render_entity;
+    std::vector<Vertex> vertices = {
+        Vertex{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        Vertex{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        Vertex{{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+    };
 
-    render_entity.m_render_meshes.push_back(RenderMesh{{
-                                                           Vertex{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-                                                           Vertex{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-                                                           Vertex{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-                                                       },
-                                                       {0, 1, 2}});
+    std::vector<uint32_t> indices = {0, 1, 3, 1, 2, 3};
+
+    RenderEntity render_entity;
+    render_entity.m_render_meshes.push_back(RenderMesh{vertices, indices});
 
     m_render_entities_map["1"] = render_entity;
 }

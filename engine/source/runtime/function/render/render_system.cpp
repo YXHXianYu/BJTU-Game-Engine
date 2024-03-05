@@ -27,20 +27,12 @@ void RenderSystem::tick(float delta_time) {
 
     static bool first_run = false;
 
-    for (auto& [uuid, entity]: *m_render_resource) {
+    for (auto& [uuid, entity] : *m_render_resource) {
         uint32_t vao = entity.m_render_meshes[0].getVAO();
 
         glUseProgram(shader_program);
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        if (!first_run) {
-            first_run = true;
-            
-            std::cout << "uuid: " << uuid << std::endl;
-            std::cout << "shader_program: " << shader_program << std::endl;
-            std::cout << "vao: " << vao << std::endl;
-        }
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
     glfwSwapBuffers(g_runtime_global_context.m_window_system->getWindow());
