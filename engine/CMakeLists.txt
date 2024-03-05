@@ -3,6 +3,7 @@
 set(ENABLE_SPIRV FALSE)
 
 if(ENABLE_SPIRV)
+    message(FATAL_ERROR "VulkanSDK is NOT installed!")
     # Vulkan (For build shader)
     if(WIN32)
         # set(vulkan_lib ${THIRD_PARTY_DIR}/VulkanSDK/lib/Win32/vulkan-1.lib)
