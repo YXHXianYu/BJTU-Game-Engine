@@ -3,7 +3,7 @@ BasedOnStyle:	LLVM
 
 
 PointerAlignment: Left
-ColumnLimit: 100
+ColumnLimit: 140
 
 AccessModifierOffset: -4
 
@@ -28,6 +28,6 @@ AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
-# AllowShortFunctionsOnASingleLine: None
+AllowShortFunctionsOnASingleLine: Inline
 
 AllowAllParametersOfDeclarationOnNextLine: true

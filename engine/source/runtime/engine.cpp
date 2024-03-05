@@ -18,7 +18,6 @@ void BJTUEngine::run() {
 
 void BJTUEngine::tick(float delta_time) {
     tickLogic(delta_time);
-
     tickRender(delta_time);
 }
 
