@@ -23,6 +23,7 @@ void RenderSystem::tick(float delta_time) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     m_render_pipeline->draw(m_render_resource);
+    // m_render_pipeline->drawShadertoy();
 
     glfwSwapBuffers(g_runtime_global_context.m_window_system->getWindow());
     glfwPollEvents();

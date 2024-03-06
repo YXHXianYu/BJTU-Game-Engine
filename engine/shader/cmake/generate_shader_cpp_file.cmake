@@ -24,14 +24,14 @@ function(embed_resource resource_file_name source_file_name variable_name)
 
         string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1, " content "${content}")
 
-        string(REGEX REPLACE ", $" "" content "${content}")
 
         string(REGEX MATCH ".+\\.spv$" is_spirv "${resource_file_name}")
         
         if(is_spirv)
+            string(REGEX REPLACE ", $" "" content "${content}")
             set(array_definition "static const std::vector<unsigned char> ${variable_name}_VECTOR =\n{\n${content}\n};")
         else()
-            set(array_definition "static const std::vector<unsigned char> ${variable_name}_VECTOR =\n{\n${content}, 0x00\n};")
+            set(array_definition "static const std::vector<unsigned char> ${variable_name}_VECTOR =\n{\n${content}0x00\n};")
         endif()
         set(ptr_definition   "static const char* ${variable_name} = reinterpret_cast<const char*>(${variable_name}_VECTOR.data());")
         

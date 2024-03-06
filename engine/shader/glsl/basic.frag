@@ -1,8 +1,11 @@
 #version 410 core
 
-layout(location = 0) out vec4 FragColor;
+layout(location = 0) out vec4 frag_color;
+
+uniform float iTime;
 
 void main()
 {
-    FragColor = vec4(1.0, 0.5, 1.0, 1.0);
+    float b = sin(iTime) * 0.5f + 0.5f;
+    frag_color = vec4(1.0f, 0.5f, b, 1.0f);
 }

@@ -15,6 +15,7 @@ public:
     void initialize();
 
     void draw(std::shared_ptr<RenderResource> render_resource);
+    void drawShadertoy();
 
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderShader>> m_render_shaders;
