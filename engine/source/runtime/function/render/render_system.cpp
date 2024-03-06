@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include "runtime/function/global/global_context.h"
 
@@ -23,17 +22,8 @@ void RenderSystem::tick(float delta_time) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    uint32_t shader_program = m_render_pipeline->getShaderProgram();
-
-    static bool first_run = false;
-
-    for (auto& [uuid, entity] : *m_render_resource) {
-        uint32_t vao = entity.m_render_meshes[0].getVAO();
-
-        glUseProgram(shader_program);
-        glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    }
+    m_render_pipeline->draw(m_render_resource);
+    // m_render_pipeline->drawShadertoy();
 
     glfwSwapBuffers(g_runtime_global_context.m_window_system->getWindow());
     glfwPollEvents();
