@@ -11,14 +11,15 @@ function(compile_shader SHADERS TARGET_NAME SHADER_INCLUDE_FOLDER GENERATED_DIR)
         string(TOUPPER ${HEADER_NAME} GLOBAL_SHADER_VAR)
 
         set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${GENERATED_DIR}/cpp/${HEADER_NAME}.h")
+        set(CPP_TARGET "${GLOBAL_SHADER_VAR}_TARGET")
 
-        add_custom_command(
-            OUTPUT ${CPP_FILE}
+        add_custom_target(
+            ${CPP_TARGET}
             COMMAND ${CMAKE_COMMAND} -DPATH=${SHADER} -DHEADER=${CPP_FILE}
                 -DGLOBAL=${GLOBAL_SHADER_VAR} -P "${WORKING_DIR}/cmake/generate_shader_cpp_file.cmake"
             WORKING_DIRECTORY "${WORKING_DIR}")
 
-        list(APPEND ALL_GENERATED_CPP_FILES ${CPP_FILE})
+        list(APPEND ALL_GENERATED_CPP_FILES ${CPP_TARGET})
 
     endforeach()
 
