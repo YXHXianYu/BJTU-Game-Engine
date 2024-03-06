@@ -16,3 +16,7 @@ endif()
 if (NOT TARGET glm)
     include(glm.cmake)
 endif()
+
+if (NOT TARGET stb)
+    include(stb.cmake)
+endif()
