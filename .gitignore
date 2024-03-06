@@ -1,3 +1,4 @@
 bin/
 build/
 .ccls-cache/
+.vscode/
