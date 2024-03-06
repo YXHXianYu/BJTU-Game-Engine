@@ -14,4 +14,6 @@
 
 `REL_ROOT`：为 `shaders_root` 相对于 `glsl-preprocessor.py` 的相对路径。
 
+`EXTS`：需要进行预处理的文件的扩展名
+
 > 指定目录的解析不依赖于当前工作目录，只依赖于脚本文件位置。
