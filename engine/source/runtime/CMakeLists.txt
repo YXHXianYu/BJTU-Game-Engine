@@ -23,6 +23,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC glad)
 target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC OpenGL::GL)
 target_link_libraries(${TARGET_NAME} PUBLIC glm)
+target_link_libraries(${TARGET_NAME} PUBLIC stb)
 
 # Add Shader Dependency
 add_dependencies(${TARGET_NAME} ${SHADER_COMPILE_TARGET})

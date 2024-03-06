@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 
 #include <vector>
 
@@ -23,6 +24,8 @@ public:
     RenderMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
 
     uint32_t getVAO() const { return m_vao; }
+    void     use() const { glBindVertexArray(m_vao); }
+    void     bind() const { use(); }
 
 private:
     std::vector<Vertex>   m_vertices;

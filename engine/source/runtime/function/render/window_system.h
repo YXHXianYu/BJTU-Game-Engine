@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 
@@ -25,6 +26,9 @@ public:
      * @brief Get the window object
      */
     GLFWwindow* getWindow() const { return m_window; }
+
+    uint32_t getWidth() const { return m_width; }
+    uint32_t getHeight() const { return m_height; }
 
     /**
      * @brief Set the resize callback object
