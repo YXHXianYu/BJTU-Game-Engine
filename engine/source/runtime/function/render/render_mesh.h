@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <iostream>
+
 namespace BJTUGE {
 
 struct Vertex {
@@ -29,6 +31,14 @@ public:
     uint32_t getVAO() const { return m_vao; }
     void     use() const { glBindVertexArray(m_vao); }
     void     bind() const { use(); }
+    void     draw() const {
+        use();
+        if (m_ebo > 0) {
+            glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
+        }
+    }
 
 private:
     std::vector<Vertex>   m_vertices;

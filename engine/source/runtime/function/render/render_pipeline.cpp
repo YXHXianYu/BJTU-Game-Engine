@@ -5,6 +5,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <basic_vert.h>
 #include <basic_frag.h>
 #include <post_process_vert.h>
@@ -21,19 +24,38 @@ void RenderPipeline::initialize() {
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> render_resource) {
+    auto shader = m_render_shaders["basic"];
+
     // shader program
-    m_render_shaders["basic"]->use();
-    m_render_shaders["basic"]->setUniform("u_time", static_cast<float>(glfwGetTime()));
-    m_render_shaders["basic"]->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                                          static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+    shader->use();
+    shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+    shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                       static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
     // texture
-    m_render_shaders["basic"]->setTexture("u_texture0", 0, render_resource->get("basic").m_render_textures[0]);
-    m_render_shaders["basic"]->setTexture("u_texture1", 1, render_resource->get("basic").m_render_textures[1]);
+    shader->setTexture("u_texture0", 0, render_resource->get("basic").m_render_textures[0]);
+    shader->setTexture("u_texture1", 1, render_resource->get("basic").m_render_textures[1]);
 
     // draw
-    render_resource->get("basic").m_render_meshes[0]->use();
-    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model           = glm::rotate(model, glm::radians(-45.0f + 10.0f * float(glfwGetTime())), glm::vec3(1.0, 2.0f, 0.0f));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    view           = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.5f));
+
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection           = glm::perspective(glm::radians(90.0f),
+                                            static_cast<float>(g_runtime_global_context.m_window_system->getWidth()) /
+                                                static_cast<float>(g_runtime_global_context.m_window_system->getHeight()),
+                                            0.1f, 1000.0f);
+
+    shader->setUniform("model", model);
+    shader->setUniform("view", view);
+    shader->setUniform("projection", projection);
+
+    render_resource->get("basic").m_render_meshes[1]->use();
+    render_resource->get("basic").m_render_meshes[1]->draw();
 }
 
 void RenderPipeline::drawShadertoy() {

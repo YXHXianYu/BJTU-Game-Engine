@@ -1,5 +1,5 @@
 Language: Cpp
-BasedOnStyle:	LLVM
+BasedOnStyle: LLVM
 
 
 PointerAlignment: Left
@@ -24,10 +24,10 @@ AlignConsecutiveDeclarations: true
 AlignTrailingComments: true
 
 # 关闭各种压行
-AllowShortBlocksOnASingleLine: true
+AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
 
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false

@@ -16,11 +16,13 @@ void RenderSystem::initialize() {
 
     m_render_pipeline = std::make_shared<RenderPipeline>();
     m_render_pipeline->initialize();
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void RenderSystem::tick(float delta_time) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_render_pipeline->draw(m_render_resource);
     // m_render_pipeline->drawShadertoy();
