@@ -21,7 +21,7 @@ RenderTexture::RenderTexture(const std::string& picture_path) {
     if (data == nullptr) { data = stbi_load(("./bin/" + picture_path).c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0); }
     assert(data);
 
-    std::cerr << picture_path << ": " << m_width << "x" << m_height << "x" << m_channels << std::endl;
+    std::cout << "Load texture \"" << picture_path << "\": " << m_width << "x" << m_height << "x" << m_channels << std::endl;
 
     // gen texture
     glGenTextures(1, &m_texture);
@@ -34,10 +34,16 @@ RenderTexture::RenderTexture(const std::string& picture_path) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
     // load data
-    if (m_channels == 3) {
+    if (m_channels == 1) {
+        std::cout << " - Loading an ONE channel texture, load it to RED channel." << std::endl;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_width, m_height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+    } else if (m_channels == 3) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     } else if (m_channels == 4) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    } else {
+        std::cerr << "Unsupported texture channels: " << m_channels << std::endl;
+        assert(false);
     }
     glGenerateMipmap(GL_TEXTURE_2D);
 

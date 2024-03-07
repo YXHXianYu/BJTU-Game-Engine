@@ -29,9 +29,9 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> render_resource) {
     // mesh
     render_resource->get("basic").m_render_meshes[0]->use();
     // texture 0
-    m_render_shaders["basic"]->setTexture("u_texture0", render_resource->get("basic").m_render_textures[0], 0);
+    m_render_shaders["basic"]->setTexture("u_texture0", 0, render_resource->get("basic").m_render_textures[0]);
     // texture 1
-    m_render_shaders["basic"]->setTexture("u_texture1", render_resource->get("basic").m_render_textures[1], 1);
+    m_render_shaders["basic"]->setTexture("u_texture1", 1, render_resource->get("basic").m_render_textures[1]);
     // draw
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

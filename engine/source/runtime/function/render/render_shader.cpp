@@ -35,7 +35,7 @@ RenderShader::~RenderShader() {
     glDeleteProgram(m_shader_program);
 }
 
-void RenderShader::setTexture(const char* name, std::shared_ptr<RenderTexture> texture, uint32_t texture_id) {
+void RenderShader::setTexture(const char* name, uint32_t texture_id, std::shared_ptr<RenderTexture> texture) {
     texture->use(texture_id);
     setUniform(name, texture_id);
 }
