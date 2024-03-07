@@ -8,6 +8,7 @@ default: build run
 
 # generate project buildsystem to `build/`
 generate:
+    python ./scripts/glsl-preprocessor/glsl-preprocessor.py
     cmake -B build
 
 # build the project
