@@ -1,4 +1,6 @@
 bin/
 build/
 .ccls-cache/
+
+.DS_Store
 .vscode/
