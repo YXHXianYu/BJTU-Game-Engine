@@ -16,6 +16,8 @@ float scale_texcoord_x_to_square(in float x) {
 }
 
 void main() {
+    vec3 tmp = normal;
+
     vec4 tex_color0 = texture(u_texture0, texcoord);
 
     float square_texcoord_x = scale_texcoord_x_to_square(texcoord.x);

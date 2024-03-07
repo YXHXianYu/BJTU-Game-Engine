@@ -26,14 +26,14 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> render_resource) {
     m_render_shaders["basic"]->setUniform("u_time", static_cast<float>(glfwGetTime()));
     m_render_shaders["basic"]->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-    // mesh
-    render_resource->get("basic").m_render_meshes[0]->use();
-    // texture 0
+
+    // texture
     m_render_shaders["basic"]->setTexture("u_texture0", 0, render_resource->get("basic").m_render_textures[0]);
-    // texture 1
     m_render_shaders["basic"]->setTexture("u_texture1", 1, render_resource->get("basic").m_render_textures[1]);
+
     // draw
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    render_resource->get("basic").m_render_meshes[0]->use();
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
 }
 
 void RenderPipeline::drawShadertoy() {
