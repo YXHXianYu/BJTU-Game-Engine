@@ -14,6 +14,7 @@
 2. Run the following command to build
 
     ```
+    python ./scripts/glsl-preprocessor/glsl-preprocessor.py
     cmake . -B build
     cmake --build build
     ```
