@@ -1,4 +1,3 @@
-
 # Shader
 set(SHADER_COMPILE_TARGET PiccoloShader)
 add_subdirectory(shader)

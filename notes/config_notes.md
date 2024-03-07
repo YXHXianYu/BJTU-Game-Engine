@@ -58,3 +58,20 @@
   * ![image-20240305232954488](./config_notes/image-20240305232954488.png)
 
     > By ChatGPT4
+
+### 1.4 Texture All Black
+
+* Problem
+  * ![image-20240306213512906](./config_notes/image-20240306213512906.png)
+* Cause
+  * C++析构函数用不好，导致资源被提前析构
+  * RenderTexture类析构函数
+    * ![image-20240306224149455](./config_notes/image-20240306224149455.png)
+  * 初始化构造资源
+    * ![image-20240306224217965](./config_notes/image-20240306224217965.png)
+  * 这就导致：初始化构造资源时，就会调用RenderTexture析构函数，从而释放资源
+  * **找了两个多小时！！！太痛苦了！**
+* Solution
+  * ① 不用析构函数了，自己重载一套（比如Unreal）
+  * ② 质疑C++、理解C++、成为C++！使用C++特性 —— 智能指针，通过 `shared_ptr` 来管理RenderTexture等RAII资源。这样就可以在拷贝时只拷贝指针，避免析构函数被调用！
+  * TODO

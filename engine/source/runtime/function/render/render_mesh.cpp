@@ -4,8 +4,7 @@
 
 namespace BJTUGE {
 
-RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
-    : m_vertices(vertices), m_indices(indices) {
+RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) : m_vertices(vertices), m_indices(indices) {
     // 0. generate vao, vbo, ebo
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo);
@@ -26,6 +25,12 @@ RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<ui
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
+}
+
+RenderMesh::~RenderMesh() {
+    glDeleteVertexArrays(1, &m_vao);
+    glDeleteBuffers(1, &m_vbo);
+    glDeleteBuffers(1, &m_ebo);
 }
 
 } // namespace BJTUGE
