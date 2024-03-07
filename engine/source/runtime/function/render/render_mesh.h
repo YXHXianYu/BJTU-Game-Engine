@@ -22,6 +22,9 @@ class RenderMesh {
 
 public:
     RenderMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+    ~RenderMesh();
+    RenderMesh(const RenderMesh&)            = delete;
+    RenderMesh& operator=(const RenderMesh&) = delete;
 
     uint32_t getVAO() const { return m_vao; }
     void     use() const { glBindVertexArray(m_vao); }

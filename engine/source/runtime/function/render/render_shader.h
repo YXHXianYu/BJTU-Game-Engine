@@ -25,7 +25,11 @@ public:
     void setUniform(const char* name, bool value) const { glUniform1i(glGetUniformLocation(m_shader_program, name), value); }
     void setUniform(const char* name, float value) const { glUniform1f(glGetUniformLocation(m_shader_program, name), value); }
     void setUniform(const char* name, float x, float y) const { glUniform2f(glGetUniformLocation(m_shader_program, name), x, y); }
+    void setUniform(const char* name, uint32_t x, uint32_t y) const { glUniform2i(glGetUniformLocation(m_shader_program, name), x, y); }
     void setUniform(const char* name, float x, float y, float z) const { glUniform3f(glGetUniformLocation(m_shader_program, name), x, y, z); }
+    void setUniform(const char* name, uint32_t value) const {
+        glUniform1i(glGetUniformLocation(m_shader_program, name), static_cast<int>(value));
+    }
 
 private:
     uint32_t m_shader_program;

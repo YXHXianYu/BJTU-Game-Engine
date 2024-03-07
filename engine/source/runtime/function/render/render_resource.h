@@ -13,12 +13,14 @@ public:
     void initialize();
     void clear();
 
-    std::unordered_map<std::string, RenderEntity>::iterator begin() { return m_render_entities_map.begin(); }
+    RenderEntity&       get(const std::string& key) { return m_render_entities_map[key]; }
+    const RenderEntity& get(const std::string& key) const { return m_render_entities_map.at(key); }
+    RenderEntity&       operator[](const std::string& key) { return m_render_entities_map[key]; }
+    const RenderEntity& operator[](const std::string& key) const { return m_render_entities_map.at(key); }
 
-    std::unordered_map<std::string, RenderEntity>::iterator end() { return m_render_entities_map.end(); }
-
+    std::unordered_map<std::string, RenderEntity>::iterator       begin() { return m_render_entities_map.begin(); }
+    std::unordered_map<std::string, RenderEntity>::iterator       end() { return m_render_entities_map.end(); }
     std::unordered_map<std::string, RenderEntity>::const_iterator cbegin() const { return m_render_entities_map.cbegin(); }
-
     std::unordered_map<std::string, RenderEntity>::const_iterator cend() const { return m_render_entities_map.cend(); }
 
 private:

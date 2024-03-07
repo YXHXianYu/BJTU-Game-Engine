@@ -36,6 +36,7 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
 }
 
 void WindowSystem::tick(float delta_time) {
+    glfwGetWindowSize(m_window, &m_width, &m_height);
     m_window_should_close = glfwWindowShouldClose(m_window);
 }
 
