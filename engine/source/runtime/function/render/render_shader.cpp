@@ -63,7 +63,7 @@ void RenderShader::assertShaderCompileSuccess(uint32_t shader) {
 
 std::optional<std::string> RenderShader::getProgramCompileInfo(uint32_t program) {
     int32_t success;
-    glGetProgramiv(program, GL_COMPILE_STATUS, &success);
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
 
     if (success) {
         return {};
