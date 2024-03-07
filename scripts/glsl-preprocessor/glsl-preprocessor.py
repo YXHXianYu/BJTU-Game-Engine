@@ -46,7 +46,7 @@ def process(path, parents=[]):
 
 # !!! this is the root of shaders relative to this script
 script_dir = os.path.dirname(os.path.abspath(__file__))
-REL_ROOT = '../engine/shader/'
+REL_ROOT = '../../engine/shader/'
 # REL_ROOT = './glsl-precompiler-test/'
 
 # the root of shaders
