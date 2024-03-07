@@ -2,6 +2,9 @@
 
 #include <glad/glad.h>
 
+#include "runtime/function/render/render_texture.h"
+
+#include <memory>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -30,6 +33,8 @@ public:
     void setUniform(const char* name, uint32_t value) const {
         glUniform1i(glGetUniformLocation(m_shader_program, name), static_cast<int>(value));
     }
+
+    void setTexture(const char* name, std::shared_ptr<RenderTexture> texture, uint32_t texture_id);
 
 private:
     uint32_t m_shader_program;

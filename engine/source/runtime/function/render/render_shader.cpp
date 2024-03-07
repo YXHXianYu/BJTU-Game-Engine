@@ -35,6 +35,11 @@ RenderShader::~RenderShader() {
     glDeleteProgram(m_shader_program);
 }
 
+void RenderShader::setTexture(const char* name, std::shared_ptr<RenderTexture> texture, uint32_t texture_id) {
+    texture->use(texture_id);
+    setUniform(name, texture_id);
+}
+
 std::optional<std::string> RenderShader::getShaderCompileInfo(uint32_t shader) {
     int32_t success;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);

@@ -8,7 +8,7 @@
 
 namespace BJTUGE {
 
-RenderTexture::RenderTexture(const std::string& picture_path, uint32_t texture_id) {
+RenderTexture::RenderTexture(const std::string& picture_path) {
 
     static bool is_first_time = true;
     if (is_first_time) {
@@ -21,11 +21,7 @@ RenderTexture::RenderTexture(const std::string& picture_path, uint32_t texture_i
     if (data == nullptr) { data = stbi_load(("./bin/" + picture_path).c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0); }
     assert(data);
 
-    std::cout << picture_path << ": " << m_width << "x" << m_height << "x" << m_channels << std::endl;
-
-    // bind texture unit
-    assert(texture_id <= 15);
-    m_texture_id = texture_id;
+    std::cerr << picture_path << ": " << m_width << "x" << m_height << "x" << m_channels << std::endl;
 
     // gen texture
     glGenTextures(1, &m_texture);
