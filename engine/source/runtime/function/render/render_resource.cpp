@@ -41,10 +41,10 @@ void RenderResource::initialize() {
     };
 
     RenderEntity render_entity;
-    render_entity.m_render_meshes.push_back(std::make_shared<RenderMesh>(vertices, indices));
-    render_entity.m_render_meshes.push_back(std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}));
-    render_entity.m_render_textures.push_back(std::make_shared<RenderTexture>("./asset/textures/pixel-island.jpg"));
-    render_entity.m_render_textures.push_back(std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png"));
+    render_entity.addRenderMesh(std::make_shared<RenderMesh>(vertices, indices));
+    render_entity.addRenderMesh(std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}));
+    render_entity.addRenderTexture(std::make_shared<RenderTexture>("./asset/textures/pixel-island.jpg"));
+    render_entity.addRenderTexture(std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png"));
 
     m_render_entities_map["basic"] = render_entity;
 }

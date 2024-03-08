@@ -1,11 +1,12 @@
-#include "runtime/function/render/window_system.h"
+#include "runtime/function/window/window_system.h"
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 namespace BJTUGE {
 
 void WindowSystem::initialize(WindowCreateInfo create_info) {
+    // ===== Window System =====
     // config
     m_width  = create_info.width;
     m_height = create_info.height;
@@ -33,6 +34,21 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
     // viewport
     glViewport(0, 0, m_width, m_height);
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); });
+
+    // ===== Event System =====
+    // initialize event system
+    glfwSetWindowUserPointer(m_window, this);
+
+    glfwSetKeyCallback(m_window, keyCallback);
+    glfwSetCursorPosCallback(m_window, cursorPosCallback);
+    glfwSetMouseButtonCallback(m_window, mouseButtonCallback);
+    glfwSetScrollCallback(m_window, scrollCallback);
+
+    glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+
+    // window
+    registerOnKeyFunc(std::bind(&WindowSystem::onKeyEscape, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+                                std::placeholders::_4));
 }
 
 void WindowSystem::tick(float delta_time) {
@@ -41,11 +57,17 @@ void WindowSystem::tick(float delta_time) {
 }
 
 void WindowSystem::clear() {
+    glfwDestroyWindow(m_window);
     glfwTerminate();
 }
 
 void WindowSystem::setResizeCallback(GLFWframebuffersizefun callback) {
     glfwSetFramebufferSizeCallback(m_window, callback);
+}
+
+void WindowSystem::onKeyEscape(int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(m_window, true); }
+    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) { glfwSetWindowShouldClose(m_window, true); }
 }
 
 } // namespace BJTUGE

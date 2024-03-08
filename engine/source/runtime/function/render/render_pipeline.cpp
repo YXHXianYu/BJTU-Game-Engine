@@ -1,6 +1,9 @@
 #include "runtime/function/render/render_pipeline.h"
 
 #include "runtime/function/global/global_context.h"
+#include "runtime/function/window/window_system.h"
+#include "runtime/function/render/render_resource.h"
+#include "runtime/function/render/render_camera.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -11,7 +14,6 @@
 #include <basic_vert.h>
 #include <basic_frag.h>
 #include <post_process_vert.h>
-// #include <shadertoy_clouds_frag.h>
 #include <shadertoy_slisesix_frag.h>
 
 namespace BJTUGE {
@@ -23,8 +25,9 @@ void RenderPipeline::initialize() {
     m_render_shaders["shadertoy"] = std::make_shared<RenderShader>(POST_PROCESS_VERT, SHADERTOY_SLISESIX_FRAG);
 }
 
-void RenderPipeline::draw(std::shared_ptr<RenderResource> render_resource) {
+void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     auto shader = m_render_shaders["basic"];
+    auto entity = resource->get("basic");
 
     // shader program
     shader->use();
@@ -33,29 +36,19 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> render_resource) {
                        static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
     // texture
-    shader->setTexture("u_texture0", 0, render_resource->get("basic").m_render_textures[0]);
-    shader->setTexture("u_texture1", 1, render_resource->get("basic").m_render_textures[1]);
+    shader->setTexture("u_texture0", 0, resource->get("basic").getRenderTextures()[0]);
+    shader->setTexture("u_texture1", 1, resource->get("basic").getRenderTextures()[1]);
+
+    // tick
+    entity.setModelMatrix(glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f + 10.0f * float(glfwGetTime())), glm::vec3(1.0, 2.0f, 0.0f)));
+
+    // mvp
+    shader->setUniform("model", entity.getModelMatrix());
+    shader->setUniform("view", camera->getViewMatrix());
+    shader->setUniform("projection", camera->getProjectionMatrix());
 
     // draw
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model           = glm::rotate(model, glm::radians(-45.0f + 10.0f * float(glfwGetTime())), glm::vec3(1.0, 2.0f, 0.0f));
-
-    glm::mat4 view = glm::mat4(1.0f);
-    view           = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.5f));
-
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection           = glm::perspective(glm::radians(90.0f),
-                                            static_cast<float>(g_runtime_global_context.m_window_system->getWidth()) /
-                                                static_cast<float>(g_runtime_global_context.m_window_system->getHeight()),
-                                            0.1f, 1000.0f);
-
-    shader->setUniform("model", model);
-    shader->setUniform("view", view);
-    shader->setUniform("projection", projection);
-
-    render_resource->get("basic").m_render_meshes[1]->use();
-    render_resource->get("basic").m_render_meshes[1]->draw();
+    entity.getRenderMeshes()[1]->draw();
 }
 
 void RenderPipeline::drawShadertoy() {

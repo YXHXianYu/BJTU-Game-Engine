@@ -9,6 +9,7 @@ AccessModifierOffset: -4
 
 # Indent Width
 IndentWidth: 4
+IndentCaseLabels: true
 NamespaceIndentation: None
 
 # Tab Width
@@ -24,10 +25,12 @@ AlignConsecutiveDeclarations: true
 AlignTrailingComments: true
 
 # 关闭各种压行
-AllowShortBlocksOnASingleLine: false
+AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
 
 AllowAllParametersOfDeclarationOnNextLine: false
+
+# Switch语句正常缩进
