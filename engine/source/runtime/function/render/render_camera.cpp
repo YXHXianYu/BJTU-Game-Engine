@@ -23,8 +23,8 @@ void RenderCamera::tick(float delta_time, uint32_t camera_movement, float mouse_
         if (camera_movement & static_cast<uint32_t>(GameCommand::BACKWARD)) m_position -= m_front * velocity;
         if (camera_movement & static_cast<uint32_t>(GameCommand::LEFT)) m_position -= m_right * velocity;
         if (camera_movement & static_cast<uint32_t>(GameCommand::RIGHT)) m_position += m_right * velocity;
-        if (camera_movement & static_cast<uint32_t>(GameCommand::UP)) m_position += m_up * velocity;
-        if (camera_movement & static_cast<uint32_t>(GameCommand::DOWN)) m_position -= m_up * velocity;
+        if (camera_movement & static_cast<uint32_t>(GameCommand::UP)) m_position += UP_IN_WORLD * velocity;
+        if (camera_movement & static_cast<uint32_t>(GameCommand::DOWN)) m_position -= UP_IN_WORLD * velocity;
         m_view_matrix_dirty = true;
     }
 
