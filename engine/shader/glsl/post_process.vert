@@ -1,6 +1,6 @@
 #version 410 core
 
-layout(location = 0) out vec2 tex_coord;
+layout(location = 0) out vec2 texcoord;
 layout(location = 1) out int instance_id;
 
 void main()
@@ -11,7 +11,7 @@ void main()
 
     const vec2 fullscreen_triangle_tex_coords[3] =
         vec2[3](vec2(2.0, 1.0), vec2(0.0, 1.0), vec2(0.0, -1.0));
-    tex_coord = fullscreen_triangle_tex_coords[gl_InstanceID];
+    texcoord = fullscreen_triangle_tex_coords[gl_InstanceID];
 
     instance_id = gl_InstanceID;
 }
