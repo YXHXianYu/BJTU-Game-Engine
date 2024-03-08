@@ -8,16 +8,20 @@ RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<ui
     // 0. generate vao, vbo, ebo
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo);
-    glGenBuffers(1, &m_ebo);
+    if (m_indices.size() > 0) {
+        glGenBuffers(1, &m_ebo);
+    }
     // 1. bind vao
     glBindVertexArray(m_vao);
     // 2. copy vertex data to gpu
     // 2.1 vbo
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), &m_vertices[0].position.x, GL_STATIC_DRAW);
-    // 2.2 ebo
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), &m_indices[0], GL_STATIC_DRAW);
+    if (m_ebo > 0) {
+        // 2.2 ebo
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), &m_indices[0], GL_STATIC_DRAW);
+    }
     // 3. set vertex attributes
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -30,7 +34,9 @@ RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<ui
 RenderMesh::~RenderMesh() {
     glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(1, &m_vbo);
-    glDeleteBuffers(1, &m_ebo);
+    if (m_ebo > 0) {
+        glDeleteBuffers(1, &m_ebo);
+    }
 }
 
 } // namespace BJTUGE

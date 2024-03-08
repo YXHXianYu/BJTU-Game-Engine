@@ -74,4 +74,17 @@
 * Solution
   * ① 不用析构函数了，自己重载一套（比如Unreal）
   * ② 质疑C++、理解C++、成为C++！使用C++特性 —— 智能指针，通过 `shared_ptr` 来管理RenderTexture等RAII资源。这样就可以在拷贝时只拷贝指针，避免析构函数被调用！
-  * TODO
+
+### 1.5 glGetProgramiv参数错误
+
+* Problem
+  * 在MacOS上，shader代码无误，但是程序报Program compile error
+    * 并且MacOS上，没有编译的错误信息
+    * 同一份代码，Windows系统上，编译正常
+  * ![9c97abb903153b20d2189e16ab9f13c](./config_notes/9c97abb903153b20d2189e16ab9f13c.jpg)
+* Cause
+  * 参数写错了
+  * 错误：![image-20240307194842775](./config_notes/image-20240307194842775.png)
+  * 正确：![image-20240307194856641](./config_notes/image-20240307194856641.png)
+* Solution
+  * 改成GL_LINK_STATUS就行了

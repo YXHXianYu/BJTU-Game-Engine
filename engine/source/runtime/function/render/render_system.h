@@ -2,10 +2,11 @@
 
 #include <memory>
 
-#include "runtime/function/render/render_resource.h"
-#include "runtime/function/render/render_pipeline.h"
-
 namespace BJTUGE {
+
+class RenderResource;
+class RenderPipeline;
+class RenderCamera;
 
 class RenderSystem {
 
@@ -17,6 +18,7 @@ public:
 private:
     std::shared_ptr<RenderResource> m_render_resource{nullptr};
     std::shared_ptr<RenderPipeline> m_render_pipeline{nullptr};
+    std::shared_ptr<RenderCamera>   m_render_camera{nullptr};
 };
 
 } // namespace BJTUGE

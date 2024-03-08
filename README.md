@@ -2,7 +2,7 @@
 
 > BJTU Game Engine, for short
 
-## How to build & run
+## How to Build & Run
 
 1. Clone the project and enter the directory
 
@@ -30,3 +30,13 @@ just
 ```
 
 > Check `justfile` or use `just -l` for more information.
+
+## How to Control
+
+* Movement
+  * Use `WASD` for moving forward, backward, left, and right, respectively.
+  * Use `QE` for moving up and down.
+* Camera
+  * Hold the right mouse button and drag to adjust the camera view.
+* Window
+  * Press `Escape` and `Enter` to exit the BJTU-Game-Engine

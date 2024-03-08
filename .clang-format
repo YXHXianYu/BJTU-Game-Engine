@@ -1,5 +1,5 @@
 Language: Cpp
-BasedOnStyle:	LLVM
+BasedOnStyle: LLVM
 
 
 PointerAlignment: Left
@@ -9,6 +9,7 @@ AccessModifierOffset: -4
 
 # Indent Width
 IndentWidth: 4
+IndentCaseLabels: true
 NamespaceIndentation: None
 
 # Tab Width
@@ -30,4 +31,6 @@ AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
 
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# Switch语句正常缩进

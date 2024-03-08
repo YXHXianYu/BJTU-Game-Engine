@@ -4,6 +4,8 @@
 
 #include "runtime/function/render/render_texture.h"
 
+#include <glm/glm.hpp>
+
 #include <memory>
 #include <cstdint>
 #include <optional>
@@ -32,6 +34,9 @@ public:
     void setUniform(const char* name, float x, float y, float z) const { glUniform3f(glGetUniformLocation(m_shader_program, name), x, y, z); }
     void setUniform(const char* name, uint32_t value) const {
         glUniform1i(glGetUniformLocation(m_shader_program, name), static_cast<int>(value));
+    }
+    void setUniform(const char* name, const glm::mat4& value) const {
+        glUniformMatrix4fv(glGetUniformLocation(m_shader_program, name), 1, GL_FALSE, &value[0][0]);
     }
 
     /**
