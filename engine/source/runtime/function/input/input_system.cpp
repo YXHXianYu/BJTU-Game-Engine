@@ -50,6 +50,10 @@ void InputSystem::onKey(int key, int scancode, int action, int mods) {
                 m_game_command |= (uint32_t)GameCommand::DOWN;
                 break;
             }
+            case GLFW_KEY_SPACE: {
+                m_game_command |= (uint32_t)GameCommand::KB_SPACE;
+                break;
+            }
             default: {
                 break;
             }
@@ -78,6 +82,10 @@ void InputSystem::onKey(int key, int scancode, int action, int mods) {
             }
             case GLFW_KEY_E: {
                 m_game_command &= ~(uint32_t)GameCommand::DOWN;
+                break;
+            }
+            case GLFW_KEY_SPACE: {
+                m_game_command &= ~(uint32_t)GameCommand::KB_SPACE;
                 break;
             }
             default: {

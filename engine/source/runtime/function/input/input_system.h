@@ -14,6 +14,7 @@ enum class GameCommand : uint32_t {
     MOUSE_LEFT   = 1U << 6,
     MOUSE_RIGHT  = 1U << 7,
     MOUSE_MIDDLE = 1U << 8,
+    KB_SPACE     = 1U << 9,
 
     INVALID = 1U << 31,
 };
