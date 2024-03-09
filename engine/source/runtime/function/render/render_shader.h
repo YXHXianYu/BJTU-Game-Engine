@@ -39,15 +39,6 @@ public:
         glUniformMatrix4fv(glGetUniformLocation(m_shader_program, name), 1, GL_FALSE, &value[0][0]);
     }
 
-    /**
-     * @brief Set a texture in the shader.
-     *
-     * @param name The name of the texture in the shader.
-     * @param texture_id The texture unit to bind the texture to.
-     * @param texture The texture to bind.
-     */
-    void setTexture(const char* name, uint32_t texture_id, std::shared_ptr<RenderTexture> texture);
-
 private:
     uint32_t m_shader_program;
 

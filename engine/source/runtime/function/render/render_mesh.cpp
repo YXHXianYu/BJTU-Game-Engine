@@ -1,16 +1,19 @@
 #include "runtime/function/render/render_mesh.h"
 
+#include "runtime/function/render/render_resource.h"
+#include "runtime/function/render/render_texture.h"
+#include "runtime/function/render/render_shader.h"
+
 #include <iostream>
 
 namespace BJTUGE {
 
-RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) : m_vertices(vertices), m_indices(indices) {
+RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, const std::vector<std::string>& textures)
+    : m_vertices(vertices), m_indices(indices), m_textures(textures) {
     // 0. generate vao, vbo, ebo
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo);
-    if (m_indices.size() > 0) {
-        glGenBuffers(1, &m_ebo);
-    }
+    if (m_indices.size() > 0) { glGenBuffers(1, &m_ebo); }
     // 1. bind vao
     glBindVertexArray(m_vao);
     // 2. copy vertex data to gpu
@@ -34,8 +37,29 @@ RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<ui
 RenderMesh::~RenderMesh() {
     glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(1, &m_vbo);
+    if (m_ebo > 0) { glDeleteBuffers(1, &m_ebo); }
+}
+
+void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) {
+    shader->setUniform("u_model", model * m_model);
+    for (auto i = 0; i < m_textures.size(); i++) {
+        auto texture = resource->getTexture(m_textures[i]);
+        assert(texture);
+        texture->use(shader, "u_texture_" + texture->getType(), i);
+    }
+    if (m_textures.size() > 1) {
+        std::cout << "(" << m_textures.size() << "): ";
+        for (auto id : m_textures) {
+            std::cout << resource->getTexture(id)->getType() << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    use();
     if (m_ebo > 0) {
-        glDeleteBuffers(1, &m_ebo);
+        glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+    } else {
+        glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
     }
 }
 

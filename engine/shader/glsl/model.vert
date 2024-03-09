@@ -10,12 +10,10 @@ layout (location = 1) out vec2 texcoord;
 uniform mat4 u_model;
 uniform mat4 u_view_projection;
 
-uniform float u_time;
-
 void main() {
     vec3 pos = v_position;
 
-    gl_Position = u_view_projection * u_model * vec4(pos, 1.0);
+    gl_Position =  u_view_projection * u_model * vec4(pos, 1.0);
 
     normal = v_normal;
     texcoord = v_texcoord;

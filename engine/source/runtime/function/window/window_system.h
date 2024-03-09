@@ -52,6 +52,7 @@ public:
 
 private:
     void onKeyEscape(int key, int scancode, int action, int mods);
+    void onResizeFramebuffer(int width, int height);
 
 private:
     GLFWwindow* m_window{nullptr};
@@ -68,11 +69,13 @@ public:
     typedef std::function<void(double, double)>     onCursorPosFunc;
     typedef std::function<void(int, int, int)>      onMouseButtonFunc;
     typedef std::function<void(double, double)>     onScrollFunc;
+    typedef std::function<void(int, int)>           onResizeFunc;
 
     void registerOnKeyFunc(onKeyFunc func) { m_on_key_func.push_back(func); }
     void registerOnCursorPosFunc(onCursorPosFunc func) { m_on_cursor_pos_func.push_back(func); }
     void registerOnMouseButtonFunc(onMouseButtonFunc func) { m_on_mouse_button_func.push_back(func); }
     void registerOnScrollFunc(onScrollFunc func) { m_on_scroll_func.push_back(func); }
+    void registerOnResizeFunc(onResizeFunc func) { m_on_resize_func.push_back(func); }
 
     void onKey(int key, int scancode, int action, int mods) {
         for (auto& func : m_on_key_func)
@@ -89,6 +92,10 @@ public:
     void onScroll(double xoffset, double yoffset) {
         for (auto& func : m_on_scroll_func)
             func(xoffset, yoffset);
+    }
+    void onResize(int width, int height) {
+        for (auto& func : m_on_resize_func)
+            func(width, height);
     }
 
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -107,12 +114,17 @@ public:
         WindowSystem* app = (WindowSystem*)glfwGetWindowUserPointer(window);
         if (app) { app->onScroll(xoffset, yoffset); }
     }
+    static void resizeCallback(GLFWwindow* window, int width, int height) {
+        WindowSystem* app = (WindowSystem*)glfwGetWindowUserPointer(window);
+        if (app) { app->onResize(width, height); }
+    }
 
 private:
     std::vector<onKeyFunc>         m_on_key_func;
     std::vector<onCursorPosFunc>   m_on_cursor_pos_func;
     std::vector<onMouseButtonFunc> m_on_mouse_button_func;
     std::vector<onScrollFunc>      m_on_scroll_func;
+    std::vector<onResizeFunc>      m_on_resize_func;
 
     // 添加新时间时，记得在 "window_system.cpp - initialize()" 中添加相应的注册函数
 };

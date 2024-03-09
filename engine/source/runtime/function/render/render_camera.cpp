@@ -1,5 +1,7 @@
 #include "runtime/function/render/render_camera.h"
 
+#include "runtime/function/global/global_context.h"
+#include "runtime/function/window/window_system.h"
 #include "runtime/function/input/input_system.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,14 +15,18 @@ RenderCamera::RenderCamera(CameraCreateInfo info)
     : m_position(info.position), m_yaw(info.yaw), m_pitch(info.pitch), m_fovy(info.fovy), m_aspect(info.aspect), m_near(info.near),
       m_far(info.far), m_move_speed(info.move_speed), m_mouse_sensitivity(info.mouse_sensitivity) {
     updateVector();
+
+    // window resize
+    g_runtime_global_context.m_window_system->registerOnResizeFunc(
+        std::bind(&RenderCamera::onResize, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 // === setter ===
 void RenderCamera::tick(float delta_time, uint32_t camera_movement, float mouse_x, float mouse_y) {
     if (camera_movement != 0 && !(camera_movement & static_cast<uint32_t>(GameCommand::INVALID))) {
         float velocity = m_move_speed * delta_time;
-        if (camera_movement & static_cast<uint32_t>(GameCommand::FORWARD)) m_position += m_front * velocity;
-        if (camera_movement & static_cast<uint32_t>(GameCommand::BACKWARD)) m_position -= m_front * velocity;
+        if (camera_movement & static_cast<uint32_t>(GameCommand::FORWARD)) m_position += m_forward * velocity;
+        if (camera_movement & static_cast<uint32_t>(GameCommand::BACKWARD)) m_position -= m_forward * velocity;
         if (camera_movement & static_cast<uint32_t>(GameCommand::LEFT)) m_position -= m_right * velocity;
         if (camera_movement & static_cast<uint32_t>(GameCommand::RIGHT)) m_position += m_right * velocity;
         if (camera_movement & static_cast<uint32_t>(GameCommand::UP)) m_position += UP_IN_WORLD * velocity;
@@ -47,11 +53,12 @@ void RenderCamera::setAspect(float aspect) {
 
 // === update (private) ===
 void RenderCamera::updateVector() {
-    m_front = glm::vec3{cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch)), sin(glm::radians(m_pitch)),
+    m_front   = glm::vec3{cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch)), sin(glm::radians(m_pitch)),
                         sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch))};
-    m_front = glm::normalize(m_front);
-    m_right = glm::normalize(glm::cross(m_front, UP_IN_WORLD));
-    m_up    = glm::normalize(glm::cross(m_right, m_front));
+    m_front   = glm::normalize(m_front);
+    m_right   = glm::normalize(glm::cross(m_front, UP_IN_WORLD));
+    m_up      = glm::normalize(glm::cross(m_right, m_front));
+    m_forward = glm::normalize(glm::cross(UP_IN_WORLD, m_right));
 
     m_view_matrix_dirty = true;
 }
@@ -73,10 +80,16 @@ void RenderCamera::updateProjectionMatrix() {
 }
 
 void RenderCamera::updateViewProjectionMatrix() {
+    updateViewMatrix();
+    updateProjectionMatrix();
     if (m_view_projection_matrix_dirty) {
         m_view_projection_matrix       = m_projection_matrix * m_view_matrix;
         m_view_projection_matrix_dirty = false;
     }
+}
+
+void RenderCamera::onResize(int width, int height) {
+    setAspect(static_cast<float>(width) / static_cast<float>(height));
 }
 
 } // namespace BJTUGE

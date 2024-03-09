@@ -5,8 +5,8 @@ layout (location = 1) in vec2 texcoord;
 
 layout(location = 0) out vec4 fragcolor;
 
-uniform sampler2D u_texture0;
-uniform sampler2D u_texture1;
+uniform sampler2D u_texture_diffuse;
+uniform sampler2D u_texture_specular;
 
 uniform float u_time;
 uniform vec2 u_resolution;
@@ -18,13 +18,13 @@ float scale_texcoord_x_to_square(in float x) {
 void main() {
     vec3 tmp = normal;
 
-    vec4 tex_color0 = texture(u_texture0, texcoord);
+    vec4 tex_color0 = texture(u_texture_diffuse, texcoord);
 
     float square_texcoord_x = scale_texcoord_x_to_square(texcoord.x);
 
     vec4 tex_color1;
     if (square_texcoord_x >= 0.0 && square_texcoord_x <= 1.0)
-        tex_color1 = texture(u_texture1, vec2(square_texcoord_x, texcoord.y));
+        tex_color1 = texture(u_texture_specular, vec2(square_texcoord_x, texcoord.y));
     else
         tex_color1 = vec4(0.0, 0.0, 0.0, 0.0);
     

@@ -49,6 +49,8 @@ private:
     void updateProjectionMatrix();
     void updateViewProjectionMatrix();
 
+    void onResize(int width, int height);
+
 private:
     static const glm::vec3 UP_IN_WORLD;
     static const float     EPS;
@@ -60,6 +62,7 @@ private:
     glm::vec3 m_front;
     glm::vec3 m_up;
     glm::vec3 m_right;
+    glm::vec3 m_forward;
     // options
     float m_fovy;
     float m_aspect;
