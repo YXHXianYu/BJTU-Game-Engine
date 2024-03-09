@@ -24,6 +24,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC OpenGL::GL)
 target_link_libraries(${TARGET_NAME} PUBLIC glm)
 target_link_libraries(${TARGET_NAME} PUBLIC stb)
+target_link_libraries(${TARGET_NAME} PUBLIC assimp)
 
 # Add Shader Dependency
 add_dependencies(${TARGET_NAME} ${SHADER_COMPILE_TARGET})

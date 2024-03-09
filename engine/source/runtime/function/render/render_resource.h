@@ -2,10 +2,13 @@
 
 #include <string>
 #include <unordered_map>
-
-#include "runtime/function/render/render_entity.h"
+#include <memory>
 
 namespace BJTUGE {
+
+class RenderMesh;
+class RenderEntity;
+class RenderTexture;
 
 class RenderResource {
 
@@ -13,18 +16,30 @@ public:
     void initialize();
     void clear();
 
-    RenderEntity&       get(const std::string& key) { return m_render_entities_map[key]; }
-    const RenderEntity& get(const std::string& key) const { return m_render_entities_map.at(key); }
-    RenderEntity&       operator[](const std::string& key) { return m_render_entities_map[key]; }
-    const RenderEntity& operator[](const std::string& key) const { return m_render_entities_map.at(key); }
+    /**
+     * @brief 1. Load a texture from a file.
+     *        2. Add a texture to the resource manager.
+     */
+    void addTexture(const std::string& key, std::shared_ptr<RenderTexture> texture);
 
-    std::unordered_map<std::string, RenderEntity>::iterator       begin() { return m_render_entities_map.begin(); }
-    std::unordered_map<std::string, RenderEntity>::iterator       end() { return m_render_entities_map.end(); }
-    std::unordered_map<std::string, RenderEntity>::const_iterator cbegin() const { return m_render_entities_map.cbegin(); }
-    std::unordered_map<std::string, RenderEntity>::const_iterator cend() const { return m_render_entities_map.cend(); }
+    /**
+     * @brief Get a texture by its key
+     */
+    std::shared_ptr<RenderTexture> getTexture(const std::string& key) const { return m_render_textures.at(key); }
+
+    /**
+     * @brief Get a entity by its key
+     */
+    std::shared_ptr<RenderEntity> getEntity(const std::string& key) const { return m_render_entities.at(key); }
+
+    /**
+     * @brief Load a RenderEntity from a file.
+     */
+    std::shared_ptr<RenderEntity> loadEntityFromFile(const std::string& file_path);
 
 private:
-    std::unordered_map<std::string, RenderEntity> m_render_entities_map;
+    std::unordered_map<std::string, std::shared_ptr<RenderEntity>>  m_render_entities;
+    std::unordered_map<std::string, std::shared_ptr<RenderTexture>> m_render_textures;
 };
 
 } // namespace BJTUGE

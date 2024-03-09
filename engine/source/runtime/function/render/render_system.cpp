@@ -33,7 +33,6 @@ void RenderSystem::tick(float delta_time) {
     input_system->resetCursorDelta();
 
     m_render_pipeline->draw(m_render_resource, m_render_camera);
-    // m_render_pipeline->drawShadertoy();
 
     glfwSwapBuffers(g_runtime_global_context.m_window_system->getWindow());
     glfwPollEvents();

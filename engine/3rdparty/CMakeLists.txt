@@ -20,3 +20,7 @@ endif()
 if (NOT TARGET stb)
     include(stb.cmake)
 endif()
+
+if (NOT TARGET assimp)
+    add_subdirectory(assimp-5.3.1)
+endif()

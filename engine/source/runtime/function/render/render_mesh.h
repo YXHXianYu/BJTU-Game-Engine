@@ -4,10 +4,14 @@
 #include <glad/glad.h>
 
 #include <vector>
-
-#include <iostream>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
 namespace BJTUGE {
+
+class RenderShader;
+class RenderResource;
 
 struct Vertex {
     glm::vec3 position;
@@ -23,26 +27,27 @@ struct Vertex {
 class RenderMesh {
 
 public:
-    RenderMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+    RenderMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, const std::vector<std::string>& textures = {});
     ~RenderMesh();
     RenderMesh(const RenderMesh&)            = delete;
     RenderMesh& operator=(const RenderMesh&) = delete;
 
+    void addTexture(const std::string& texture) { m_textures.push_back(texture); }
+
     uint32_t getVAO() const { return m_vao; }
-    void     use() const { glBindVertexArray(m_vao); }
-    void     bind() const { use(); }
-    void     draw() const {
-        use();
-        if (m_ebo > 0) {
-            glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
-        } else {
-            glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-        }
-    }
+
+    void use() const { glBindVertexArray(m_vao); }
+    void bind() const { use(); }
+
+    void draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model);
+
+    void setModelMatrix(const glm::mat4& model) { m_model = model; }
 
 private:
-    std::vector<Vertex>   m_vertices;
-    std::vector<uint32_t> m_indices;
+    std::vector<Vertex>      m_vertices;
+    std::vector<uint32_t>    m_indices;
+    std::vector<std::string> m_textures;
+    glm::mat4                m_model{1.0f};
 
     uint32_t m_vao{0};
     uint32_t m_vbo{0};

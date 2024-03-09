@@ -4,6 +4,8 @@
 #include "runtime/function/window/window_system.h"
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_camera.h"
+#include "runtime/function/render/render_entity.h"
+#include "runtime/function/render/render_mesh.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,54 +15,53 @@
 
 #include <basic_vert.h>
 #include <basic_frag.h>
-#include <post_process_vert.h>
-#include <shadertoy_slisesix_frag.h>
+#include <model_vert.h>
+#include <model_frag.h>
+
+#include <iostream>
 
 namespace BJTUGE {
 
 unsigned int texture1, texture2;
 
 void RenderPipeline::initialize() {
-    m_render_shaders["basic"]     = std::make_shared<RenderShader>(BASIC_VERT, BASIC_FRAG);
-    m_render_shaders["shadertoy"] = std::make_shared<RenderShader>(POST_PROCESS_VERT, SHADERTOY_SLISESIX_FRAG);
+    m_render_shaders["basic"]    = std::make_shared<RenderShader>(BASIC_VERT, BASIC_FRAG);
+    m_render_shaders["3d-model"] = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
-    auto shader = m_render_shaders["basic"];
-    auto entity = resource->get("basic");
+    {
+        auto shader = m_render_shaders["3d-model"];
 
-    // shader program
-    shader->use();
-    shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
-    shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                       static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
-    // texture
-    shader->setTexture("u_texture0", 0, resource->get("basic").getRenderTextures()[0]);
-    shader->setTexture("u_texture1", 1, resource->get("basic").getRenderTextures()[1]);
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
 
-    // tick
-    entity.setModelMatrix(glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f + 10.0f * float(glfwGetTime())), glm::vec3(1.0, 2.0f, 0.0f)));
+        resource->getEntity("aris")->draw(shader, resource);
+        resource->getEntity("miyako")->draw(shader, resource);
+        resource->getEntity("koharu")->draw(shader, resource);
+    }
 
-    // mvp
-    shader->setUniform("model", entity.getModelMatrix());
-    shader->setUniform("view", camera->getViewMatrix());
-    shader->setUniform("projection", camera->getProjectionMatrix());
+    return;
 
-    // draw
-    entity.getRenderMeshes()[1]->draw();
-}
+    {
+        auto shader = m_render_shaders["basic"];
+        auto cube   = resource->getEntity("cube");
 
-void RenderPipeline::drawShadertoy() {
-    assert(false);
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
-    m_render_shaders["shadertoy"]->use();
-    m_render_shaders["shadertoy"]->setUniform("u_time", static_cast<float>(glfwGetTime()));
-    m_render_shaders["shadertoy"]->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                                              static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-    m_render_shaders["shadertoy"]->setUniform("u_mouse", 0.0f, 0.0f);
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+        cube->setModelMatrix(glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f + 10.0f * float(glfwGetTime())), glm::vec3(1.0, 2.0f, 0.0f)));
+
+        cube->draw(shader, resource);
+    }
 }
 
 } // namespace BJTUGE

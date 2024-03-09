@@ -43,12 +43,14 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
     glfwSetCursorPosCallback(m_window, cursorPosCallback);
     glfwSetMouseButtonCallback(m_window, mouseButtonCallback);
     glfwSetScrollCallback(m_window, scrollCallback);
+    glfwSetFramebufferSizeCallback(m_window, resizeCallback);
 
     glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
 
     // window
     registerOnKeyFunc(std::bind(&WindowSystem::onKeyEscape, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
                                 std::placeholders::_4));
+    registerOnResizeFunc(std::bind(&WindowSystem::onResizeFramebuffer, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void WindowSystem::tick(float delta_time) {
@@ -68,6 +70,12 @@ void WindowSystem::setResizeCallback(GLFWframebuffersizefun callback) {
 void WindowSystem::onKeyEscape(int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) { glfwSetWindowShouldClose(m_window, true); }
     if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) { glfwSetWindowShouldClose(m_window, true); }
+}
+
+void WindowSystem::onResizeFramebuffer(int width, int height) {
+    m_width  = width;
+    m_height = height;
+    glViewport(0, 0, m_width, m_height);
 }
 
 } // namespace BJTUGE
