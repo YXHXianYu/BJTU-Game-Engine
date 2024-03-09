@@ -23,6 +23,8 @@ public:
     std::unordered_map<std::string, RenderEntity>::const_iterator cbegin() const { return m_render_entities_map.cbegin(); }
     std::unordered_map<std::string, RenderEntity>::const_iterator cend() const { return m_render_entities_map.cend(); }
 
+    static RenderEntity load_entity_from_file(const std::string& file_path);
+
 private:
     std::unordered_map<std::string, RenderEntity> m_render_entities_map;
 };

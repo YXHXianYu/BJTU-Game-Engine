@@ -18,9 +18,7 @@ RenderTexture::RenderTexture(const std::string& picture_path) {
     }
 
     unsigned char* data = stbi_load(picture_path.c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0);
-    if (data == nullptr) {
-        data = stbi_load(("./bin/" + picture_path).c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0);
-    }
+    if (data == nullptr) { data = stbi_load(("./bin/" + picture_path).c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0); }
     assert(data);
 
     std::cout << "Load texture \"" << picture_path << "\": " << m_width << "x" << m_height << "x" << m_channels << std::endl;

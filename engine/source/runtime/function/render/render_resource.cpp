@@ -1,5 +1,9 @@
 #include "runtime/function/render/render_resource.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include <iostream>
 
 namespace BJTUGE {
@@ -47,6 +51,15 @@ void RenderResource::initialize() {
     render_entity.addRenderTexture(std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png"));
 
     m_render_entities_map["basic"] = render_entity;
+
+    m_render_entities_map["aris"] = load_entity_from_file("./asset/models/characters/aris/CH0200.fbx");
+}
+
+RenderEntity RenderResource::load_entity_from_file(const std::string& file_path) {
+    Assimp::Importer importer;
+    const aiScene*   scene = importer.ReadFile(file_path, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+    return RenderEntity{};
 }
 
 } // namespace BJTUGE
