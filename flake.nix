@@ -33,8 +33,9 @@
           # '';
 
           buildInputs = with pkgs; [
+            clang-tools
             clang
-            llvmPackages_16.bintools
+            llvmPackages_17.bintools
             pkg-config
             cmake
             python3
