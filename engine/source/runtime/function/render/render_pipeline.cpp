@@ -47,9 +47,9 @@ void RenderPipeline::draw_with_lights(std::shared_ptr<RenderResource> resource, 
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
-        shader->setUniform("lightColor", light_color);
-        shader->setUniform("lightPos", 0.0f, -0.5f, 1.0f);
-        shader->setUniform("viewPos", camera->getPosition());
+        shader->setUniform("u_light_color", light_color);
+        shader->setUniform("u_light_pos", 0.0f, -0.5f, 1.0f);
+        shader->setUniform("u_cam_pos", camera->getPosition());
 
         resource->getEntity("aris")->draw(shader, resource);
         resource->getEntity("miyako")->draw(shader, resource);
@@ -61,7 +61,7 @@ void RenderPipeline::draw_with_lights(std::shared_ptr<RenderResource> resource, 
         light_shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                                  static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         light_shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
-        light_shader->setUniform("lightColor", light_color);
+        light_shader->setUniform("u_light_color", light_color);
         resource->getEntity("light-cube")->draw(light_shader, resource);
     }
 
