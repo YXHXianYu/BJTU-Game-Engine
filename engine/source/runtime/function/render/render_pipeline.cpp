@@ -1,5 +1,6 @@
 #include "runtime/function/render/render_pipeline.h"
 
+#include "glm/fwd.hpp"
 #include "runtime/function/global/global_context.h"
 #include "runtime/function/window/window_system.h"
 #include "runtime/function/render/render_resource.h"
@@ -17,6 +18,9 @@
 #include <basic_frag.h>
 #include <model_vert.h>
 #include <model_frag.h>
+#include <model_with_lighting_frag.h>
+#include <model_with_lighting_vert.h>
+#include <light_frag.h>
 
 #include <iostream>
 
@@ -25,8 +29,43 @@ namespace BJTUGE {
 unsigned int texture1, texture2;
 
 void RenderPipeline::initialize() {
-    m_render_shaders["basic"]    = std::make_shared<RenderShader>(BASIC_VERT, BASIC_FRAG);
-    m_render_shaders["3d-model"] = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
+    m_render_shaders["basic"]             = std::make_shared<RenderShader>(BASIC_VERT, BASIC_FRAG);
+    m_render_shaders["3d-model"]          = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
+    m_render_shaders["3d-model-lighting"] = std::make_shared<RenderShader>(MODEL_WITH_LIGHTING_VERT, MODEL_WITH_LIGHTING_FRAG);
+    m_render_shaders["light"]             = std::make_shared<RenderShader>(MODEL_VERT, LIGHT_FRAG);
+}
+
+void RenderPipeline::draw_with_lights(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
+    {
+        auto shader = m_render_shaders["3d-model-lighting"];
+
+        auto light_color = glm::vec3(1.0f, 0.95f, 0.9f);
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
+        shader->setUniform("u_light_color", light_color);
+        shader->setUniform("u_light_pos", 0.0f, -0.5f, 1.0f);
+        shader->setUniform("u_cam_pos", camera->getPosition());
+
+        resource->getEntity("aris")->draw(shader, resource);
+        resource->getEntity("miyako")->draw(shader, resource);
+        resource->getEntity("koharu")->draw(shader, resource);
+
+        auto light_shader = m_render_shaders["light"];
+        light_shader->use();
+        light_shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        light_shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                                 static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+        light_shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
+        light_shader->setUniform("u_light_color", light_color);
+        resource->getEntity("light-cube")->draw(light_shader, resource);
+    }
+
+    return;
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {

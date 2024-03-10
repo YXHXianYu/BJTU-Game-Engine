@@ -1,5 +1,6 @@
 #include "runtime/function/render/render_resource.h"
 
+#include "glm/ext/matrix_transform.hpp"
 #include "runtime/function/render/render_mesh.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_texture.h"
@@ -61,6 +62,13 @@ void RenderResource::initialize() {
     render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
     m_render_entities["cube"] = std::make_shared<RenderEntity>();
     m_render_entities["cube"]->addMesh("cube", render_mesh);
+
+    auto cube_mesh = std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{}) ;
+    m_render_entities["light-cube"] = std::make_shared<RenderEntity>();
+    m_render_entities["light-cube"]->addMesh("cube", cube_mesh);
+    m_render_entities["light-cube"]->setModelMatrix(
+        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 1.0f)), glm::vec3(0.2f))
+    );
 
     m_render_entities["aris"] = loadEntityFromFile("./asset/models/characters/aris/CH0200.fbx");
     m_render_entities["aris"]->setModelMatrix(
