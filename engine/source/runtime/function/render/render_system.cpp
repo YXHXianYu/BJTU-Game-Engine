@@ -32,7 +32,8 @@ void RenderSystem::tick(float delta_time) {
     m_render_camera->tick(delta_time, input_system->getGameCommand(), input_system->getCursorDeltaX(), input_system->getCursorDeltaY());
     input_system->resetCursorDelta();
 
-    m_render_pipeline->draw(m_render_resource, m_render_camera);
+    // m_render_pipeline->draw(m_render_resource, m_render_camera);
+    m_render_pipeline->draw_with_lights(m_render_resource, m_render_camera);
 
     glfwSwapBuffers(g_runtime_global_context.m_window_system->getWindow());
     glfwPollEvents();
