@@ -17,6 +17,8 @@
 #include <basic_frag.h>
 #include <model_vert.h>
 #include <model_frag.h>
+#include <depth_rendering_vert.h>
+#include <depth_rendering_frag.h>
 
 #include <iostream>
 
@@ -27,11 +29,13 @@ unsigned int texture1, texture2;
 void RenderPipeline::initialize() {
     m_render_shaders["basic"]    = std::make_shared<RenderShader>(BASIC_VERT, BASIC_FRAG);
     m_render_shaders["3d-model"] = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
+    m_render_shaders["depth"] = std::make_shared<RenderShader>(DEPTH_RENDERING_VERT, DEPTH_RENDERING_FRAG);
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     {
         auto shader = m_render_shaders["3d-model"];
+        // auto shader = m_render_shaders["depth"];
 
         shader->use();
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));

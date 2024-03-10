@@ -12,7 +12,7 @@ struct CameraCreateInfo {
     float fovy{90.0f};
     float aspect{16.0f / 9.0f};
     float near{0.1f};
-    float far{1000.0f}; // too large far may cause precision problem
+    float far{100.0f}; // too large far may cause precision problem
 
     float move_speed{0.001f};
     float mouse_sensitivity{0.3f};
