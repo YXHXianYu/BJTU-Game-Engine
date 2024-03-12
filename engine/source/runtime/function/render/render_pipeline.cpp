@@ -32,7 +32,7 @@ void RenderPipeline::initialize() {
     m_render_shaders["basic"]    = std::make_shared<RenderShader>(BASIC_VERT, BASIC_FRAG);
     m_render_shaders["3d-model"] = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
     m_render_shaders["depth"]    = std::make_shared<RenderShader>(DEPTH_RENDERING_VERT, DEPTH_RENDERING_FRAG);
-    m_render_shaders["block"] = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
+    m_render_shaders["block"]    = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
@@ -63,7 +63,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
 
-        resource->getEntity("mesh-blocks")->draw(shader, resource);
+        resource->getEntity("mesh_blocks")->draw(shader, resource);
     }
 
     return;

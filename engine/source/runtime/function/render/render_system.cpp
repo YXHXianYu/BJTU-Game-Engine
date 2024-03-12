@@ -9,11 +9,19 @@
 
 #include <glad/glad.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #include <iostream>
 
 namespace BJTUGE {
 
 void RenderSystem::initialize() {
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glEnable(GL_TEXTURE_3D);
+    glEnable(GL_DEPTH_TEST);
+    stbi_set_flip_vertically_on_load(true);
+
     m_render_resource = std::make_shared<RenderResource>();
     m_render_resource->initialize();
 
@@ -22,8 +30,6 @@ void RenderSystem::initialize() {
 
     m_render_camera = std::make_shared<RenderCamera>(CameraCreateInfo{});
     m_render_camera->setAspect(g_runtime_global_context.m_window_system->getAspect());
-
-    glEnable(GL_DEPTH_TEST);
 
     std::cout << "RenderSystem::initialize complete" << std::endl;
 }

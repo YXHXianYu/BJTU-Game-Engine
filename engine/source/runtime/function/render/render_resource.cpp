@@ -4,6 +4,7 @@
 #include "runtime/function/render/render_mesh_blocks.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_texture.h"
+#include "runtime/function/render/render_texture_3d.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -96,13 +97,11 @@ void RenderResource::initialize() {
     m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Ex_Root");
 
     // ===== Block ====
-    auto texture = std::make_shared<RenderTexture>("./asset/textures/grass.png", "diffuse");
-    addTexture("./asset/textures/grass.png", texture);
+    auto texture = std::make_shared<RenderTexture>("./asset/textures/blocks/grass.png", "diffuse");
+    addTexture("./asset/textures/blocks/grass.png", texture);
     auto model = loadEntityFromFile("./asset/models/block/block.obj");
     auto mesh  = model->get("Cube")->getMesh("Cube");
-    std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/grass.png");
-
-    std::dynamic_pointer_cast<RenderMesh>(mesh)->output();
+    std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/blocks/grass.png");
 
     assert(mesh);
 
@@ -125,20 +124,28 @@ void RenderResource::initialize() {
 
     // ===== Mesh Block =====
     std::vector<BlockInfo> blocks(100);
-    for(int i = 0; i < 100; i++) {
-        blocks[i] = BlockInfo {0.0f, 0.0f, i * 1.0f, (float)(i % 4), 0.0f};
+    for (int i = 0; i < 100; i++) {
+        blocks[i] = BlockInfo{0.0f, 0.0f, i * 1.0f, (float)(i % 6), (float)(i % 4)};
     }
-    auto mesh_blocks = std::make_shared<RenderMeshBlocks>(blocks);
+    auto mesh_blocks                 = std::make_shared<RenderMeshBlocks>(blocks);
     m_render_entities["mesh_blocks"] = std::make_shared<RenderEntity>();
     m_render_entities["mesh_blocks"]->addMesh("", mesh_blocks);
+
+    // ===== Load 3D Texture =====
+    auto textures_path = std::vector<std::string>{
+        "./asset/textures/blocks/grass.png",       "./asset/textures/blocks/stone.png",      "./asset/textures/blocks/dirt.png",
+        "./asset/textures/blocks/cobblestone.png", "./asset/textures/blocks/oak_planks.png", "./asset/textures/blocks/oak_log.png",
+        "./asset/textures/blocks/oak_leaves.png",
+    };
+    m_render_textures["3d_texture"] = std::make_shared<RenderTexture3D>(textures_path);
 }
 
-void RenderResource::addTexture(const std::string& key, std::shared_ptr<RenderTexture> texture) {
+void RenderResource::addTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture) {
     if (m_render_textures.find(key) != m_render_textures.end()) { return; }
     m_render_textures[key] = texture;
 }
 
-std::shared_ptr<RenderTexture> RenderResource::getTexture(const std::string& key) const {
+std::shared_ptr<RenderTextureBase> RenderResource::getTexture(const std::string& key) const {
     assert(m_render_textures.find(key) != m_render_textures.end());
     return m_render_textures.at(key);
 }

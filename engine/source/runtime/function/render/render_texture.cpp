@@ -1,11 +1,10 @@
-#include "runtime/function/render/render_texture.h"
+﻿#include "runtime/function/render/render_texture.h"
 
 #include "runtime/function/render/render_shader.h"
 
 #include <cassert>
 #include <iostream>
 
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace BJTUGE {
@@ -24,17 +23,7 @@ const std::unordered_map<std::string, TextureType> RenderTexture::STRING_TO_TEXT
     {"height", TextureType::HEIGHT},
 };
 
-static bool is_first_time = true;
-
-void first_time_initialize() {
-    if (!is_first_time) { return; }
-    is_first_time = false;
-    stbi_set_flip_vertically_on_load(true);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-}
-
 RenderTexture::RenderTexture(const std::string& picture_path, const std::string& type) : m_type(STRING_TO_TEXTURE_TYPE.at(type)) {
-    first_time_initialize();
 
     unsigned char* data = stbi_load(picture_path.c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0);
     if (data == nullptr) { data = stbi_load(("./bin/" + picture_path).c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0); }
@@ -49,7 +38,6 @@ RenderTexture::RenderTexture(const std::string& picture_path, const std::string&
 }
 
 RenderTexture::RenderTexture(const aiTexture* texture, const std::string& type) {
-    first_time_initialize();
 
     unsigned char* data;
     auto           pcData = reinterpret_cast<const unsigned char*>(texture->pcData);

@@ -43,17 +43,11 @@ RenderMesh::~RenderMesh() {
 void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) {
     shader->setUniform("u_model", model * m_model);
     for (auto i = 0; i < m_textures.size(); i++) {
-        auto texture = resource->getTexture(m_textures[i]);
+        auto texture = std::dynamic_pointer_cast<RenderTexture>(resource->getTexture(m_textures[i]));
         assert(texture);
         texture->use(shader, "u_texture_" + texture->getType(), i);
     }
-    if (m_textures.size() > 1) {
-        std::cout << "(" << m_textures.size() << "): ";
-        for (auto id : m_textures) {
-            std::cout << resource->getTexture(id)->getType() << " ";
-        }
-        std::cout << std::endl;
-    }
+    assert(m_textures.size() == 1);
 
     glBindVertexArray(m_vao);
     if (m_ebo > 0) {
@@ -65,7 +59,7 @@ void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Rend
 
 void RenderMesh::output() const {
     std::cout << "{" << std::endl;
-    for(const auto& v: m_vertices) {
+    for (const auto& v : m_vertices) {
         std::cout << "    Vertex{";
         std::cout << v.position.x << ", " << v.position.y << ", " << v.position.z << ", ";
         std::cout << v.normal.x << ", " << v.normal.y << ", " << v.position.z << ", ";
@@ -73,8 +67,8 @@ void RenderMesh::output() const {
     }
     std::cout << "}" << std::endl;
     std::cout << "{" << std::endl;
-    for(int i = 0; i < m_indices.size(); i += 3) {
-        std::cout << "    " << m_indices[i] << ", " << m_indices[i+1] << ", " << m_indices[i+2] << std::endl;
+    for (int i = 0; i < m_indices.size(); i += 3) {
+        std::cout << "    " << m_indices[i] << ", " << m_indices[i + 1] << ", " << m_indices[i + 2] << std::endl;
     }
     std::cout << "}" << std::endl;
 }
