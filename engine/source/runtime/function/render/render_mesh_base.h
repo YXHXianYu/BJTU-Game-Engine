@@ -8,6 +8,17 @@ namespace BJTUGE {
 class RenderShader;
 class RenderResource;
 
+struct Vertex {
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 texcoord;
+
+    Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texcoord)
+        : position(position), normal(normal), texcoord(texcoord) {}
+    Vertex(float x, float y, float z, float nx, float ny, float nz, float u, float v)
+        : position(x, y, z), normal(nx, ny, nz), texcoord(u, v) {}
+};
+
 class RenderMeshBase {
 
 public:

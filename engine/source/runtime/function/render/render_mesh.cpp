@@ -63,4 +63,20 @@ void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Rend
     }
 }
 
+void RenderMesh::output() const {
+    std::cout << "{" << std::endl;
+    for(const auto& v: m_vertices) {
+        std::cout << "    Vertex{";
+        std::cout << v.position.x << ", " << v.position.y << ", " << v.position.z << ", ";
+        std::cout << v.normal.x << ", " << v.normal.y << ", " << v.position.z << ", ";
+        std::cout << v.texcoord.x << ", " << v.texcoord.y << "}," << std::endl;
+    }
+    std::cout << "}" << std::endl;
+    std::cout << "{" << std::endl;
+    for(int i = 0; i < m_indices.size(); i += 3) {
+        std::cout << "    " << m_indices[i] << ", " << m_indices[i+1] << ", " << m_indices[i+2] << std::endl;
+    }
+    std::cout << "}" << std::endl;
+}
+
 } // namespace BJTUGE

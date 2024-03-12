@@ -12,17 +12,6 @@
 
 namespace BJTUGE {
 
-struct Vertex {
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 texcoord;
-
-    Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texcoord)
-        : position(position), normal(normal), texcoord(texcoord) {}
-    Vertex(float x, float y, float z, float nx, float ny, float nz, float u, float v)
-        : position(x, y, z), normal(nx, ny, nz), texcoord(u, v) {}
-};
-
 class RenderMesh : public RenderMeshBase {
 
 public:
@@ -36,6 +25,8 @@ public:
     virtual void draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) override;
 
     void setModelMatrix(const glm::mat4& model) { m_model = model; }
+
+    void output() const;
 
 private:
     std::vector<Vertex>      m_vertices;

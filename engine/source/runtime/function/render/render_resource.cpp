@@ -1,6 +1,7 @@
 #include "runtime/function/render/render_resource.h"
 
 #include "runtime/function/render/render_mesh.h"
+#include "runtime/function/render/render_mesh_blocks.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_texture.h"
 
@@ -94,11 +95,15 @@ void RenderResource::initialize() {
     m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("HaloRoot");
     m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Ex_Root");
 
+    // ===== Block ====
     auto texture = std::make_shared<RenderTexture>("./asset/textures/grass.png", "diffuse");
     addTexture("./asset/textures/grass.png", texture);
     auto model = loadEntityFromFile("./asset/models/block/block.obj");
     auto mesh  = model->get("Cube")->getMesh("Cube");
     std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/grass.png");
+
+    std::dynamic_pointer_cast<RenderMesh>(mesh)->output();
+
     assert(mesh);
 
     m_render_entities["block"] = std::make_shared<RenderEntity>();
@@ -117,6 +122,15 @@ void RenderResource::initialize() {
                 glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)), glm::vec3(i * (1.0f), -3.5f, j * (1.0f))));
         }
     }
+
+    // ===== Mesh Block =====
+    std::vector<BlockInfo> blocks(100);
+    for(int i = 0; i < 100; i++) {
+        blocks[i] = BlockInfo {0.0f, 0.0f, i * 1.0f, (float)(i % 4), 0.0f};
+    }
+    auto mesh_blocks = std::make_shared<RenderMeshBlocks>(blocks);
+    m_render_entities["mesh_blocks"] = std::make_shared<RenderEntity>();
+    m_render_entities["mesh_blocks"]->addMesh("", mesh_blocks);
 }
 
 void RenderResource::addTexture(const std::string& key, std::shared_ptr<RenderTexture> texture) {
@@ -198,7 +212,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
         // return std::static_pointer_cast<RenderMeshBase>(std::make_shared<RenderMesh>(vertices, indices, textures));
     };
 
-    const bool VERBOSE = true;
+    const bool VERBOSE = false;
 
     std::function<std::shared_ptr<RenderEntity>(aiNode*, const aiScene*, uint32_t)> process_node =
         [&](aiNode* node, const aiScene* scene, uint32_t level) -> std::shared_ptr<RenderEntity> {

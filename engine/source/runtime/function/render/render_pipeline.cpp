@@ -19,6 +19,8 @@
 #include <model_frag.h>
 #include <depth_rendering_vert.h>
 #include <depth_rendering_frag.h>
+#include <block_vert.h>
+#include <block_frag.h>
 
 #include <iostream>
 
@@ -30,6 +32,7 @@ void RenderPipeline::initialize() {
     m_render_shaders["basic"]    = std::make_shared<RenderShader>(BASIC_VERT, BASIC_FRAG);
     m_render_shaders["3d-model"] = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
     m_render_shaders["depth"]    = std::make_shared<RenderShader>(DEPTH_RENDERING_VERT, DEPTH_RENDERING_FRAG);
+    m_render_shaders["block"] = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
@@ -48,6 +51,19 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         resource->getEntity("miyako")->draw(shader, resource);
         resource->getEntity("koharu")->draw(shader, resource);
         resource->getEntity("block")->draw(shader, resource);
+    }
+
+    {
+        auto shader = m_render_shaders["block"];
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
+
+        resource->getEntity("mesh-blocks")->draw(shader, resource);
     }
 
     return;
