@@ -1,26 +1,26 @@
 #include "runtime/function/render/render_pipeline.h"
 
 #include "runtime/function/global/global_context.h"
-#include "runtime/function/window/window_system.h"
-#include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_camera.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_mesh.h"
+#include "runtime/function/render/render_resource.h"
+#include "runtime/function/window/window_system.h"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <basic_vert.h>
 #include <basic_frag.h>
-#include <model_vert.h>
-#include <model_frag.h>
-#include <depth_rendering_vert.h>
-#include <depth_rendering_frag.h>
-#include <block_vert.h>
+#include <basic_vert.h>
 #include <block_frag.h>
+#include <block_vert.h>
+#include <depth_rendering_frag.h>
+#include <depth_rendering_vert.h>
+#include <model_frag.h>
+#include <model_vert.h>
 
 #include <iostream>
 
@@ -44,13 +44,9 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
 
-        resource->getEntity("aris")->draw(shader, resource);
-        resource->getEntity("miyako")->draw(shader, resource);
-        resource->getEntity("koharu")->draw(shader, resource);
-        resource->getEntity("block")->draw(shader, resource);
+        resource->getEntity("model")->draw(shader, resource);
     }
 
     {
@@ -60,10 +56,9 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
 
-        resource->getEntity("mesh_blocks")->draw(shader, resource);
+        resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
     return;

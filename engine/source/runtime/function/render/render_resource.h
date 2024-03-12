@@ -1,8 +1,8 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <unordered_map>
-#include <memory>
 
 namespace BJTUGE {
 
@@ -28,9 +28,19 @@ public:
     std::shared_ptr<RenderTextureBase> getTexture(const std::string& key) const;
 
     /**
+     * @brief Whether the resource manager has a texture
+     */
+    bool hasTexture(const std::string& key) const { return m_render_textures.find(key) != m_render_textures.end(); }
+
+    /**
      * @brief Get a entity by its key
      */
-    std::shared_ptr<RenderEntity> getEntity(const std::string& key) const { return m_render_entities.at(key); }
+    std::shared_ptr<RenderEntity> getEntity(const std::string& key) const;
+
+    /**
+     * @brief Whether the resource manager has a texture
+     */
+    bool hasEntity(const std::string& key) const { return m_render_entities.find(key) != m_render_entities.end(); }
 
     /**
      * @brief Load a RenderEntity from a file.
@@ -42,7 +52,12 @@ private:
     std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>> m_render_textures;
 
 private:
-    void loadMinecraft3DTexture();
+    std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
+
+    std::shared_ptr<RenderEntity> loadMinecraftBlocks();
+    std::shared_ptr<RenderEntity> loadCube();
+    std::shared_ptr<RenderEntity> loadCharacters();
+    std::shared_ptr<RenderEntity> loadPlainBlocks();
 };
 
 } // namespace BJTUGE

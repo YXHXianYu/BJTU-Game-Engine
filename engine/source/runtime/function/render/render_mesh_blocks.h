@@ -2,14 +2,14 @@
 
 #include "runtime/function/render/render_mesh_base.h"
 
-#include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
-#include <vector>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 namespace BJTUGE {
 
@@ -49,7 +49,7 @@ private:
     uint32_t m_vbo_vertices{0};
 
 private:
-    std::unordered_set<void*> m_shader_tag;
+    std::unordered_set<void*> m_shader_tag; // 用于给一些shader添加tag，避免在draw时重复设置uniform
 };
 
 } // namespace BJTUGE

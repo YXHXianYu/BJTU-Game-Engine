@@ -1,7 +1,7 @@
 ﻿#include "runtime/function/render/render_mesh_blocks.h"
 
-#include "runtime/function/render/render_shader.h"
 #include "runtime/function/render/render_resource.h"
+#include "runtime/function/render/render_shader.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -12,14 +12,18 @@ namespace BJTUGE {
 const std::vector<float> RenderMeshBlocks::m_vertices = {0.0f, 1.0f, 2.0f, 3.0f};
 
 const std::vector<Vertex> RenderMeshBlocks::m_cube = {
-    Vertex{1, 1, -1, -0, 1, -1, 0.625, 0.5},    Vertex{-1, 1, -1, -0, 1, -1, 0.875, 0.5},   Vertex{-1, 1, 1, -0, 1, 1, 0.875, 0.75},
-    Vertex{1, 1, 1, -0, 1, 1, 0.625, 0.75},     Vertex{1, -1, 1, -0, -0, 1, 0.375, 0.75},   Vertex{1, 1, 1, -0, -0, 1, 0.625, 0.75},
-    Vertex{-1, 1, 1, -0, -0, 1, 0.625, 1},      Vertex{-1, -1, 1, -0, -0, 1, 0.375, 1},     Vertex{-1, -1, 1, -1, -0, 1, 0.375, 0},
-    Vertex{-1, 1, 1, -1, -0, 1, 0.625, 0},      Vertex{-1, 1, -1, -1, -0, -1, 0.625, 0.25}, Vertex{-1, -1, -1, -1, -0, -1, 0.375, 0.25},
-    Vertex{-1, -1, -1, -0, -1, -1, 0.125, 0.5}, Vertex{1, -1, -1, -0, -1, -1, 0.375, 0.5},  Vertex{1, -1, 1, -0, -1, 1, 0.375, 0.75},
-    Vertex{-1, -1, 1, -0, -1, 1, 0.125, 0.75},  Vertex{1, -1, -1, 1, -0, -1, 0.375, 0.5},   Vertex{1, 1, -1, 1, -0, -1, 0.625, 0.5},
-    Vertex{1, 1, 1, 1, -0, 1, 0.625, 0.75},     Vertex{1, -1, 1, 1, -0, 1, 0.375, 0.75},    Vertex{-1, -1, -1, -0, -0, -1, 0.375, 0.25},
-    Vertex{-1, 1, -1, -0, -0, -1, 0.625, 0.25}, Vertex{1, 1, -1, -0, -0, -1, 0.625, 0.5},   Vertex{1, -1, -1, -0, -0, -1, 0.375, 0.5},
+    Vertex{0.5, 0.5, -0.5, -0, 1, -1, 0.625, 0.5},      Vertex{-0.5, 0.5, -0.5, -0, 1, -1, 0.875, 0.5},
+    Vertex{-0.5, 0.5, 0.5, -0, 1, 1, 0.875, 0.75},      Vertex{0.5, 0.5, 0.5, -0, 1, 1, 0.625, 0.75},
+    Vertex{0.5, -0.5, 0.5, -0, -0, 1, 0.375, 0.75},     Vertex{0.5, 0.5, 0.5, -0, -0, 1, 0.625, 0.75},
+    Vertex{-0.5, 0.5, 0.5, -0, -0, 1, 0.625, 1},        Vertex{-0.5, -0.5, 0.5, -0, -0, 1, 0.375, 1},
+    Vertex{-0.5, -0.5, 0.5, -0.5, -0, 1, 0.375, 0},     Vertex{-0.5, 0.5, 0.5, -0.5, -0, 1, 0.625, 0},
+    Vertex{-0.5, 0.5, -0.5, -0.5, -0, -1, 0.625, 0.25}, Vertex{-0.5, -0.5, -0.5, -0.5, -0, -1, 0.375, 0.25},
+    Vertex{-0.5, -0.5, -0.5, -0, -1, -1, 0.125, 0.5},   Vertex{0.5, -0.5, -0.5, -0, -1, -1, 0.375, 0.5},
+    Vertex{0.5, -0.5, 0.5, -0, -1, 1, 0.375, 0.75},     Vertex{-0.5, -0.5, 0.5, -0, -1, 1, 0.125, 0.75},
+    Vertex{0.5, -0.5, -0.5, 0.5, -0, -1, 0.375, 0.5},   Vertex{0.5, 0.5, -0.5, 0.5, -0, -1, 0.625, 0.5},
+    Vertex{0.5, 0.5, 0.5, 0.5, -0, 1, 0.625, 0.75},     Vertex{0.5, -0.5, 0.5, 0.5, -0, 1, 0.375, 0.75},
+    Vertex{-0.5, -0.5, -0.5, -0, -0, -1, 0.375, 0.25},  Vertex{-0.5, 0.5, -0.5, -0, -0, -1, 0.625, 0.25},
+    Vertex{0.5, 0.5, -0.5, -0, -0, -1, 0.625, 0.5},     Vertex{0.5, -0.5, -0.5, -0, -0, -1, 0.375, 0.5},
 };
 
 RenderMeshBlocks::RenderMeshBlocks(const std::vector<BlockInfo> blocks) : m_blocks(blocks) {
@@ -55,7 +59,7 @@ RenderMeshBlocks::RenderMeshBlocks(const std::vector<BlockInfo> blocks) : m_bloc
     glVertexAttribDivisor(3, 1);
 
     // 4. m_model
-    setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f)));
+    setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)));
 }
 
 RenderMeshBlocks::~RenderMeshBlocks() {
@@ -72,7 +76,7 @@ void RenderMeshBlocks::draw(std::shared_ptr<RenderShader> shader, std::shared_pt
         assert(m_cube.size() * sizeof(Vertex) / sizeof(float) == 192);
     }
 
-    resource->getTexture("3d_texture")->use(shader, "u_textures", 0);
+    resource->getTexture("minecraft_texture")->use(shader, "u_texture", 0);
 
     // todo: apply texture
     glBindVertexArray(m_vao);

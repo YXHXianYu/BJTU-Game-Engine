@@ -14,9 +14,17 @@ uniform mat4 u_view_projection;
 uniform float u_cube[192];
 
 void main() {
+    if (v_material_id < 0) {
+        gl_Position = vec4(100.f, 100.f, 100.f, 1.f);
+        normal = vec3(0.0f);
+        texcoord = vec2(0.0f);
+        material_id = int(v_material_id);
+        return;
+    }
+    
     int id = int(8.0f * (v_id + v_face * 4.0f));
     vec3 pos = vec3(u_cube[id + 0], u_cube[id + 1], u_cube[id + 2]);
-    pos = pos * 0.5 + v_position;
+    pos = pos + v_position;
 
     gl_Position =  u_view_projection * u_model * vec4(pos, 1.0);
 
