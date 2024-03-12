@@ -7,7 +7,9 @@
 #include "runtime/function/render/render_camera.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_mesh.h"
+#include "runtime/function/render/lighting/spot_light.h"
 
+#include <cstdio>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -23,6 +25,7 @@
 #include <light_frag.h>
 
 #include <iostream>
+#include <string>
 
 namespace BJTUGE {
 
@@ -39,30 +42,44 @@ void RenderPipeline::draw_with_lights(std::shared_ptr<RenderResource> resource, 
     {
         auto shader = m_render_shaders["3d-model-lighting"];
 
-        auto light_color = glm::vec3(1.0f, 0.95f, 0.9f);
-
         shader->use();
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
-        shader->setUniform("u_light_color", light_color);
-        shader->setUniform("u_light_pos", 0.0f, -0.5f, 1.0f);
+        // shader->setUniform("u_light_color", light_color);
+        // shader->setUniform("u_light_pos", 0.0f, -0.5f, 1.0f);
         shader->setUniform("u_cam_pos", camera->getPosition());
+
+        int i = 0;
+        for (auto& spot_light : resource->getSpotLights()) {
+            auto&& index = std::to_string(i);
+            shader->setUniform(("u_spotlights[" + index + "].pos").c_str(), spot_light->getPosition());
+            shader->setUniform(("u_spotlights[" + index + "].color").c_str(),spot_light->getColor());
+            i++;
+        }
+        shader->setUniform("u_spotlights_cnt", i);
 
         resource->getEntity("aris")->draw(shader, resource);
         resource->getEntity("miyako")->draw(shader, resource);
         resource->getEntity("koharu")->draw(shader, resource);
 
+        // draw light mesh
         auto light_shader = m_render_shaders["light"];
         light_shader->use();
         light_shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         light_shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                                  static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         light_shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
-        light_shader->setUniform("u_light_color", light_color);
-        resource->getEntity("light-cube")->draw(light_shader, resource);
+
+        i = 0;
+        for (auto& spot_light : resource->getSpotLights()) {
+            auto&& index = std::to_string(i);
+            light_shader->setUniform("u_light_color", spot_light->getColor());
+            spot_light->draw(light_shader, resource);
+            i++;
+        }
     }
 
     return;

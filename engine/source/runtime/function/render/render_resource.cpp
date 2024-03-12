@@ -1,6 +1,9 @@
 #include "runtime/function/render/render_resource.h"
 
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/vector_float3.hpp"
+#include "glm/fwd.hpp"
+#include "runtime/function/render/lighting/spot_light.h"
 #include "runtime/function/render/render_mesh.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_texture.h"
@@ -63,12 +66,29 @@ void RenderResource::initialize() {
     m_render_entities["cube"] = std::make_shared<RenderEntity>();
     m_render_entities["cube"]->addMesh("cube", render_mesh);
 
-    auto cube_mesh = std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{}) ;
-    m_render_entities["light-cube"] = std::make_shared<RenderEntity>();
-    m_render_entities["light-cube"]->addMesh("cube", cube_mesh);
-    m_render_entities["light-cube"]->setModelMatrix(
-        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 1.0f)), glm::vec3(0.2f))
-    );
+    auto cube_mesh = std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{});
+    cube_mesh->setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f)));
+
+    auto light_cube1 = std::make_shared<SpotLight>();
+    light_cube1->addMesh("cube", cube_mesh);
+    // light_cube1->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 1.0f)));
+    light_cube1->setPosition(glm::vec3(-0.5f, -0.5f, 1.0f));
+    light_cube1->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+    m_spot_lights["light-cube-1"] = light_cube1;
+
+    auto light_cube2 = std::make_shared<SpotLight>();
+    light_cube2->addMesh("cube", cube_mesh);
+    // light_cube2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 3.0f)));
+    light_cube2->setPosition(glm::vec3(0.0f, 0.5f, 1.0f));
+    light_cube2->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
+    m_spot_lights["light-cube-2"] = light_cube2;
+
+    auto light_cube3 = std::make_shared<SpotLight>();
+    light_cube3->addMesh("cube", cube_mesh);
+    // light_cube2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 3.0f)));
+    light_cube3->setPosition(glm::vec3(0.5f, -0.5f, 1.0f));
+    light_cube3->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
+    m_spot_lights["light-cube-3"] = light_cube3;
 
     m_render_entities["aris"] = loadEntityFromFile("./asset/models/characters/aris/CH0200.fbx");
     m_render_entities["aris"]->setModelMatrix(
