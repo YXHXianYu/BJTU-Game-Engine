@@ -25,7 +25,7 @@ public:
     /**
      * @brief Get a texture by its key
      */
-    std::shared_ptr<RenderTexture> getTexture(const std::string& key) const { return m_render_textures.at(key); }
+    std::shared_ptr<RenderTexture> getTexture(const std::string& key) const;
 
     /**
      * @brief Get a entity by its key

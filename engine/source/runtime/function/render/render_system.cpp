@@ -9,6 +9,8 @@
 
 #include <glad/glad.h>
 
+#include <iostream>
+
 namespace BJTUGE {
 
 void RenderSystem::initialize() {
@@ -22,6 +24,8 @@ void RenderSystem::initialize() {
     m_render_camera->setAspect(g_runtime_global_context.m_window_system->getAspect());
 
     glEnable(GL_DEPTH_TEST);
+
+    std::cout << "RenderSystem::initialize complete" << std::endl;
 }
 
 void RenderSystem::tick(float delta_time) {

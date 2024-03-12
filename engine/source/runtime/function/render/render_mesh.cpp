@@ -20,8 +20,8 @@ RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<ui
     // 2.1 vbo
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), &m_vertices[0].position.x, GL_STATIC_DRAW);
+    // 2.2 ebo
     if (m_ebo > 0) {
-        // 2.2 ebo
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), &m_indices[0], GL_STATIC_DRAW);
     }
@@ -55,7 +55,7 @@ void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Rend
         std::cout << std::endl;
     }
 
-    use();
+    glBindVertexArray(m_vao);
     if (m_ebo > 0) {
         glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
     } else {

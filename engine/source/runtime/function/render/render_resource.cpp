@@ -60,7 +60,7 @@ void RenderResource::initialize() {
     render_mesh->addTexture("./asset/textures/pixel-island.jpg");
     render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
     m_render_entities["cube"] = std::make_shared<RenderEntity>();
-    m_render_entities["cube"]->addMesh("cube", render_mesh);
+    m_render_entities["cube"]->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(render_mesh));
 
     m_render_entities["aris"] = loadEntityFromFile("./asset/models/characters/aris/CH0200.fbx");
     m_render_entities["aris"]->setModelMatrix(
@@ -93,11 +93,40 @@ void RenderResource::initialize() {
     m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Koharu_Weapon_Toggle");
     m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("HaloRoot");
     m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Ex_Root");
+
+    auto texture = std::make_shared<RenderTexture>("./asset/textures/grass.png", "diffuse");
+    addTexture("./asset/textures/grass.png", texture);
+    auto model = loadEntityFromFile("./asset/models/block/block.obj");
+    auto mesh  = model->get("Cube")->getMesh("Cube");
+    std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/grass.png");
+    assert(mesh);
+
+    m_render_entities["block"] = std::make_shared<RenderEntity>();
+
+    for (int i = -25; i < 25; i++) {
+        for (int j = -25; j < 25; j++) {
+            std::shared_ptr<RenderEntity> entity = std::make_shared<RenderEntity>();
+            entity->addMesh("Cube", mesh);
+
+            auto str = "block" + std::to_string(i) + "_" + std::to_string(j);
+
+            assert(m_render_entities["block"]);
+            m_render_entities["block"]->addEntity(str, entity);
+
+            entity->setModelMatrix(
+                glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)), glm::vec3(i * (1.0f), -3.5f, j * (1.0f))));
+        }
+    }
 }
 
 void RenderResource::addTexture(const std::string& key, std::shared_ptr<RenderTexture> texture) {
     if (m_render_textures.find(key) != m_render_textures.end()) { return; }
     m_render_textures[key] = texture;
+}
+
+std::shared_ptr<RenderTexture> RenderResource::getTexture(const std::string& key) const {
+    assert(m_render_textures.find(key) != m_render_textures.end());
+    return m_render_textures.at(key);
 }
 
 std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::string& file_path) {
@@ -135,7 +164,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
         }
     };
 
-    auto process_mesh = [&](aiMesh* mesh, const aiScene* scene) -> std::shared_ptr<RenderMesh> {
+    auto process_mesh = [&](aiMesh* mesh, const aiScene* scene) -> std::shared_ptr<RenderMeshBase> {
         std::vector<Vertex>      vertices;
         std::vector<uint32_t>    indices;
         std::vector<std::string> textures;
@@ -165,30 +194,33 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
         process_material(material, scene, aiTextureType_NORMALS, "normal", textures);
         process_material(material, scene, aiTextureType_HEIGHT, "height", textures);
 
-        return std::make_shared<RenderMesh>(vertices, indices, textures);
+        return std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(vertices, indices, textures));
+        // return std::static_pointer_cast<RenderMeshBase>(std::make_shared<RenderMesh>(vertices, indices, textures));
     };
+
+    const bool VERBOSE = true;
 
     std::function<std::shared_ptr<RenderEntity>(aiNode*, const aiScene*, uint32_t)> process_node =
         [&](aiNode* node, const aiScene* scene, uint32_t level) -> std::shared_ptr<RenderEntity> {
-        // if (level <= 2) {
-        //     std::cout << level << " ";
-        //     for (uint32_t i = 0; i <= level; i++) {
-        //         std::cout << "-";
-        //     }
-        //     std::cout << " :" << node->mName.C_Str() << std::endl;
-        // }
+        if (VERBOSE && level <= 2) {
+            std::cout << level << " ";
+            for (uint32_t i = 0; i <= level; i++) {
+                std::cout << "-";
+            }
+            std::cout << " :" << node->mName.C_Str() << std::endl;
+        }
 
         auto entity = std::make_shared<RenderEntity>();
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
             auto name = node->mName.C_Str();
 
-            // if (level <= 4) {
-            //     std::cout << level << " ";
-            //     for (uint32_t i = 0; i <= level; i++) {
-            //         std::cout << " ";
-            //     }
-            //     std::cout << "  => " << name << std::endl;
-            // }
+            if (VERBOSE && level <= 4) {
+                std::cout << level << " ";
+                for (uint32_t i = 0; i <= level; i++) {
+                    std::cout << " ";
+                }
+                std::cout << "  => " << name << std::endl;
+            }
 
             if (entity->hasMesh(name)) {
                 uint32_t index = 0;
