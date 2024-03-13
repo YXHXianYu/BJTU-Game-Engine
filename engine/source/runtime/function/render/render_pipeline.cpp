@@ -42,7 +42,7 @@ void RenderPipeline::initialize() {
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
-    bool use_ortho = true;
+    bool use_ortho = false;
     // change the position of the spot lights (should be moved to the logic in the future)
     {
         float    time = static_cast<float>(glfwGetTime());
