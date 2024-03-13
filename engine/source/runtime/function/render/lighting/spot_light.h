@@ -37,6 +37,7 @@ public:
     glm::vec3 getColor() const { return m_color; }
 
     // model matrix
+    // to make sure the `m_position` is correspond to the m_model, use `setPosition` instead
     // void      setModelMatrix(const glm::mat4& model) { m_model = model; }
     // glm::mat4 getModelMatrix() const { return m_model; }
 
