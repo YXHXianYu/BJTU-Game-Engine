@@ -9,6 +9,7 @@ namespace BJTUGE {
 class RenderMesh;
 class RenderEntity;
 class RenderTextureBase;
+class RenderMeshBase;
 
 class RenderResource {
 
@@ -53,6 +54,8 @@ private:
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
+
+    std::shared_ptr<RenderMeshBase> loadCubeMesh();
 
     std::shared_ptr<RenderEntity> loadMinecraftBlocks();
     std::shared_ptr<RenderEntity> loadCube();

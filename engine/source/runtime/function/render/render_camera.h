@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glm/fwd.hpp"
 #include <glm/glm.hpp>
 
 namespace BJTUGE {
@@ -35,6 +36,10 @@ public:
     glm::mat4 getViewProjectionMatrix() {
         updateViewProjectionMatrix();
         return m_view_projection_matrix;
+    }
+
+    glm::vec3 getPosition() {
+        return m_position;
     }
 
     // setter

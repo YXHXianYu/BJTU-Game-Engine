@@ -1,8 +1,8 @@
 #include "runtime/function/render/render_mesh.h"
 
 #include "runtime/function/render/render_resource.h"
-#include "runtime/function/render/render_texture.h"
 #include "runtime/function/render/render_shader.h"
+#include "runtime/function/render/render_texture.h"
 
 #include <iostream>
 
@@ -47,7 +47,7 @@ void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Rend
         assert(texture);
         texture->use(shader, "u_texture_" + texture->getType(), i);
     }
-    assert(m_textures.size() == 1);
+    // assert(m_textures.size() == 1);
 
     glBindVertexArray(m_vao);
     if (m_ebo > 0) {
