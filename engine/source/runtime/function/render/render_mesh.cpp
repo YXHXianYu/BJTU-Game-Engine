@@ -1,8 +1,8 @@
 #include "runtime/function/render/render_mesh.h"
 
 #include "runtime/function/render/render_resource.h"
-#include "runtime/function/render/render_texture.h"
 #include "runtime/function/render/render_shader.h"
+#include "runtime/function/render/render_texture.h"
 
 #include <iostream>
 
@@ -20,8 +20,8 @@ RenderMesh::RenderMesh(const std::vector<Vertex>& vertices, const std::vector<ui
     // 2.1 vbo
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), &m_vertices[0].position.x, GL_STATIC_DRAW);
+    // 2.2 ebo
     if (m_ebo > 0) {
-        // 2.2 ebo
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), &m_indices[0], GL_STATIC_DRAW);
     }
@@ -43,24 +43,34 @@ RenderMesh::~RenderMesh() {
 void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) {
     shader->setUniform("u_model", model * m_model);
     for (auto i = 0; i < m_textures.size(); i++) {
-        auto texture = resource->getTexture(m_textures[i]);
+        auto texture = std::dynamic_pointer_cast<RenderTexture>(resource->getTexture(m_textures[i]));
         assert(texture);
         texture->use(shader, "u_texture_" + texture->getType(), i);
     }
-    if (m_textures.size() > 1) {
-        std::cout << "(" << m_textures.size() << "): ";
-        for (auto id : m_textures) {
-            std::cout << resource->getTexture(id)->getType() << " ";
-        }
-        std::cout << std::endl;
-    }
+    // assert(m_textures.size() == 1);
 
-    use();
+    glBindVertexArray(m_vao);
     if (m_ebo > 0) {
         glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
     } else {
         glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
     }
+}
+
+void RenderMesh::output() const {
+    std::cout << "{" << std::endl;
+    for (const auto& v : m_vertices) {
+        std::cout << "    Vertex{";
+        std::cout << v.position.x << ", " << v.position.y << ", " << v.position.z << ", ";
+        std::cout << v.normal.x << ", " << v.normal.y << ", " << v.position.z << ", ";
+        std::cout << v.texcoord.x << ", " << v.texcoord.y << "}," << std::endl;
+    }
+    std::cout << "}" << std::endl;
+    std::cout << "{" << std::endl;
+    for (int i = 0; i < m_indices.size(); i += 3) {
+        std::cout << "    " << m_indices[i] << ", " << m_indices[i + 1] << ", " << m_indices[i + 2] << std::endl;
+    }
+    std::cout << "}" << std::endl;
 }
 
 } // namespace BJTUGE

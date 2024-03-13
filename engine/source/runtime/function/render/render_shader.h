@@ -40,6 +40,9 @@ public:
     void setUniform(const char* name, const glm::mat4& value) const {
         glUniformMatrix4fv(glGetUniformLocation(m_shader_program, name), 1, GL_FALSE, &value[0][0]);
     }
+    void setUniform(const char* name, uint32_t count, const float* data) {
+        glUniform1fv(glGetUniformLocation(m_shader_program, name), count, data);
+    }
 
 private:
     uint32_t m_shader_program;
