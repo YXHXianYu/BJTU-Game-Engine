@@ -2,6 +2,7 @@
 
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_shader.h"
+#include "runtime/function/render/render_texture_base.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

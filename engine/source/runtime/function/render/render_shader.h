@@ -2,13 +2,11 @@
 
 #include <glad/glad.h>
 
-#include "glm/fwd.hpp"
-#include "runtime/function/render/render_texture.h"
-
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 
-#include <memory>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 

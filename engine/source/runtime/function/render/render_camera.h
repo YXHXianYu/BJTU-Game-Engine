@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glm/fwd.hpp"
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 
 namespace BJTUGE {
@@ -38,9 +38,7 @@ public:
         return m_view_projection_matrix;
     }
 
-    glm::vec3 getPosition() {
-        return m_position;
-    }
+    glm::vec3 getPosition() { return m_position; }
 
     // setter
     void tick(float delta_time, uint32_t camera_movement, float mouse_x, float mouse_y);

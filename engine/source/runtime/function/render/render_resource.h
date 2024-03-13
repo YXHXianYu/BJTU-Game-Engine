@@ -3,7 +3,6 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <memory>
 #include <vector>
 
 namespace BJTUGE {
@@ -68,12 +67,14 @@ public:
     std::shared_ptr<RenderEntity> loadEntityFromFile(const std::string& file_path);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<SpotLight>>     m_spot_lights;
+    std::unordered_map<std::string, std::shared_ptr<SpotLight>>         m_spot_lights;
     std::unordered_map<std::string, std::shared_ptr<RenderEntity>>      m_render_entities;
     std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>> m_render_textures;
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
+
+    void loadLightingCubeToResource(); // TODO: 统一格式
 
     std::shared_ptr<RenderEntity> loadMinecraftBlocks();
     std::shared_ptr<RenderEntity> loadCube();

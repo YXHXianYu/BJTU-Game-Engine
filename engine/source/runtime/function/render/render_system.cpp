@@ -1,11 +1,11 @@
 #include "runtime/function/render/render_system.h"
 
 #include "runtime/function/global/global_context.h"
-#include "runtime/function/window/window_system.h"
 #include "runtime/function/input/input_system.h"
-#include "runtime/function/render/render_resource.h"
-#include "runtime/function/render/render_pipeline.h"
 #include "runtime/function/render/render_camera.h"
+#include "runtime/function/render/render_pipeline.h"
+#include "runtime/function/render/render_resource.h"
+#include "runtime/function/window/window_system.h"
 
 #include <glad/glad.h>
 
