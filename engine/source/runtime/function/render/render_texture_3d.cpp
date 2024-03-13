@@ -3,6 +3,7 @@
 #include "runtime/function/render/render_shader.h"
 
 #include <cassert>
+#include <cstring>
 #include <iostream>
 
 #include <stb_image.h>

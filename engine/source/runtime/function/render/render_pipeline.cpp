@@ -42,6 +42,7 @@ void RenderPipeline::initialize() {
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
+    bool use_ortho = true;
     // change the position of the spot lights (should be moved to the logic in the future)
     {
         float    time = static_cast<float>(glfwGetTime());
@@ -59,7 +60,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
         shader->setUniform("u_cam_pos", camera->getPosition());
 
         uint32_t i = 0;
@@ -80,7 +81,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         light_shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         light_shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                                  static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-        light_shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
+        light_shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
 
         uint32_t i = 0;
         for (const auto& [key, spot_light] : resource->getSpotLights()) {
@@ -98,7 +99,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix());
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
 
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }

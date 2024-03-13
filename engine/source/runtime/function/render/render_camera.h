@@ -14,6 +14,11 @@ struct CameraCreateInfo {
     float aspect{16.0f / 9.0f};
     float near{0.1f};
     float far{100.0f}; // too large far may cause precision problem
+    
+    float left{-10.0f};
+    float right{10.0f};
+    float top{10.0f};
+    float buttom{-10.0f};
 
     float move_speed{0.001f};
     float mouse_sensitivity{0.3f};
@@ -29,12 +34,12 @@ public:
         updateViewMatrix();
         return m_view_matrix;
     }
-    glm::mat4 getProjectionMatrix() {
-        updateProjectionMatrix();
+    glm::mat4 getProjectionMatrix(bool use_ortho = false) {
+        updateProjectionMatrix(use_ortho);
         return m_projection_matrix;
     }
-    glm::mat4 getViewProjectionMatrix() {
-        updateViewProjectionMatrix();
+    glm::mat4 getViewProjectionMatrix(bool use_ortho = false) {
+        updateViewProjectionMatrix(use_ortho);
         return m_view_projection_matrix;
     }
 
@@ -49,8 +54,8 @@ private:
     // update
     void updateVector();
     void updateViewMatrix();
-    void updateProjectionMatrix();
-    void updateViewProjectionMatrix();
+    void updateProjectionMatrix(bool use_ortho);
+    void updateViewProjectionMatrix(bool use_ortho);
 
     void onResize(int width, int height);
 
@@ -73,6 +78,11 @@ private:
     float m_far;
     float m_move_speed;
     float m_mouse_sensitivity;
+    // options for orthographic
+    float m_ortho_left;
+    float m_ortho_right;
+    float m_ortho_top;
+    float m_ortho_buttom;
     // matrices
     bool      m_view_matrix_dirty{true};
     glm::mat4 m_view_matrix{1.0f};
