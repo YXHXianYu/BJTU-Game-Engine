@@ -17,7 +17,7 @@ TabWidth: 4
 UseTab: Never
 
 # 关闭自动排序头文件
-SortIncludes: false
+SortIncludes: true
 
 # 各种对齐
 AlignConsecutiveAssignments: true

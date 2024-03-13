@@ -1,5 +1,7 @@
 #pragma once
 
+#include "render_texture_base.h"
+
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -20,16 +22,16 @@ enum class TextureType {
     HEIGHT,
 };
 
-class RenderTexture {
+class RenderTexture : public RenderTextureBase {
 
 public:
     RenderTexture(const std::string& picture_path, const std::string& type);
     RenderTexture(const aiTexture* texture, const std::string& type);
-    ~RenderTexture();
+    virtual ~RenderTexture();
     RenderTexture(const RenderTexture&)            = delete;
     RenderTexture& operator=(const RenderTexture&) = delete;
 
-    void use(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const;
+    virtual void use(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const override;
 
     std::string getType() const { return TEXTURE_TYPE_TO_STRING.at(m_type); }
 

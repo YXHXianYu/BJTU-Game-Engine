@@ -1,7 +1,7 @@
 #include "runtime/function/render/render_entity.h"
 
 #include "runtime/function/render/render_shader.h"
-#include "runtime/function/render/render_mesh.h"
+#include "runtime/function/render/render_mesh_base.h"
 
 namespace BJTUGE {
 

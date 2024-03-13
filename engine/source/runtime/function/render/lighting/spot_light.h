@@ -1,29 +1,29 @@
 #pragma once
 
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/ext/vector_float3.hpp"
-#include <unordered_map>
-#include <string>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
 #include <memory>
+#include <string>
+#include <unordered_map>
 
 #include <glm/glm.hpp>
 
 namespace BJTUGE {
 
 class RenderResource;
-class RenderMesh;
+class RenderMeshBase;
 class RenderShader;
 
 class SpotLight {
 
 public:
     SpotLight() = default;
-    SpotLight(const std::unordered_map<std::string, std::shared_ptr<RenderMesh>>& render_meshes) : m_render_meshes(render_meshes){};
+    SpotLight(const std::unordered_map<std::string, std::shared_ptr<RenderMeshBase>>& render_meshes) : m_render_meshes(render_meshes){};
 
     // mesh
-    void addMesh(const std::string& key, const std::shared_ptr<RenderMesh>& render_mesh) { m_render_meshes[key] = render_mesh; }
-    std::shared_ptr<RenderMesh> getMesh(const std::string& key) const { return m_render_meshes.at(key); }
-    bool                        hasMesh(const std::string& key) const { return m_render_meshes.find(key) != m_render_meshes.end(); }
+    void addMesh(const std::string& key, const std::shared_ptr<RenderMeshBase>& render_mesh) { m_render_meshes[key] = render_mesh; }
+    std::shared_ptr<RenderMeshBase> getMesh(const std::string& key) const { return m_render_meshes.at(key); }
+    bool                            hasMesh(const std::string& key) const { return m_render_meshes.find(key) != m_render_meshes.end(); }
 
     // position
     void setPosition(const glm::vec3& position) {
@@ -45,9 +45,9 @@ public:
     void draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model = glm::mat4(1.0f));
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<RenderMesh>> m_render_meshes;
-    glm::vec3                                                    m_position{0.0f};
-    glm::vec3                                                    m_color{1.0f};
+    std::unordered_map<std::string, std::shared_ptr<RenderMeshBase>> m_render_meshes;
+    glm::vec3                                                        m_position{0.0f};
+    glm::vec3                                                        m_color{1.0f};
 
     glm::mat4 m_model{1.0f};
 };

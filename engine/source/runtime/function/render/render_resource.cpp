@@ -1,22 +1,25 @@
 #include "runtime/function/render/render_resource.h"
-
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/ext/vector_float3.hpp"
-#include "glm/fwd.hpp"
 #include "runtime/function/render/lighting/spot_light.h"
 #include "runtime/function/render/render_mesh.h"
 #include "runtime/function/render/render_entity.h"
+#include "runtime/function/render/render_mesh.h"
+#include "runtime/function/render/render_mesh_blocks.h"
 #include "runtime/function/render/render_texture.h"
+#include "runtime/function/render/render_texture_3d.h"
+
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/fwd.hpp>
 
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <iostream>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <string>
 
@@ -24,108 +27,53 @@ namespace BJTUGE {
 
 void RenderResource::initialize() {
 
-    std::vector<Vertex> vertices = {
-        Vertex{{0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        Vertex{{0.9f, -0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-        Vertex{{-0.9f, -0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        Vertex{{-0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-    };
-    std::vector<uint32_t> indices = {0, 1, 3, 1, 2, 3};
+    m_render_entities["model"] = std::make_shared<RenderEntity>();
+    m_render_entities["model"]->addEntity("characters", loadCharacters());
 
-    std::vector<Vertex> cube = {
-        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},   Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+    m_render_entities["minecraft_blocks"] = loadMinecraftBlocks();
+    m_render_textures["minecraft_texture"] = loadMinecraftTexture();
 
-        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},   Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-
-        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-
-        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-        Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-
-        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},   Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-
-        Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0},
-    };
-
-    auto render_mesh = std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{});
-    auto texture1    = std::make_shared<RenderTexture>("./asset/textures/pixel-island.jpg", "diffuse");
-    auto texture2    = std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png", "specular");
-    render_mesh->addTexture("./asset/textures/pixel-island.jpg");
-    render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
-    m_render_entities["cube"] = std::make_shared<RenderEntity>();
-    m_render_entities["cube"]->addMesh("cube", render_mesh);
-
-    auto cube_mesh = std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{});
-    cube_mesh->setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f)));
+    auto cube_render_entity = loadCube();
+    auto cube = cube_render_entity->getMesh("cube");
 
     auto light_cube1 = std::make_shared<SpotLight>();
-    light_cube1->addMesh("cube", cube_mesh);
+    light_cube1->addMesh("cube", cube);
     // light_cube1->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 1.0f)));
     light_cube1->setPosition(glm::vec3(-0.5f, -0.5f, 1.0f));
     light_cube1->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
     m_spot_lights["light-cube-1"] = light_cube1;
 
     auto light_cube2 = std::make_shared<SpotLight>();
-    light_cube2->addMesh("cube", cube_mesh);
+    light_cube2->addMesh("cube", cube);
     // light_cube2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 3.0f)));
     light_cube2->setPosition(glm::vec3(0.0f, 0.5f, 1.0f));
     light_cube2->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
     m_spot_lights["light-cube-2"] = light_cube2;
 
     auto light_cube3 = std::make_shared<SpotLight>();
-    light_cube3->addMesh("cube", cube_mesh);
+    light_cube3->addMesh("cube", cube);
     // light_cube2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 3.0f)));
     light_cube3->setPosition(glm::vec3(0.5f, -0.5f, 1.0f));
     light_cube3->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
     m_spot_lights["light-cube-3"] = light_cube3;
 
-    m_render_entities["aris"] = loadEntityFromFile("./asset/models/characters/aris/CH0200.fbx");
-    m_render_entities["aris"]->setModelMatrix(
-        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -0.5f, 0.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-    m_render_entities["aris"]->get("CH0200")->removeEntity("bone_root");
-    m_render_entities["aris"]->get("CH0200")->removeEntity("Aris_Original_Weapon");
-    m_render_entities["aris"]->get("CH0200")->removeEntity("CH0200_SkillProp_Outline");
-    m_render_entities["aris"]->get("CH0200")->removeEntity("FX_Aris_Original_Weapon");
-    m_render_entities["aris"]->get("CH0200")->removeEntity("HaloRoot");
-    m_render_entities["aris"]->get("CH0200")->removeEntity("EX_Root");
-    m_render_entities["aris"]->get("CH0200")->removeEntity("VoiceSourceObjectParent");
-    m_render_entities["aris"]->get("CH0200")->removeEntity("AudioSourceObjectParent");
-
-    m_render_entities["miyako"] = loadEntityFromFile("./asset/models/characters/miyako/CH0215.fbx");
-    m_render_entities["miyako"]->setModelMatrix(
-        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 0.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-    m_render_entities["miyako"]->get("CH0215")->removeEntity("bone_root");
-    m_render_entities["miyako"]->get("CH0215")->removeEntity("CH0215_Prop_Outline");
-    m_render_entities["miyako"]->get("CH0215")->removeEntity("Miyako_Original_Weapon");
-    m_render_entities["miyako"]->get("CH0215")->removeEntity("HaloRoot");
-    m_render_entities["miyako"]->get("CH0215")->removeEntity("EX_Root");
-
-    m_render_entities["koharu"] = loadEntityFromFile("./asset/models/characters/koharu/Koharu_Original.fbx");
-    m_render_entities["koharu"]->setModelMatrix(
-        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, -0.5f, 0.0f)), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-    m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("bone_root");
-    m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Koharu_Original_Book");
-    m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Koharu_Original_Grenade");
-    m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Koharu_Original_Weapon");
-    m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Koharu_Weapon_Toggle");
-    m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("HaloRoot");
-    m_render_entities["koharu"]->get("Koharu_Original")->removeEntity("Ex_Root");
 }
 
-void RenderResource::addTexture(const std::string& key, std::shared_ptr<RenderTexture> texture) {
-    if (m_render_textures.find(key) != m_render_textures.end()) { return; }
+std::shared_ptr<RenderEntity> RenderResource::getEntity(const std::string& key) const {
+    // std::cout << "getEntity: " << key << std::endl;
+    assert(hasEntity(key));
+    return m_render_entities.at(key);
+}
+
+void RenderResource::addTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture) {
+    if (hasTexture(key)) { return; }
     m_render_textures[key] = texture;
+}
+
+std::shared_ptr<RenderTextureBase> RenderResource::getTexture(const std::string& key) const {
+    std::cout << "getTexture: " << key << std::endl;
+    assert(hasTexture(key));
+    return m_render_textures.at(key);
 }
 
 std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::string& file_path) {
@@ -163,7 +111,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
         }
     };
 
-    auto process_mesh = [&](aiMesh* mesh, const aiScene* scene) -> std::shared_ptr<RenderMesh> {
+    auto process_mesh = [&](aiMesh* mesh, const aiScene* scene) -> std::shared_ptr<RenderMeshBase> {
         std::vector<Vertex>      vertices;
         std::vector<uint32_t>    indices;
         std::vector<std::string> textures;
@@ -193,30 +141,33 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
         process_material(material, scene, aiTextureType_NORMALS, "normal", textures);
         process_material(material, scene, aiTextureType_HEIGHT, "height", textures);
 
-        return std::make_shared<RenderMesh>(vertices, indices, textures);
+        return std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(vertices, indices, textures));
+        // return std::static_pointer_cast<RenderMeshBase>(std::make_shared<RenderMesh>(vertices, indices, textures));
     };
+
+    const bool VERBOSE = false;
 
     std::function<std::shared_ptr<RenderEntity>(aiNode*, const aiScene*, uint32_t)> process_node =
         [&](aiNode* node, const aiScene* scene, uint32_t level) -> std::shared_ptr<RenderEntity> {
-        // if (level <= 2) {
-        //     std::cout << level << " ";
-        //     for (uint32_t i = 0; i <= level; i++) {
-        //         std::cout << "-";
-        //     }
-        //     std::cout << " :" << node->mName.C_Str() << std::endl;
-        // }
+        if (VERBOSE && level <= 2) {
+            std::cout << level << " ";
+            for (uint32_t i = 0; i <= level; i++) {
+                std::cout << "-";
+            }
+            std::cout << " :" << node->mName.C_Str() << std::endl;
+        }
 
         auto entity = std::make_shared<RenderEntity>();
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
             auto name = node->mName.C_Str();
 
-            // if (level <= 4) {
-            //     std::cout << level << " ";
-            //     for (uint32_t i = 0; i <= level; i++) {
-            //         std::cout << " ";
-            //     }
-            //     std::cout << "  => " << name << std::endl;
-            // }
+            if (VERBOSE && level <= 4) {
+                std::cout << level << " ";
+                for (uint32_t i = 0; i <= level; i++) {
+                    std::cout << " ";
+                }
+                std::cout << "  => " << name << std::endl;
+            }
 
             if (entity->hasMesh(name)) {
                 uint32_t index = 0;
@@ -244,6 +195,142 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
     };
 
     return process_node(scene->mRootNode, scene, 0);
+}
+
+std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
+    auto textures_path = std::vector<std::string>{
+        "./asset/textures/blocks/grass.png",       "./asset/textures/blocks/stone.png",      "./asset/textures/blocks/dirt.png",
+        "./asset/textures/blocks/cobblestone.png", "./asset/textures/blocks/oak_planks.png", "./asset/textures/blocks/oak_log.png",
+        "./asset/textures/blocks/oak_leaves.png",
+    };
+    return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture3D>(textures_path));
+}
+
+/* ===== For Test ===== */
+
+std::shared_ptr<RenderEntity> RenderResource::loadMinecraftBlocks() {
+    std::vector<BlockInfo> blocks(100);
+    for (int i = 0; i < 100; i++) {
+        if (i <= 2)
+            blocks[i] = BlockInfo{0.0f, 0.0f, (i + 1.0f) * 1.0f, (float)(i % 6), -1.0f};
+        else
+            blocks[i] = BlockInfo{0.0f, 0.0f, (i + 1.0f) * 1.0f, (float)(i % 6), (float)(i % 4)};
+    }
+    auto mesh_blocks = std::make_shared<RenderMeshBlocks>(blocks);
+    auto entity      = std::make_shared<RenderEntity>();
+    entity->addMesh("", mesh_blocks);
+    return entity;
+}
+
+std::shared_ptr<RenderEntity> RenderResource::loadCube() {
+    std::vector<Vertex> vertices = {
+        Vertex{{0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        Vertex{{0.9f, -0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        Vertex{{-0.9f, -0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        Vertex{{-0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+    };
+    std::vector<uint32_t> indices = {0, 1, 3, 1, 2, 3};
+
+    std::vector<Vertex> cube = {
+        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},   Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+        Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+
+        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},   Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+
+        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+
+        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+        Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+
+        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+        Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},   Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+
+        Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0},
+    };
+
+    auto render_mesh = std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{});
+    auto texture1    = std::make_shared<RenderTexture>("./asset/textures/pixel-island.jpg", "diffuse");
+    auto texture2    = std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png", "specular");
+    // TODO: has error on render_mesh->draw: Assertion failed: (hasTexture(key)), function getTexture, file render_resource.cpp, line 76.
+    // render_mesh->addTexture("./asset/textures/pixel-island.jpg");
+    // render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
+
+    auto entity = std::make_shared<RenderEntity>();
+    entity->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(render_mesh));
+
+    return entity;
+}
+
+std::shared_ptr<RenderEntity> RenderResource::loadCharacters() {
+    auto entity = std::make_shared<RenderEntity>();
+
+    entity->addEntity("aris", RenderResource::loadEntityFromFile("./asset/models/characters/aris/CH0200.fbx"));
+    entity->get("aris")->setModelMatrix(
+        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(-1.0f, 0.0f, 0.0f)));
+    entity->get("aris")->get("CH0200")->removeEntity("bone_root");
+    entity->get("aris")->get("CH0200")->removeEntity("Aris_Original_Weapon");
+    entity->get("aris")->get("CH0200")->removeEntity("CH0200_SkillProp_Outline");
+    entity->get("aris")->get("CH0200")->removeEntity("FX_Aris_Original_Weapon");
+    entity->get("aris")->get("CH0200")->removeEntity("HaloRoot");
+    entity->get("aris")->get("CH0200")->removeEntity("EX_Root");
+    entity->get("aris")->get("CH0200")->removeEntity("VoiceSourceObjectParent");
+    entity->get("aris")->get("CH0200")->removeEntity("AudioSourceObjectParent");
+
+    entity->addEntity("miyako", loadEntityFromFile("./asset/models/characters/miyako/CH0215.fbx"));
+    entity->get("miyako")->setModelMatrix(
+        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f)));
+    entity->get("miyako")->get("CH0215")->removeEntity("bone_root");
+    entity->get("miyako")->get("CH0215")->removeEntity("CH0215_Prop_Outline");
+    entity->get("miyako")->get("CH0215")->removeEntity("Miyako_Original_Weapon");
+    entity->get("miyako")->get("CH0215")->removeEntity("HaloRoot");
+    entity->get("miyako")->get("CH0215")->removeEntity("EX_Root");
+
+    entity->addEntity("koharu", loadEntityFromFile("./asset/models/characters/koharu/Koharu_Original.fbx"));
+    entity->get("koharu")->setModelMatrix(
+        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.0f, 0.0f, 0.0f)));
+    entity->get("koharu")->get("Koharu_Original")->removeEntity("bone_root");
+    entity->get("koharu")->get("Koharu_Original")->removeEntity("Koharu_Original_Book");
+    entity->get("koharu")->get("Koharu_Original")->removeEntity("Koharu_Original_Grenade");
+    entity->get("koharu")->get("Koharu_Original")->removeEntity("Koharu_Original_Weapon");
+    entity->get("koharu")->get("Koharu_Original")->removeEntity("Koharu_Weapon_Toggle");
+    entity->get("koharu")->get("Koharu_Original")->removeEntity("HaloRoot");
+    entity->get("koharu")->get("Koharu_Original")->removeEntity("Ex_Root");
+
+    return entity;
+}
+
+std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
+    auto texture = std::make_shared<RenderTexture>("./asset/textures/blocks/grass.png", "diffuse");
+    addTexture("./asset/textures/blocks/grass.png", texture);
+
+    auto model = loadEntityFromFile("./asset/models/block/block.obj");
+    auto mesh  = model->get("Cube")->getMesh("Cube");
+    std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/blocks/grass.png");
+    assert(mesh);
+
+    auto f_entity = std::make_shared<RenderEntity>();
+
+    for (int i = -25; i < 25; i++) {
+        for (int j = -25; j < 25; j++) {
+            std::shared_ptr<RenderEntity> entity = std::make_shared<RenderEntity>();
+            entity->addMesh("Cube", mesh);
+            auto str = "block" + std::to_string(i) + "_" + std::to_string(j);
+            f_entity->addEntity(str, entity);
+            entity->setModelMatrix(
+                glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)), glm::vec3(i * (2.0f), -3.5f, j * (2.0f))));
+        }
+    }
+
+    return f_entity;
 }
 
 } // namespace BJTUGE
