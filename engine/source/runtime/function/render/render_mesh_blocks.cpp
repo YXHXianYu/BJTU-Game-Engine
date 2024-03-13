@@ -79,7 +79,6 @@ void RenderMeshBlocks::draw(std::shared_ptr<RenderShader> shader, std::shared_pt
 
     resource->getTexture("minecraft_texture")->use(shader, "u_texture", 0);
 
-    // todo: apply texture
     glBindVertexArray(m_vao);
     glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, 100);
 }

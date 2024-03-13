@@ -1,6 +1,6 @@
 #include "runtime/function/render/render_resource.h"
 
-#include "runtime/function/render/lighting/spot_light.h"
+#include "runtime/function/render/lighting/render_spot_light.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_mesh.h"
 #include "runtime/function/render/render_mesh_blocks.h"
@@ -41,13 +41,12 @@ std::shared_ptr<RenderEntity> RenderResource::getEntity(const std::string& key) 
     return m_render_entities.at(key);
 }
 
-void RenderResource::addTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture) {
+void RenderResource::registerTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture) {
     if (hasTexture(key)) { return; }
     m_render_textures[key] = texture;
 }
 
 std::shared_ptr<RenderTextureBase> RenderResource::getTexture(const std::string& key) const {
-    // std::cout << "getTexture: " << key << std::endl;
     assert(hasTexture(key));
     return m_render_textures.at(key);
 }
@@ -82,7 +81,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
                 texture = std::make_shared<RenderTexture>(file_directory + "/" + str.C_Str(), type_name);
             }
             std::string texture_path = file_directory + "/" + str.C_Str();
-            addTexture(texture_path, texture);
+            registerTexture(texture_path, texture);
             textures.push_back(texture_path);
         }
     };
@@ -199,78 +198,20 @@ std::shared_ptr<RenderEntity> RenderResource::loadMinecraftBlocks() {
 }
 
 void RenderResource::loadLightingCubeToResource() {
-    std::vector<Vertex> cube = {
-        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},   Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+    auto mesh = loadCubeMesh();
 
-        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},   Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-
-        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-
-        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-        Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-
-        Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},   Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-
-        Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0},
+    auto create_light_cube = [&](glm::vec3 position, glm::vec3 color) -> std::shared_ptr<RenderSpotLight> {
+        auto light_cube = std::make_shared<RenderSpotLight>();
+        light_cube->addMesh("cube", mesh);
+        std::dynamic_pointer_cast<RenderMesh>(light_cube->getMesh("cube"))->setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)));
+        light_cube->setPosition(position);
+        light_cube->setColor(color);
+        return light_cube;
     };
 
-    auto lights = std::vector<std::shared_ptr<SpotLight>>{};
-
-    auto mesh   = std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{});
-    auto entity = std::make_shared<RenderEntity>();
-
-    auto light_cube1 = std::make_shared<SpotLight>();
-    light_cube1->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(mesh));
-    // light_cube1->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 1.0f)));
-    light_cube1->setPosition(glm::vec3(-0.5f, -0.5f, 1.0f));
-    light_cube1->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-    m_spot_lights["light-cube-1"] = light_cube1;
-
-    auto light_cube2 = std::make_shared<SpotLight>();
-    light_cube2->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(mesh));
-    // light_cube2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 3.0f)));
-    light_cube2->setPosition(glm::vec3(0.0f, 0.5f, 1.0f));
-    light_cube2->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
-    m_spot_lights["light-cube-2"] = light_cube2;
-
-    auto light_cube3 = std::make_shared<SpotLight>();
-    light_cube3->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(mesh));
-    // light_cube2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 3.0f)));
-    light_cube3->setPosition(glm::vec3(0.5f, -0.5f, 1.0f));
-    light_cube3->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
-    m_spot_lights["light-cube-3"] = light_cube3;
-}
-
-std::shared_ptr<RenderEntity> RenderResource::loadCube() {
-    std::vector<Vertex> vertices = {
-        Vertex{{0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        Vertex{{0.9f, -0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-        Vertex{{-0.9f, -0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        Vertex{{-0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-    };
-    std::vector<uint32_t> indices = {0, 1, 3, 1, 2, 3};
-
-    auto render_mesh = loadCubeMesh();
-    auto texture1    = std::make_shared<RenderTexture>("./asset/textures/pixel-island.jpg", "diffuse");
-    auto texture2    = std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png", "specular");
-    // render_mesh->addTexture("./asset/textures/pixel-island.jpg");
-    // render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
-
-    auto entity = std::make_shared<RenderEntity>();
-    entity->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(render_mesh));
-
-    return entity;
+    m_spot_lights["light_cube_1"] = create_light_cube(glm::vec3(-0.5f, -0.5f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    m_spot_lights["light_cube_2"] = create_light_cube(glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_spot_lights["light_cube_3"] = create_light_cube(glm::vec3(0.5f, -0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
@@ -299,14 +240,6 @@ std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
         Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
         Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0},
     };
-
-    auto render_mesh = std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{});
-    auto texture1    = std::make_shared<RenderTexture>("./asset/textures/pixel-island.jpg", "diffuse");
-    auto texture2    = std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png", "specular");
-    // TODO: has error on render_mesh->draw: Assertion failed: (hasTexture(key)), function getTexture, file render_resource.cpp, line 76.
-    //     => Because these textures are not added to resource, wait for my refactor (add a more convenient way to add textures to resource)
-    // render_mesh->addTexture("./asset/textures/pixel-island.jpg");
-    // render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
 
     return std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{}));
 }
@@ -351,11 +284,11 @@ std::shared_ptr<RenderEntity> RenderResource::loadCharacters() {
 
 std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     auto texture = std::make_shared<RenderTexture>("./asset/textures/blocks/grass.png", "diffuse");
-    addTexture("./asset/textures/blocks/grass.png", texture);
 
     auto model = loadEntityFromFile("./asset/models/block/block.obj");
     auto mesh  = model->get("Cube")->getMesh("Cube");
-    std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/blocks/grass.png");
+    std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/blocks/grass.png", texture,
+                                                            std::shared_ptr<RenderResource>(this));
     assert(mesh);
 
     auto f_entity = std::make_shared<RenderEntity>();

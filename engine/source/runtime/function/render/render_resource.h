@@ -9,7 +9,7 @@ namespace BJTUGE {
 
 class RenderMesh;
 class RenderEntity;
-class SpotLight;
+class RenderSpotLight;
 class RenderTextureBase;
 class RenderMeshBase;
 
@@ -20,10 +20,11 @@ public:
     void clear();
 
     /**
-     * @brief 1. Load a texture from a file.
-     *        2. Add a texture to the resource manager.
+     * @brief Register texture to the resource manager
+     *        Be careful, RenderMesh.addTexture will automatically register the texture (if not registered yet).
+     *        (A texture must be registered to RenderResource and be added to RenderMesh. Then the texture can be used.)
      */
-    void addTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture);
+    void registerTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture);
 
     /**
      * @brief Get a texture by its key
@@ -46,21 +47,21 @@ public:
     bool hasEntity(const std::string& key) const { return m_render_entities.find(key) != m_render_entities.end(); }
 
     /**
-     * @brief Get a SpotLight by its key
+     * @brief Get a RenderSpotLight by its key
      */
-    std::shared_ptr<SpotLight> getSpotLight(const std::string& key) const { return m_spot_lights.at(key); }
+    std::shared_ptr<RenderSpotLight> getSpotLight(const std::string& key) const { return m_spot_lights.at(key); }
 
     /**
-     * @brief Get a SpotLight by its key
+     * @brief Get a RenderSpotLights in unordered map format
      */
-    std::vector<std::shared_ptr<SpotLight>> getSpotLights() const {
-        // TODO: better way?
-        std::vector<std::shared_ptr<SpotLight>> spot_lights;
-        for (const auto& [_key, value] : m_spot_lights) {
-            spot_lights.push_back(value);
-        }
-        return spot_lights;
-    }
+    const std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>>& getSpotLights() const { return m_spot_lights; }
+
+    /**
+     * @brief Get a modifiable RenderSpotLights in unordered map format
+     *        Use this method carefully!
+     *        (This method will be deprecated in the future.)
+     */
+    std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>> getModifiableSpotLights() const { return m_spot_lights; }
 
     /**
      * @brief Load a RenderEntity from a file.
@@ -68,7 +69,7 @@ public:
     std::shared_ptr<RenderEntity> loadEntityFromFile(const std::string& file_path);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<SpotLight>>         m_spot_lights;
+    std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>>   m_spot_lights;
     std::unordered_map<std::string, std::shared_ptr<RenderEntity>>      m_render_entities;
     std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>> m_render_textures;
 
@@ -79,7 +80,6 @@ private:
     void loadLightingCubeToResource(); // TODO: 统一格式
 
     std::shared_ptr<RenderEntity> loadMinecraftBlocks();
-    std::shared_ptr<RenderEntity> loadCube();
     std::shared_ptr<RenderEntity> loadCharacters();
     std::shared_ptr<RenderEntity> loadPlainBlocks();
 };

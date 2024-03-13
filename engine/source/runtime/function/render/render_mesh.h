@@ -2,15 +2,17 @@
 
 #include "runtime/function/render/render_mesh_base.h"
 
-#include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
-#include <vector>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace BJTUGE {
+
+class RenderTexture;
 
 class RenderMesh : public RenderMeshBase {
 
@@ -20,7 +22,10 @@ public:
     RenderMesh(const RenderMesh&)            = delete;
     RenderMesh& operator=(const RenderMesh&) = delete;
 
-    void addTexture(const std::string& texture) { m_textures.push_back(texture); }
+    /**
+     * @brief Add texture to the mesh and automatically register the texture to the resource manager
+     */
+    void addTexture(const std::string& path, std::shared_ptr<RenderTexture> texture, std::shared_ptr<RenderResource> resource);
 
     virtual void draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) override;
 

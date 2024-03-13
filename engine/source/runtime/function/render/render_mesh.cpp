@@ -1,4 +1,4 @@
-#include "runtime/function/render/render_mesh.h"
+﻿#include "runtime/function/render/render_mesh.h"
 
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_shader.h"
@@ -38,6 +38,11 @@ RenderMesh::~RenderMesh() {
     glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(1, &m_vbo);
     if (m_ebo > 0) { glDeleteBuffers(1, &m_ebo); }
+}
+
+void RenderMesh::addTexture(const std::string& path, std::shared_ptr<RenderTexture> texture, std::shared_ptr<RenderResource> resource) {
+    resource->registerTexture(path, texture);
+    m_textures.push_back(path);
 }
 
 void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) {

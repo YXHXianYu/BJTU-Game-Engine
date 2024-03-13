@@ -2,11 +2,11 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
+#include <glm/glm.hpp>
+
 #include <memory>
 #include <string>
 #include <unordered_map>
-
-#include <glm/glm.hpp>
 
 namespace BJTUGE {
 
@@ -14,11 +14,11 @@ class RenderResource;
 class RenderMeshBase;
 class RenderShader;
 
-class SpotLight {
+class RenderSpotLight {
 
 public:
-    SpotLight() = default;
-    SpotLight(const std::unordered_map<std::string, std::shared_ptr<RenderMeshBase>>& render_meshes) : m_render_meshes(render_meshes){};
+    RenderSpotLight() = default;
+    RenderSpotLight(const std::unordered_map<std::string, std::shared_ptr<RenderMeshBase>>& render_meshes) : m_render_meshes(render_meshes){};
 
     // mesh
     void addMesh(const std::string& key, const std::shared_ptr<RenderMeshBase>& render_mesh) { m_render_meshes[key] = render_mesh; }
