@@ -1,8 +1,8 @@
 #include "runtime/function/render/render_mesh.h"
 
 #include "runtime/function/render/render_resource.h"
-#include "runtime/function/render/render_texture.h"
 #include "runtime/function/render/render_shader.h"
+#include "runtime/function/render/render_texture.h"
 
 #include <iostream>
 
@@ -48,6 +48,7 @@ void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Rend
         texture->use(shader, "u_texture_" + texture->getType(), i);
     }
     // assert(m_textures.size() == 1); // TODO: what is this for?
+    // Answer: 为了避免在shader中使用了多个纹理，但是没有设置uniform texture...的情况
 
     glBindVertexArray(m_vao);
     if (m_ebo > 0) {

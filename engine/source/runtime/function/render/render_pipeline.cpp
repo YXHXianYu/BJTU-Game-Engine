@@ -1,11 +1,11 @@
 
+#include "runtime/function/render/render_pipeline.h"
 #include "glm/fwd.hpp"
 #include "runtime/function/global/global_context.h"
-#include "runtime/function/render/render_pipeline.h"
+#include "runtime/function/render/lighting/spot_light.h"
 #include "runtime/function/render/render_camera.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_mesh.h"
-#include "runtime/function/render/lighting/spot_light.h"
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/window/window_system.h"
 
@@ -24,11 +24,11 @@
 #include <block_vert.h>
 #include <depth_rendering_frag.h>
 #include <depth_rendering_vert.h>
+#include <light_frag.h>
 #include <model_frag.h>
+#include <model_vert.h>
 #include <model_with_lighting_frag.h>
 #include <model_with_lighting_vert.h>
-#include <light_frag.h>
-#include <model_vert.h>
 
 #include <iostream>
 #include <string>
@@ -40,10 +40,10 @@ unsigned int texture1, texture2;
 void RenderPipeline::initialize() {
     m_render_shaders["basic"]             = std::make_shared<RenderShader>(BASIC_VERT, BASIC_FRAG);
     m_render_shaders["3d-model"]          = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
+    m_render_shaders["depth"]             = std::make_shared<RenderShader>(DEPTH_RENDERING_VERT, DEPTH_RENDERING_FRAG);
+    m_render_shaders["block"]             = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
     m_render_shaders["3d-model-lighting"] = std::make_shared<RenderShader>(MODEL_WITH_LIGHTING_VERT, MODEL_WITH_LIGHTING_FRAG);
     m_render_shaders["light"]             = std::make_shared<RenderShader>(MODEL_VERT, LIGHT_FRAG);
-    m_render_shaders["depth"]    = std::make_shared<RenderShader>(DEPTH_RENDERING_VERT, DEPTH_RENDERING_FRAG);
-    m_render_shaders["block"]    = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
 }
 
 void RenderPipeline::draw_with_lights(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
@@ -62,7 +62,7 @@ void RenderPipeline::draw_with_lights(std::shared_ptr<RenderResource> resource, 
         for (auto& spot_light : resource->getSpotLights()) {
             auto&& index = std::to_string(i);
             shader->setUniform(("u_spotlights[" + index + "].pos").c_str(), spot_light->getPosition());
-            shader->setUniform(("u_spotlights[" + index + "].color").c_str(),spot_light->getColor());
+            shader->setUniform(("u_spotlights[" + index + "].color").c_str(), spot_light->getColor());
             i++;
         }
         shader->setUniform("u_spotlights_cnt", i);

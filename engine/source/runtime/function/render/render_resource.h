@@ -11,6 +11,7 @@ class RenderMesh;
 class RenderEntity;
 class SpotLight;
 class RenderTextureBase;
+class RenderMeshBase;
 
 class RenderResource {
 
@@ -73,6 +74,7 @@ private:
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
+    std::shared_ptr<RenderMeshBase>    loadCubeMesh();
 
     void loadLightingCubeToResource(); // TODO: 统一格式
 

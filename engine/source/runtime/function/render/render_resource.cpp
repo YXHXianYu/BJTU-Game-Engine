@@ -6,6 +6,7 @@
 #include "runtime/function/render/render_mesh_blocks.h"
 #include "runtime/function/render/render_texture.h"
 #include "runtime/function/render/render_texture_3d.h"
+#include "runtime/function/render/render_texture_base.h"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -260,6 +261,19 @@ std::shared_ptr<RenderEntity> RenderResource::loadCube() {
     };
     std::vector<uint32_t> indices = {0, 1, 3, 1, 2, 3};
 
+    auto render_mesh = loadCubeMesh();
+    auto texture1    = std::make_shared<RenderTexture>("./asset/textures/pixel-island.jpg", "diffuse");
+    auto texture2    = std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png", "specular");
+    // render_mesh->addTexture("./asset/textures/pixel-island.jpg");
+    // render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
+
+    auto entity = std::make_shared<RenderEntity>();
+    entity->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(render_mesh));
+
+    return entity;
+}
+
+std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
     std::vector<Vertex> cube = {
         Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
         Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},   Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
@@ -294,10 +308,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCube() {
     // render_mesh->addTexture("./asset/textures/pixel-island.jpg");
     // render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
 
-    auto entity = std::make_shared<RenderEntity>();
-    entity->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(render_mesh));
-
-    return entity;
+    return std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{}));
 }
 
 std::shared_ptr<RenderEntity> RenderResource::loadCharacters() {
