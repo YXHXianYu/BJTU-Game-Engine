@@ -1,5 +1,6 @@
 #pragma once
 
+#include "runtime/function/render/lighting/render_direction_light.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -64,14 +65,20 @@ public:
     std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>> getModifiableSpotLights() const { return m_spot_lights; }
 
     /**
+     * @brief Get a RenderDirectionLights in unordered map format
+     */
+    const std::unordered_map<std::string, std::shared_ptr<RenderDirectionLight>>& getDirectionLights() const { return m_direction_lights; }
+
+    /**
      * @brief Load a RenderEntity from a file.
      */
     std::shared_ptr<RenderEntity> loadEntityFromFile(const std::string& file_path);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>>   m_spot_lights;
-    std::unordered_map<std::string, std::shared_ptr<RenderEntity>>      m_render_entities;
-    std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>> m_render_textures;
+    std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>>      m_spot_lights;
+    std::unordered_map<std::string, std::shared_ptr<RenderDirectionLight>> m_direction_lights;
+    std::unordered_map<std::string, std::shared_ptr<RenderEntity>>         m_render_entities;
+    std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>>    m_render_textures;
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();

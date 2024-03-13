@@ -7,30 +7,61 @@ layout (location = 2) in vec3 FragPos;
 layout(location = 0) out vec4 fragcolor;
 
 struct SpotLight {
-    vec3 color;
     vec3 pos;
+    vec3 color;
+};
+
+struct DirLight {
+    vec3 dir;
+    vec3 color;
 };
 
 uniform sampler2D u_texture_diffuse;
 // uniform sampler2D u_texture_specular;
+
 uniform int u_spotlights_cnt;
 uniform SpotLight u_spotlights[10];
-// uniform vec3 u_light_color;
-// uniform vec3 u_light_pos;
+
+uniform int u_dirlights_cnt;
+uniform DirLight u_dirlights[10];
+
 uniform vec3 u_cam_pos;
 
 uniform float u_time;
 
-vec3 calc_spotlight(SpotLight spotlight) {
+vec3 calc_dirlight(DirLight light) {
     // ambient
     float ambient_strength = 0.1;
-    vec3 ambient = ambient_strength * spotlight.color;
+    vec3 ambient = ambient_strength * light.color;
 
     // diffuse
     vec3 norm = normalize(normal);
-    vec3 light_dir = normalize(spotlight.pos - FragPos);
+    vec3 light_dir = normalize(-light.dir);
     float diff = max(dot(norm, light_dir), 0.0);
-    vec3 diffuse = diff * spotlight.color;
+    vec3 diffuse = diff * light.color;
+
+    // specular
+    float specular_strength = 0.5;
+    vec3 cam_dir = normalize(u_cam_pos - FragPos);
+    vec3 reflect_dir = reflect(-light_dir, normal);
+
+    float specular = pow(max(dot(cam_dir, reflect_dir), 0.0), 32); // TODO: add shininess to texture
+
+    vec3 res = ambient + diffuse + specular;
+
+    return res;
+}
+
+vec3 calc_spotlight(SpotLight light) {
+    // ambient
+    float ambient_strength = 0.1;
+    vec3 ambient = ambient_strength * light.color;
+
+    // diffuse
+    vec3 norm = normalize(normal);
+    vec3 light_dir = normalize(light.pos - FragPos);
+    float diff = max(dot(norm, light_dir), 0.0);
+    vec3 diffuse = diff * light.color;
 
     // specular
     float specular_strength = 0.5;
@@ -38,21 +69,24 @@ vec3 calc_spotlight(SpotLight spotlight) {
     vec3 reflect_dir = reflect(-cam_dir, norm);
 
     float spec = pow(max(dot(cam_dir, reflect_dir), 0.0), 32);
-    vec3 specular = specular_strength * spec * spotlight.color;
+    vec3 specular = specular_strength * spec * light.color;
 
-    vec3 light = ambient + diffuse + specular;
+    vec3 res = ambient + diffuse + specular;
 
     // attenuation
-    float dis = length(spotlight.pos - FragPos);
+    float dis = length(light.pos - FragPos);
     float attenuation = 1.0 / (1 + 0.09 * dis + 0.032 * (dis * dis)); 
 
-    return light * attenuation;
+    return res * attenuation;
 }
 
 void main() {
     vec3 light = vec3(0.0);
     for (int i = 0; i < u_spotlights_cnt; i++) {
         light += calc_spotlight(u_spotlights[i]);
+    }
+    for (int i = 0; i < u_dirlights_cnt; i++) {
+        light += calc_dirlight(u_dirlights[i]);
     }
     // maybe needs to do a clamp on the light to 0.0~1.0?
 
