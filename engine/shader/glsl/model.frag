@@ -12,5 +12,6 @@ uniform float u_time;
 
 void main() {
     vec4 tex_color = texture(u_texture_diffuse, texcoord);
+
     fragcolor = vec4(tex_color.rgb, 1.0f);
 }
