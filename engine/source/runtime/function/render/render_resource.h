@@ -21,8 +21,8 @@ public:
 
     /**
      * @brief Register texture to the resource manager
-     *        Be careful, RenderMesh.addTexture will automatically register the texture (if not registered yet).
-     *        (A texture must be registered to RenderResource and be added to RenderMesh. Then the texture can be used.)
+     *        This method will be invoked by RenderMesh automatically.
+     *        Most of the time, you don't need to call this method manually.
      */
     void registerTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture);
 

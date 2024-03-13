@@ -24,6 +24,9 @@ public:
 
     /**
      * @brief Add texture to the mesh and automatically register the texture to the resource manager
+     * @param path     The path of the texture
+     * @param texture  The texture
+     * @param resource The resource manager
      */
     void addTexture(const std::string& path, std::shared_ptr<RenderTexture> texture, std::shared_ptr<RenderResource> resource);
 
