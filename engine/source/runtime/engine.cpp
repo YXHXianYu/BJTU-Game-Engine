@@ -34,7 +34,7 @@ void BJTUEngine::tickLogic(float delta_time) {
 
     g_runtime_global_context.m_world_manager->tick(delta_time);
 
-    // TODO: initialize world
+    // TODO: initialize world =============================================
 }
 
 void BJTUEngine::tickRender(float delta_time) {

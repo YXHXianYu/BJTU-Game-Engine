@@ -47,6 +47,11 @@ public:
     bool hasEntity(const std::string& key) const { return m_render_entities.find(key) != m_render_entities.end(); }
 
     /**
+     * @brief Add a RenderEntity to the resource manager
+     */
+    void addEntity(const std::string& key, std::shared_ptr<RenderEntity> entity) { m_render_entities[key] = entity; }
+
+    /**
      * @brief Get a RenderSpotLight by its key
      */
     std::shared_ptr<RenderSpotLight> getSpotLight(const std::string& key) const { return m_spot_lights.at(key); }

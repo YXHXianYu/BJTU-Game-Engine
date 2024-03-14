@@ -2,6 +2,8 @@
 
 #include "runtime/function/global/global_context.h"
 #include "runtime/function/input/input_system.h"
+#include "runtime/function/render/minecraft_blocks/gmemory_buffer.h"
+#include "runtime/function/render/minecraft_blocks/render_minecraft_blocks_manager.h"
 #include "runtime/function/render/render_camera.h"
 #include "runtime/function/render/render_pipeline.h"
 #include "runtime/function/render/render_resource.h"
@@ -30,6 +32,11 @@ void RenderSystem::initialize() {
 
     m_render_camera = std::make_shared<RenderCamera>(CameraCreateInfo{});
     m_render_camera->setAspect(g_runtime_global_context.m_window_system->getAspect());
+
+    m_render_minecraft_blocks_manager = std::make_shared<RenderMinecraftBlocksManager>();
+    m_render_minecraft_blocks_manager->initialize();
+
+    m_render_resource->addEntity("minecraft_blocks", m_render_minecraft_blocks_manager->getEntity());
 
     std::cout << "RenderSystem::initialize complete" << std::endl;
 }

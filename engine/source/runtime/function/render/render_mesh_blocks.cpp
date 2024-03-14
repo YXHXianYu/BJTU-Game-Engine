@@ -28,7 +28,7 @@ const std::vector<Vertex> RenderMeshBlocks::m_cube = {
     Vertex{0.5, 0.5, -0.5, -0, -0, -1, 0.625, 0.5},     Vertex{0.5, -0.5, -0.5, -0, -0, -1, 0.375, 0.5},
 };
 
-RenderMeshBlocks::RenderMeshBlocks(const std::vector<FaceInfo> blocks) : m_blocks(blocks) {
+RenderMeshBlocks::RenderMeshBlocks(const std::vector<FaceInfo>& blocks) : m_blocks(blocks) {
     // 0. generate vao, vbo, ebo
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo_vertices);
@@ -81,17 +81,23 @@ void RenderMeshBlocks::draw(std::shared_ptr<RenderShader> shader, std::shared_pt
     resource->getTexture("minecraft_texture")->use(shader, "u_texture", 0);
 
     glBindVertexArray(m_vao);
-    glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, 100);
+    glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, m_blocks.size());
 }
 
-void RenderMeshBlocks::setData(uint32_t pos, FaceInfo face) {
+void RenderMeshBlocks::mapBuffer() {
+    assert(m_ptr == nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_blocks);
-    glBufferSubData(GL_ARRAY_BUFFER, pos * sizeof(FaceInfo), sizeof(FaceInfo), &face.position.x);
+    m_ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 }
-
-void RenderMeshBlocks::setData(uint32_t pos, const std::vector<FaceInfo>& faces) {
+void RenderMeshBlocks::unmapBuffer() {
+    assert(m_ptr != nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_blocks);
-    glBufferSubData(GL_ARRAY_BUFFER, pos * sizeof(FaceInfo), faces.size() * sizeof(FaceInfo), &faces[0].position.x);
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    m_ptr = nullptr;
+}
+void RenderMeshBlocks::updateBuffer(uint32_t pos, FaceInfo data) {
+    assert(m_ptr != nullptr);
+    memcpy(static_cast<float*>(m_ptr) + pos * sizeof(FaceInfo) / sizeof(float), &data.position.x, sizeof(FaceInfo));
 }
 
 } // namespace BJTUGE

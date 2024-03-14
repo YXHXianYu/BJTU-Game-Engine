@@ -3,7 +3,7 @@
 #include "runtime/function/framework/component/component.h"
 
 #include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <memory>
 
 namespace BJTUGE {
 
@@ -31,21 +31,9 @@ public:
     Rotation  getRotation() const { return m_rotation; }
     glm::vec3 getScale() const { return m_scale; }
 
-    void setPosition(glm::vec3 position) {
-        m_is_dirty         = true;
-        m_position         = position;
-        m_transform_matrix = glm::translate(glm::mat4(1.0f), m_position);
-    }
-    void setRotation(Rotation rotation) {
-        m_is_dirty        = true;
-        m_rotation        = rotation;
-        m_rotation_matrix = glm::toMat4(glm::quat(glm::radians(m_rotation.angle), m_rotation.axis));
-    }
-    void setScale(glm::vec3 scale) {
-        m_is_dirty     = true;
-        m_scale        = scale;
-        m_scale_matrix = glm::scale(glm::mat4(1.0f), m_scale);
-    }
+    void setPosition(glm::vec3 position);
+    void setRotation(Rotation rotation);
+    void setScale(glm::vec3 scale);
 
 private:
     void updateModelMatrix();

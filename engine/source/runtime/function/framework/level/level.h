@@ -3,6 +3,7 @@
 #include "runtime/function/framework/framework_common.h"
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 namespace BJTUGE {

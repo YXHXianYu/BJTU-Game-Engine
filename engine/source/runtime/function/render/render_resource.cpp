@@ -30,7 +30,7 @@ void RenderResource::initialize() {
     m_render_entities["model"] = std::make_shared<RenderEntity>();
     m_render_entities["model"]->addEntity("characters", loadCharacters());
 
-    m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
+    // m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
 
     loadLightingCubeToResource();

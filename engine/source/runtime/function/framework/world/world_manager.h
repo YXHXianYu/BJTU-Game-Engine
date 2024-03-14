@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 namespace BJTUGE {
@@ -22,7 +23,7 @@ public:
     void                     removeObject(GObjectID id) { m_objects.erase(id); }
     bool                     hasObject(GObjectID id) const { return m_objects.find(id) != m_objects.end(); }
     std::shared_ptr<GObject> getObject(GObjectID id) const {
-        assert(hasObject);
+        assert(hasObject(id));
         return m_objects.at(id);
     }
 
@@ -30,7 +31,7 @@ public:
     void                       removeComponent(ComponentID id) { m_components.erase(id); }
     bool                       hasComponent(ComponentID id) const { return m_components.find(id) != m_components.end(); }
     std::shared_ptr<Component> getComponent(ComponentID id) const {
-        assert(hasComponent);
+        assert(hasComponent(id));
         return m_components.at(id);
     }
 
@@ -38,7 +39,7 @@ public:
     void                   removeLevel(const std::string& name) { m_levels.erase(name); }
     bool                   hasLevel(const std::string& name) const { return m_levels.find(name) != m_levels.end(); }
     std::shared_ptr<Level> getLevel(const std::string& name) const {
-        assert(hasLevel);
+        assert(hasLevel(name));
         return m_levels.at(name);
     }
 
