@@ -184,12 +184,12 @@ std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
 /* ===== For Test ===== */
 
 std::shared_ptr<RenderEntity> RenderResource::loadMinecraftBlocks() {
-    std::vector<BlockInfo> blocks(100);
+    std::vector<FaceInfo> blocks(100);
     for (int i = 0; i < 100; i++) {
         if (i <= 2)
-            blocks[i] = BlockInfo{0.0f, 0.0f, (i + 1.0f) * 1.0f, (float)(i % 6), -1.0f};
+            blocks[i] = FaceInfo{0.0f, 0.0f, (i + 1.0f) * 1.0f, (float)(i % 6), -1.0f};
         else
-            blocks[i] = BlockInfo{0.0f, 0.0f, (i + 1.0f) * 1.0f, (float)(i % 6), (float)(i % 4)};
+            blocks[i] = FaceInfo{0.0f, 0.0f, (i + 1.0f) * 1.0f, (float)(i % 6), (float)(i % 4)};
     }
     auto mesh_blocks = std::make_shared<RenderMeshBlocks>(blocks);
     auto entity      = std::make_shared<RenderEntity>();

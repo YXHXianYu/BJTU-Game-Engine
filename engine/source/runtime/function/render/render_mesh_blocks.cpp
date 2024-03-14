@@ -4,6 +4,7 @@
 #include "runtime/function/render/render_shader.h"
 #include "runtime/function/render/render_texture_base.h"
 
+#include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
@@ -27,7 +28,7 @@ const std::vector<Vertex> RenderMeshBlocks::m_cube = {
     Vertex{0.5, 0.5, -0.5, -0, -0, -1, 0.625, 0.5},     Vertex{0.5, -0.5, -0.5, -0, -0, -1, 0.375, 0.5},
 };
 
-RenderMeshBlocks::RenderMeshBlocks(const std::vector<BlockInfo> blocks) : m_blocks(blocks) {
+RenderMeshBlocks::RenderMeshBlocks(const std::vector<FaceInfo> blocks) : m_blocks(blocks) {
     // 0. generate vao, vbo, ebo
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo_vertices);
@@ -45,7 +46,7 @@ RenderMeshBlocks::RenderMeshBlocks(const std::vector<BlockInfo> blocks) : m_bloc
 
     // 3. vbo_blocks
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_blocks);
-    glBufferData(GL_ARRAY_BUFFER, m_blocks.size() * sizeof(BlockInfo), &m_blocks[0].position.x, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_blocks.size() * sizeof(FaceInfo), &m_blocks[0].position.x, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
@@ -81,6 +82,16 @@ void RenderMeshBlocks::draw(std::shared_ptr<RenderShader> shader, std::shared_pt
 
     glBindVertexArray(m_vao);
     glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, 100);
+}
+
+void RenderMeshBlocks::setData(uint32_t pos, FaceInfo face) {
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_blocks);
+    glBufferSubData(GL_ARRAY_BUFFER, pos * sizeof(FaceInfo), sizeof(FaceInfo), &face.position.x);
+}
+
+void RenderMeshBlocks::setData(uint32_t pos, const std::vector<FaceInfo>& faces) {
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_blocks);
+    glBufferSubData(GL_ARRAY_BUFFER, pos * sizeof(FaceInfo), faces.size() * sizeof(FaceInfo), &faces[0].position.x);
 }
 
 } // namespace BJTUGE
