@@ -20,9 +20,6 @@ struct Rotation {
 class TransformComponent : public Component {
 
 public:
-    TransformComponent()           = default;
-    ~TransformComponent() override = default;
-
     void initialize(std::weak_ptr<GObject> parent) override;
 
     void tick(float delta_time) override;

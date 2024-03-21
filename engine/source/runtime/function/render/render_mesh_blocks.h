@@ -1,5 +1,6 @@
 #pragma once
 
+#include "runtime/function/render/face_info.h"
 #include "runtime/function/render/render_mesh_base.h"
 
 #include <glm/glm.hpp>
@@ -11,15 +12,6 @@
 #include <vector>
 
 namespace BJTUGE {
-
-struct FaceInfo {
-    glm::vec3 position;
-    float     face;
-    float     material_id; // float储存 [0, 2^23-1] 的整数是精确的，不会发生精度损失
-
-    FaceInfo() : position(glm::vec3{0.0f}), face(0.0f), material_id(-1.0f) {} // default to create a invalid face
-    FaceInfo(float x, float y, float z, float f, float id) : position(glm::vec3{x, y, z}), face(f), material_id(id) {}
-};
 
 class RenderMeshBlocks : public RenderMeshBase {
 

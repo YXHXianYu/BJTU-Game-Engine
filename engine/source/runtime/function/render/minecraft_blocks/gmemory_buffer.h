@@ -8,7 +8,6 @@
 namespace BJTUGE {
 
 class RenderMeshBlocks;
-struct FaceInfo;
 
 class GMemoryBuffer {
 public:

@@ -1,6 +1,9 @@
 #include "runtime/function/render/render_resource.h"
 
+#include "runtime/function/render/face_info.h"
 #include "runtime/function/render/lighting/render_spot_light.h"
+#include "runtime/function/render/minecraft_blocks/gmemory_buffer.h"
+#include "runtime/function/render/minecraft_blocks/render_minecraft_blocks_manager.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_mesh.h"
 #include "runtime/function/render/render_mesh_blocks.h"
@@ -32,6 +35,10 @@ void RenderResource::initialize() {
 
     // m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
+
+    m_render_minecraft_blocks_manager = std::make_shared<RenderMinecraftBlocksManager>();
+    m_render_minecraft_blocks_manager->initialize();
+    addEntity("minecraft_blocks", m_render_minecraft_blocks_manager->getEntity());
 
     loadLightingCubeToResource();
 }
@@ -174,9 +181,15 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
 
 std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
     auto textures_path = std::vector<std::string>{
-        "./asset/textures/blocks/grass.png",       "./asset/textures/blocks/stone.png",      "./asset/textures/blocks/dirt.png",
-        "./asset/textures/blocks/cobblestone.png", "./asset/textures/blocks/oak_planks.png", "./asset/textures/blocks/oak_log.png",
+        "",
+        "./asset/textures/blocks/stone.png",
+        "./asset/textures/blocks/grass.png",
+        "./asset/textures/blocks/dirt.png",
+        "./asset/textures/blocks/cobblestone.png",
+        "./asset/textures/blocks/oak_planks.png",
+        "./asset/textures/blocks/oak_log.png",
         "./asset/textures/blocks/oak_leaves.png",
+        "",
     };
     return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture3D>(textures_path));
 }
@@ -186,10 +199,7 @@ std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
 std::shared_ptr<RenderEntity> RenderResource::loadMinecraftBlocks() {
     std::vector<FaceInfo> blocks(100);
     for (int i = 0; i < 100; i++) {
-        if (i <= 2)
-            blocks[i] = FaceInfo{0.0f, 0.0f, (i + 1.0f) * 1.0f, (float)(i % 6), -1.0f};
-        else
-            blocks[i] = FaceInfo{0.0f, 0.0f, (i + 1.0f) * 1.0f, (float)(i % 6), (float)(i % 4)};
+        blocks[i] = FaceInfo{2.0f, 2.0f, (i + 2.0f) * 1.0f, (float)(i % 6), (float)(i % 4)};
     }
     auto mesh_blocks = std::make_shared<RenderMeshBlocks>(blocks);
     auto entity      = std::make_shared<RenderEntity>();

@@ -11,7 +11,7 @@ class Component {
 
 public:
     Component()          = default;
-    virtual ~Component() = 0;
+    virtual ~Component() = default;
 
     virtual void initialize(std::weak_ptr<GObject> parent_object) { m_parent_object = parent_object; }
 

@@ -3,6 +3,7 @@
 #include "runtime/function/framework/world/world_manager.h"
 #include "runtime/function/input/input_system.h"
 #include "runtime/function/render/render_system.h"
+#include "runtime/function/swap/swap_context.h"
 #include "runtime/function/window/window_system.h"
 
 namespace BJTUGE {
@@ -21,6 +22,9 @@ void RuntimeGlobalContext::initialize() {
 
     m_world_manager = std::make_shared<WorldManager>();
     m_world_manager->initialize();
+
+    m_swap_context = std::make_shared<SwapContext>();
+    m_swap_context->initialize();
 }
 
 void RuntimeGlobalContext::clear() {
@@ -35,6 +39,9 @@ void RuntimeGlobalContext::clear() {
 
     m_world_manager->clear();
     m_world_manager.reset();
+
+    m_swap_context->clear();
+    m_swap_context.reset();
 }
 
 } // namespace BJTUGE
