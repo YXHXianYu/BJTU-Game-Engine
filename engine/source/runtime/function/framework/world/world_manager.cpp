@@ -30,14 +30,14 @@ void WorldManager::tick(float delta_time) {
         tick_count += 1;
 
         if (tick_count == 1) {
-            int len  = 100;
+            int len  = 20;
             int len2 = 5;
             for (int i = -len; i <= len; i++) {
                 for (int j = -len; j <= len; j++) {
                     for (int k = 0; k < len2; k++) {
                         int     h  = ((i + j + k) % 10 + 10) % 10 - 5;
                         BlockId id = (h == 4) ? (BlockId::grass) : (h >= 0) ? (BlockId::dirt) : (BlockId::stone);
-                        std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->add_block(i, h, j, id);
+                        std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->add_block(i, h - 5, j, id);
                     }
                 }
             }
@@ -47,7 +47,7 @@ void WorldManager::tick(float delta_time) {
             int len = 3;
             for (int i = -len; i <= len; i++) {
                 for (int j = -len; j <= len; j++) {
-                    for (int h = 20; h <= 21; h++) {
+                    for (int h = 11; h <= 15; h++) {
                         BlockId id = BlockId::grass;
                         std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->add_block(i, h, j, id);
                     }
