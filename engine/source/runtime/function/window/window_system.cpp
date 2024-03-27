@@ -32,7 +32,7 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { assert(false); }
 
     // viewport
-    glViewport(0, 0, m_width, m_height);
+    // glViewport(0, 0, m_width, m_height);
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); });
 
     // ===== Event System =====
