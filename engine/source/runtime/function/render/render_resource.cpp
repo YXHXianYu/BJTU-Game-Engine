@@ -1,6 +1,7 @@
 #include "runtime/function/render/render_resource.h"
 
-#include "glm/ext/matrix_transform.hpp"
+#include "runtime/function/render/lighting/render_direction_light.h"
+#include "runtime/function/render/lighting/render_spot_light.h"
 #include "runtime/function/render/render_entity.h"
 #include "runtime/function/render/render_mesh.h"
 #include "runtime/function/render/render_mesh_blocks.h"
@@ -8,12 +9,15 @@
 #include "runtime/function/render/render_texture_3d.h"
 #include "runtime/function/render/render_texture_base.h"
 
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include <functional>
 #include <iostream>
@@ -27,15 +31,10 @@ void RenderResource::initialize() {
     m_render_entities["model"] = std::make_shared<RenderEntity>();
     m_render_entities["model"]->addEntity("characters", loadCharacters());
 
-    m_render_entities["minecraft_blocks"] = loadMinecraftBlocks();
-
+    m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
 
-    auto cube_mesh                  = loadCubeMesh();
-    m_render_entities["light-cube"] = std::make_shared<RenderEntity>();
-    m_render_entities["light-cube"]->addMesh("cube", cube_mesh);
-    m_render_entities["light-cube"]->setModelMatrix(
-        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 1.0f)), glm::vec3(0.2f)));
+    loadLightingCubeToResource();
 }
 
 std::shared_ptr<RenderEntity> RenderResource::getEntity(const std::string& key) const {
@@ -43,7 +42,7 @@ std::shared_ptr<RenderEntity> RenderResource::getEntity(const std::string& key) 
     return m_render_entities.at(key);
 }
 
-void RenderResource::addTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture) {
+void RenderResource::registerTexture(const std::string& key, std::shared_ptr<RenderTextureBase> texture) {
     if (hasTexture(key)) { return; }
     m_render_textures[key] = texture;
 }
@@ -83,7 +82,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
                 texture = std::make_shared<RenderTexture>(file_directory + "/" + str.C_Str(), type_name);
             }
             std::string texture_path = file_directory + "/" + str.C_Str();
-            addTexture(texture_path, texture);
+            registerTexture(texture_path, texture);
             textures.push_back(texture_path);
         }
     };
@@ -199,25 +198,32 @@ std::shared_ptr<RenderEntity> RenderResource::loadMinecraftBlocks() {
     return entity;
 }
 
-std::shared_ptr<RenderEntity> RenderResource::loadCube() {
-    std::vector<Vertex> vertices = {
-        Vertex{{0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        Vertex{{0.9f, -0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-        Vertex{{-0.9f, -0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        Vertex{{-0.9f, 0.9f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+void RenderResource::loadLightingCubeToResource() {
+    auto mesh = loadCubeMesh();
+
+    auto create_light_cube = [&](glm::vec3 position, glm::vec3 color) -> std::shared_ptr<RenderSpotLight> {
+        auto light_cube = std::make_shared<RenderSpotLight>();
+        light_cube->addMesh("cube", mesh);
+        std::dynamic_pointer_cast<RenderMesh>(light_cube->getMesh("cube"))->setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)));
+        light_cube->setPosition(position);
+        light_cube->setColor(color);
+        return light_cube;
     };
-    std::vector<uint32_t> indices = {0, 1, 3, 1, 2, 3};
 
-    auto render_mesh = loadCubeMesh();
-    auto texture1    = std::make_shared<RenderTexture>("./asset/textures/pixel-island.jpg", "diffuse");
-    auto texture2    = std::make_shared<RenderTexture>("./asset/textures/MinatoAqua4.png", "specular");
-    // render_mesh->addTexture("./asset/textures/pixel-island.jpg");
-    // render_mesh->addTexture("./asset/textures/MinatoAqua4.png");
+    auto create_direction_light_cube = [&](glm::vec3 direction, glm::vec3 color) -> std::shared_ptr<RenderDirectionLight> {
+        auto direction_light_cube = std::make_shared<RenderDirectionLight>();
+        direction_light_cube->addMesh("cube", mesh);
+        std::dynamic_pointer_cast<RenderMesh>(direction_light_cube->getMesh("cube"))->setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)));
+        direction_light_cube->setDirection(direction);
+        direction_light_cube->setColor(color);
+        return direction_light_cube;
+    };
 
-    auto entity = std::make_shared<RenderEntity>();
-    entity->addMesh("cube", std::static_pointer_cast<RenderMeshBase>(render_mesh));
+    m_spot_lights["light_cube_1"] = create_light_cube(glm::vec3(-0.5f, -0.5f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    m_spot_lights["light_cube_2"] = create_light_cube(glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_spot_lights["light_cube_3"] = create_light_cube(glm::vec3(0.5f, -0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    return entity;
+    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 0.8f, 0.6f));
 }
 
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
@@ -290,11 +296,11 @@ std::shared_ptr<RenderEntity> RenderResource::loadCharacters() {
 
 std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     auto texture = std::make_shared<RenderTexture>("./asset/textures/blocks/grass.png", "diffuse");
-    addTexture("./asset/textures/blocks/grass.png", texture);
 
     auto model = loadEntityFromFile("./asset/models/block/block.obj");
     auto mesh  = model->get("Cube")->getMesh("Cube");
-    std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/blocks/grass.png");
+    std::dynamic_pointer_cast<RenderMesh>(mesh)->addTexture("./asset/textures/blocks/grass.png", texture,
+                                                            std::shared_ptr<RenderResource>(this));
     assert(mesh);
 
     auto f_entity = std::make_shared<RenderEntity>();

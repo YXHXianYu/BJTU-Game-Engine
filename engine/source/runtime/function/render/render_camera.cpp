@@ -13,7 +13,8 @@ const float     RenderCamera::EPS = 1e-3f;
 
 RenderCamera::RenderCamera(CameraCreateInfo info)
     : m_position(info.position), m_yaw(info.yaw), m_pitch(info.pitch), m_fovy(info.fovy), m_aspect(info.aspect), m_near(info.near),
-      m_far(info.far), m_move_speed(info.move_speed), m_mouse_sensitivity(info.mouse_sensitivity) {
+      m_far(info.far), m_ortho_left{info.left}, m_ortho_right{info.right}, m_ortho_top{info.top}, m_ortho_buttom{info.buttom},
+    m_move_speed(info.move_speed), m_mouse_sensitivity(info.mouse_sensitivity) {
     updateVector();
 
     // window resize
@@ -71,17 +72,21 @@ void RenderCamera::updateViewMatrix() {
     }
 }
 
-void RenderCamera::updateProjectionMatrix() {
+void RenderCamera::updateProjectionMatrix(bool use_ortho) {
     if (m_projection_matrix_dirty) {
-        m_projection_matrix            = glm::perspective(glm::radians(m_fovy), m_aspect, m_near, m_far);
+        if (use_ortho) {
+            m_projection_matrix = glm::ortho(m_ortho_left, m_ortho_right, m_ortho_buttom, m_ortho_top, m_near, m_far);
+        } else {
+            m_projection_matrix = glm::perspective(glm::radians(m_fovy), m_aspect, m_near, m_far);
+        }
         m_projection_matrix_dirty      = false;
         m_view_projection_matrix_dirty = true;
     }
 }
 
-void RenderCamera::updateViewProjectionMatrix() {
+void RenderCamera::updateViewProjectionMatrix(bool use_ortho) {
     updateViewMatrix();
-    updateProjectionMatrix();
+    updateProjectionMatrix(use_ortho);
     if (m_view_projection_matrix_dirty) {
         m_view_projection_matrix       = m_projection_matrix * m_view_matrix;
         m_view_projection_matrix_dirty = false;

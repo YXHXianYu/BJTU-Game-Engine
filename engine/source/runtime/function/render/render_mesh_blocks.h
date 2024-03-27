@@ -22,8 +22,6 @@ struct BlockInfo {
     BlockInfo(float x, float y, float z, float f, float id) : position(glm::vec3{x, y, z}), face(f), material_id(id) {}
 };
 
-// todo
-
 class RenderMeshBlocks : public RenderMeshBase {
 
 public:

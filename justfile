@@ -13,7 +13,7 @@ generate:
 
 # build the project
 build: generate
-    cmake --build build
+    cmake --build build -j8
 
 # run the built binary
 run:

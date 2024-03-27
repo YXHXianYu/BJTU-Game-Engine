@@ -1,4 +1,4 @@
-#include "runtime/function/render/render_mesh.h"
+﻿#include "runtime/function/render/render_mesh.h"
 
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_shader.h"
@@ -40,6 +40,11 @@ RenderMesh::~RenderMesh() {
     if (m_ebo > 0) { glDeleteBuffers(1, &m_ebo); }
 }
 
+void RenderMesh::addTexture(const std::string& path, std::shared_ptr<RenderTexture> texture, std::shared_ptr<RenderResource> resource) {
+    resource->registerTexture(path, texture);
+    m_textures.push_back(path);
+}
+
 void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) {
     shader->setUniform("u_model", model * m_model);
     for (auto i = 0; i < m_textures.size(); i++) {
@@ -47,7 +52,8 @@ void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Rend
         assert(texture);
         texture->use(shader, "u_texture_" + texture->getType(), i);
     }
-    // assert(m_textures.size() == 1);
+    // assert(m_textures.size() == 1); // TODO: what is this for?
+    // Answer: 为了避免在shader中使用了多个纹理，但是没有设置uniform texture...的情况
 
     glBindVertexArray(m_vao);
     if (m_ebo > 0) {

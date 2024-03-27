@@ -2,6 +2,7 @@
 
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_shader.h"
+#include "runtime/function/render/render_texture_base.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -78,7 +79,6 @@ void RenderMeshBlocks::draw(std::shared_ptr<RenderShader> shader, std::shared_pt
 
     resource->getTexture("minecraft_texture")->use(shader, "u_texture", 0);
 
-    // todo: apply texture
     glBindVertexArray(m_vao);
     glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, 100);
 }
