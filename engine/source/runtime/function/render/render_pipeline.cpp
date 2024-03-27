@@ -43,6 +43,7 @@ void RenderPipeline::initialize() {
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     bool use_ortho = false;
+
     // change the position of the spot lights (should be moved to the logic in the future)
     {
         float    time = static_cast<float>(glfwGetTime());
@@ -52,6 +53,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
             i += 1;
         }
     }
+
     // draw characters
     {
         auto shader = m_render_shaders["model_with_lighting"];
@@ -72,8 +74,18 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         }
         shader->setUniform("u_spotlights_cnt", i);
 
+        i = 0;
+        for (const auto& [key, spot_light] : resource->getDirectionLights()) {
+            auto&& index = std::to_string(i);
+            shader->setUniform(("u_dirlights[" + index + "].dir").c_str(), spot_light->getDirection());
+            shader->setUniform(("u_dirlights[" + index + "].color").c_str(), spot_light->getColor());
+            i += 1;
+        }
+        shader->setUniform("u_dirlights_cnt", i);
+
         resource->getEntity("model")->draw(shader, resource);
     }
+
     // draw light mesh
     {
         auto light_shader = m_render_shaders["light"];
@@ -91,6 +103,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
             i += 1;
         }
     }
+
     // draw minecraft blocks
     {
         auto shader = m_render_shaders["block"];

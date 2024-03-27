@@ -1,6 +1,7 @@
 #include "runtime/function/render/render_resource.h"
 
-#include "runtime/function/render/face_info.h"
+#include "runtime/function/render/face_info.h“
+#include "runtime/function/render/lighting/render_direction_light.h"
 #include "runtime/function/render/lighting/render_spot_light.h"
 #include "runtime/function/render/minecraft_blocks/gmemory_buffer.h"
 #include "runtime/function/render/minecraft_blocks/render_minecraft_blocks_manager.h"
@@ -219,9 +220,20 @@ void RenderResource::loadLightingCubeToResource() {
         return light_cube;
     };
 
+    auto create_direction_light_cube = [&](glm::vec3 direction, glm::vec3 color) -> std::shared_ptr<RenderDirectionLight> {
+        auto direction_light_cube = std::make_shared<RenderDirectionLight>();
+        direction_light_cube->addMesh("cube", mesh);
+        std::dynamic_pointer_cast<RenderMesh>(direction_light_cube->getMesh("cube"))->setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)));
+        direction_light_cube->setDirection(direction);
+        direction_light_cube->setColor(color);
+        return direction_light_cube;
+    };
+
     m_spot_lights["light_cube_1"] = create_light_cube(glm::vec3(-0.5f, -0.5f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     m_spot_lights["light_cube_2"] = create_light_cube(glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_spot_lights["light_cube_3"] = create_light_cube(glm::vec3(0.5f, -0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 0.8f, 0.6f));
 }
 
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {

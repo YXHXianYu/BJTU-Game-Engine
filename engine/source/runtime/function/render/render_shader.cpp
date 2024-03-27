@@ -1,5 +1,3 @@
-#pragma once
-
 #include "runtime/function/render/render_shader.h"
 
 #include <glad/glad.h>
