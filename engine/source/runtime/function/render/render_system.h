@@ -16,6 +16,9 @@ public:
     void clear();
 
 private:
+    void swap();
+
+private:
     std::shared_ptr<RenderResource> m_render_resource{nullptr};
     std::shared_ptr<RenderPipeline> m_render_pipeline{nullptr};
     std::shared_ptr<RenderCamera>   m_render_camera{nullptr};

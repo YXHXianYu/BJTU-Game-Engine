@@ -11,18 +11,22 @@
 namespace BJTUGE {
 
 RenderTexture3D::RenderTexture3D(const std::vector<std::string>& picture_paths) {
-    bool is_need_to_add_bin = false;
+    int is_need_to_add_bin = -1;
 
     m_depth = picture_paths.size();
     std::vector<unsigned char*> data(m_depth);
 
     for (uint32_t i = 0; i < m_depth; i++) {
-        if (i == 0) {
+        if (picture_paths[i] == "") {
+            data[i] = nullptr;
+        } else if (is_need_to_add_bin == -1) {
             data[i] = stbi_load(picture_paths[i].c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0);
             if (data[i] == nullptr) {
                 data[i] = stbi_load(("./bin/" + picture_paths[i]).c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0);
                 assert(data[i] != nullptr);
-                is_need_to_add_bin = true;
+                is_need_to_add_bin = 1;
+            } else {
+                is_need_to_add_bin = 0;
             }
         } else {
             int width, height, channels;
@@ -35,6 +39,7 @@ RenderTexture3D::RenderTexture3D(const std::vector<std::string>& picture_paths) 
     unsigned char* data_3d    = new unsigned char[image_size * m_depth];
 
     for (uint32_t i = 0; i < m_depth; i++) {
+        if (data[i] == nullptr) continue;
         memcpy(data_3d + (i * image_size), data[i], image_size);
         stbi_image_free(data[i]);
     }

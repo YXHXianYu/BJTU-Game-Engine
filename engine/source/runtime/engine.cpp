@@ -2,10 +2,11 @@
 
 #include <cassert>
 
+#include "runtime/function/framework/world/world_manager.h"
 #include "runtime/function/global/global_context.h"
-#include "runtime/function/window/window_system.h"
-#include "runtime/function/render/render_system.h"
 #include "runtime/function/input/input_system.h"
+#include "runtime/function/render/render_system.h"
+#include "runtime/function/window/window_system.h"
 
 namespace BJTUGE {
 
@@ -30,6 +31,10 @@ void BJTUEngine::tick(float delta_time) {
 
 void BJTUEngine::tickLogic(float delta_time) {
     g_runtime_global_context.m_input_system->tick();
+
+    g_runtime_global_context.m_world_manager->tick(delta_time);
+
+    // TODO: initialize world =============================================
 }
 
 void BJTUEngine::tickRender(float delta_time) {

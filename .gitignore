@@ -1,7 +1,8 @@
 bin/
 build/
-.ccls-cache/
 
+.ccls-cache/
 .DS_Store
 .vscode/
+.VSCodeCounter/
 .direnv/

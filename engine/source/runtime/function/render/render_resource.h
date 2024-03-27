@@ -13,6 +13,7 @@ class RenderEntity;
 class RenderSpotLight;
 class RenderTextureBase;
 class RenderMeshBase;
+class RenderMinecraftBlocksManager;
 
 class RenderResource {
 
@@ -48,6 +49,11 @@ public:
     bool hasEntity(const std::string& key) const { return m_render_entities.find(key) != m_render_entities.end(); }
 
     /**
+     * @brief Add a RenderEntity to the resource manager
+     */
+    void addEntity(const std::string& key, std::shared_ptr<RenderEntity> entity) { m_render_entities[key] = entity; }
+
+    /**
      * @brief Get a RenderSpotLight by its key
      */
     std::shared_ptr<RenderSpotLight> getSpotLight(const std::string& key) const { return m_spot_lights.at(key); }
@@ -74,11 +80,19 @@ public:
      */
     std::shared_ptr<RenderEntity> loadEntityFromFile(const std::string& file_path);
 
+    /**
+     * @brief Get the RenderMinecraftBlocksManager to add or remove blocks.
+     *        `startTransfer` and `endTransfer` must be called before and after adding or removing blocks.
+     */
+    std::shared_ptr<RenderMinecraftBlocksManager> getRenderMinecraftBlocksManager() { return m_render_minecraft_blocks_manager; }
+
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>>      m_spot_lights;
     std::unordered_map<std::string, std::shared_ptr<RenderDirectionLight>> m_direction_lights;
     std::unordered_map<std::string, std::shared_ptr<RenderEntity>>         m_render_entities;
     std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>>    m_render_textures;
+
+    std::shared_ptr<RenderMinecraftBlocksManager> m_render_minecraft_blocks_manager{nullptr};
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();

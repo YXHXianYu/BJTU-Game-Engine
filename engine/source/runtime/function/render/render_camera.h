@@ -14,13 +14,13 @@ struct CameraCreateInfo {
     float aspect{16.0f / 9.0f};
     float near{0.1f};
     float far{100.0f}; // too large far may cause precision problem
-    
+
     float left{-10.0f};
     float right{10.0f};
     float top{10.0f};
     float buttom{-10.0f};
 
-    float move_speed{0.001f};
+    float move_speed{0.002f};
     float mouse_sensitivity{0.3f};
 };
 
