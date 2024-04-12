@@ -40,3 +40,7 @@ just
   * Hold the right mouse button and drag to adjust the camera view.
 * Window
   * Press `Escape` and `Enter` to exit the BJTU-Game-Engine
+*  Render
+   *  Press `Shift + K` to control whether to render the character
+   *  Press `Shift + J` to control whether to render the block
+   *  Press `Shift + L` to control whether to render the light mesh

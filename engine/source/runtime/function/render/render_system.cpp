@@ -51,9 +51,8 @@ void RenderSystem::tick(float delta_time) {
 
     // swap context from logical module
     swap();
-
     // draw
-    m_render_pipeline->draw(m_render_resource, m_render_camera);
+    m_render_pipeline->tick(input_system->getGameCommand(), m_render_resource, m_render_camera);
 
     // post tick
     glfwSwapBuffers(g_runtime_global_context.m_window_system->getWindow());

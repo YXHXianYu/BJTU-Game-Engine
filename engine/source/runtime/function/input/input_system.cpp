@@ -2,12 +2,12 @@
 
 #include "runtime/function/global/global_context.h"
 #include "runtime/function/window/window_system.h"
-
 #include <cassert>
 
 namespace BJTUGE {
 
 void InputSystem::initialize() {
+    // 在这里设置window_system的回调函数
     std::shared_ptr<WindowSystem> window_system = g_runtime_global_context.m_window_system;
     assert(window_system);
 
@@ -55,7 +55,15 @@ void InputSystem::onKey(int key, int scancode, int action, int mods) {
                 break;
             }
             case GLFW_KEY_J: {
-                m_game_command ^= (uint32_t)GameCommand::RENDER_BLOCK;
+                if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::RENDER_BLOCK; }
+                break;
+            }
+            case GLFW_KEY_K: {
+                if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::RENDER_CHARACTER; }
+                break;
+            }
+            case GLFW_KEY_L: {
+                if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::RENDER_LIGHT; }
                 break;
             }
             default: {
