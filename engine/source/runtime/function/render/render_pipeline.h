@@ -24,9 +24,10 @@ public:
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderShader>> m_render_shaders;
 
-    bool render_block     = false;
-    bool render_character = false;
-    bool render_light     = false;
+    bool render_block{false};
+    bool render_character{false};
+    bool render_light{false};
+    bool use_ortho{false};
 };
 
 } // namespace BJTUGE

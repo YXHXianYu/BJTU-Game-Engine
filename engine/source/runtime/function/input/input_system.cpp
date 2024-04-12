@@ -66,6 +66,10 @@ void InputSystem::onKey(int key, int scancode, int action, int mods) {
                 if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::RENDER_LIGHT; }
                 break;
             }
+            case GLFW_KEY_O: {
+                if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::USE_ORTHO; }
+                break;
+            }
             default: {
                 break;
             }

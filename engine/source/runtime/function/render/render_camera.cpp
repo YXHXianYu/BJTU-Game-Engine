@@ -1,10 +1,10 @@
 #include "runtime/function/render/render_camera.h"
 
 #include "runtime/function/global/global_context.h"
-#include "runtime/function/window/window_system.h"
 #include "runtime/function/input/input_system.h"
-
+#include "runtime/function/window/window_system.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 namespace BJTUGE {
 
@@ -14,7 +14,7 @@ const float     RenderCamera::EPS = 1e-3f;
 RenderCamera::RenderCamera(CameraCreateInfo info)
     : m_position(info.position), m_yaw(info.yaw), m_pitch(info.pitch), m_fovy(info.fovy), m_aspect(info.aspect), m_near(info.near),
       m_far(info.far), m_ortho_left{info.left}, m_ortho_right{info.right}, m_ortho_top{info.top}, m_ortho_buttom{info.buttom},
-    m_move_speed(info.move_speed), m_mouse_sensitivity(info.mouse_sensitivity) {
+      m_move_speed(info.move_speed), m_mouse_sensitivity(info.mouse_sensitivity) {
     updateVector();
 
     // window resize
@@ -73,6 +73,10 @@ void RenderCamera::updateViewMatrix() {
 }
 
 void RenderCamera::updateProjectionMatrix(bool use_ortho) {
+    if (current_ortho != use_ortho) {
+        m_projection_matrix_dirty = true;
+        current_ortho             = use_ortho;
+    }
     if (m_projection_matrix_dirty) {
         if (use_ortho) {
             m_projection_matrix = glm::ortho(m_ortho_left, m_ortho_right, m_ortho_buttom, m_ortho_top, m_near, m_far);
@@ -86,6 +90,7 @@ void RenderCamera::updateProjectionMatrix(bool use_ortho) {
 
 void RenderCamera::updateViewProjectionMatrix(bool use_ortho) {
     updateViewMatrix();
+
     updateProjectionMatrix(use_ortho);
     if (m_view_projection_matrix_dirty) {
         m_view_projection_matrix       = m_projection_matrix * m_view_matrix;

@@ -18,6 +18,7 @@ enum class GameCommand : uint32_t {
     RENDER_BLOCK     = 1U << 10,
     RENDER_CHARACTER = 1U << 11,
     RENDER_LIGHT     = 1U << 12,
+    USE_ORTHO        = 1U << 13,
 
     INVALID = 1U << 31,
 };

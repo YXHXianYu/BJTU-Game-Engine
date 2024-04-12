@@ -43,8 +43,6 @@ void RenderPipeline::initialize() {
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
-    bool use_ortho = false;
-
     // change the position of the spot lights (should be moved to the logic in the future)
     {
         float    time = static_cast<float>(glfwGetTime());
@@ -121,22 +119,28 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 }
 
 void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
-    if (GameCommand & (uint32_t)GameCommand::RENDER_BLOCK) {
+    if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_BLOCK)) {
         render_block = true;
     } else {
         render_block = false;
     }
 
-    if (GameCommand & (uint32_t)GameCommand::RENDER_CHARACTER) {
+    if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_CHARACTER)) {
         render_character = true;
     } else {
         render_character = false;
     }
 
-    if (GameCommand & (uint32_t)GameCommand::RENDER_LIGHT) {
+    if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_LIGHT)) {
         render_light = true;
     } else {
         render_light = false;
+    }
+
+    if (GameCommand & static_cast<uint32_t>(GameCommand::USE_ORTHO)) {
+        use_ortho = true;
+    } else {
+        use_ortho = false;
     }
     draw(resource, camera);
 }
