@@ -5,16 +5,18 @@
 namespace BJTUGE {
 
 enum class GameCommand : uint32_t {
-    FORWARD      = 1U << 0,
-    BACKWARD     = 1U << 1,
-    LEFT         = 1U << 2,
-    RIGHT        = 1U << 3,
-    UP           = 1U << 4,
-    DOWN         = 1U << 5,
-    MOUSE_LEFT   = 1U << 6,
-    MOUSE_RIGHT  = 1U << 7,
-    MOUSE_MIDDLE = 1U << 8,
-    KB_SPACE     = 1U << 9,
+    FORWARD          = 1U << 0,
+    BACKWARD         = 1U << 1,
+    LEFT             = 1U << 2,
+    RIGHT            = 1U << 3,
+    UP               = 1U << 4,
+    DOWN             = 1U << 5,
+    MOUSE_LEFT       = 1U << 6,
+    MOUSE_RIGHT      = 1U << 7,
+    MOUSE_MIDDLE     = 1U << 8,
+    KB_SPACE         = 1U << 9,
+    RENDER_BLOCK     = 1U << 10,
+    RENDER_CHARACTER = 1U << 11,
 
     INVALID = 1U << 31,
 };

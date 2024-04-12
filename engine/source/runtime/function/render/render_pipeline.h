@@ -1,10 +1,11 @@
 #pragma once
 
+#include "runtime/function/input/input_system.h"
 #include "runtime/function/render/render_shader.h"
 
-#include <unordered_map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace BJTUGE {
 

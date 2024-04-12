@@ -105,6 +105,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     }
 
     // draw minecraft blocks
+    
     {
         auto shader = m_render_shaders["block"];
 

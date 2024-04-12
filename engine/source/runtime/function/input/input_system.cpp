@@ -54,6 +54,10 @@ void InputSystem::onKey(int key, int scancode, int action, int mods) {
                 m_game_command |= (uint32_t)GameCommand::KB_SPACE;
                 break;
             }
+            case GLFW_KEY_J: {
+                m_game_command ^= (uint32_t)GameCommand::RENDER_BLOCK;
+                break;
+            }
             default: {
                 break;
             }
