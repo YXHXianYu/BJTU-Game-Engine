@@ -90,6 +90,8 @@ private:
     glm::mat4 m_projection_matrix{1.0f};
     bool      m_view_projection_matrix_dirty{true};
     glm::mat4 m_view_projection_matrix{1.0f};
+
+    bool current_ortho{false};
 };
 
 } // namespace BJTUGE

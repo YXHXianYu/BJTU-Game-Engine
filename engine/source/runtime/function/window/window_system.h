@@ -127,7 +127,7 @@ private:
     std::vector<onScrollFunc>      m_on_scroll_func;
     std::vector<onResizeFunc>      m_on_resize_func;
 
-    // 添加新时间时，记得在 "window_system.cpp - initialize()" 中添加相应的注册函数
+    // 添加新事件时，记得在 "window_system.cpp - initialize()" 中添加相应的注册函数
 };
 
 } // namespace BJTUGE
