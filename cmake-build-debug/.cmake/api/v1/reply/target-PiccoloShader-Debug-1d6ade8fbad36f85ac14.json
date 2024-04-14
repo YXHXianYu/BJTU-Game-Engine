@@ -1,0 +1,203 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"compile_shader"
+		],
+		"files" : 
+		[
+			"engine/shader/cmake/shader_compile_glsl.cmake",
+			"engine/shader/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 15,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 26,
+				"parent" : 1
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "BASIC_FRAG_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "BASIC_VERT_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "BLOCK_FRAG_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "DEPTH_RENDERING_FRAG_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "DEPTH_RENDERING_VERT_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "LIGHT_FRAG_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "MODEL_WITH_LIGHTING_FRAG_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "MODEL_WITH_LIGHTING_VERT_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "MODEL_FRAG_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "BLOCK_VERT_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "MODEL_VERT_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "SHADERTOY_SLISESIX_FRAG_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "POST_PROCESS_VERT_TARGET::@a5f387e72a9480893fff"
+		},
+		{
+			"id" : "SHADERTOY_CLOUDS_FRAG_TARGET::@a5f387e72a9480893fff"
+		}
+	],
+	"id" : "PiccoloShader::@a5f387e72a9480893fff",
+	"name" : "PiccoloShader",
+	"paths" : 
+	{
+		"build" : "engine/shader",
+		"source" : "engine/shader"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				15
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/basic.frag",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/basic.vert",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/block.frag",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/block.vert",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/depth_rendering.frag",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/depth_rendering.vert",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/light.frag",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/model.frag",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/model.vert",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/model_with_lighting.frag",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/model_with_lighting.vert",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/post_process.vert",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/shadertoy_clouds.frag",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "engine/shader/build/glsl/shadertoy_slisesix.frag",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/engine/shader/CMakeFiles/PiccoloShader",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/engine/shader/CMakeFiles/PiccoloShader.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

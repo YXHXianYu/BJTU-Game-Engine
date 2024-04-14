@@ -34,6 +34,8 @@ void RenderResource::initialize() {
     m_render_entities["model"] = std::make_shared<RenderEntity>();
     m_render_entities["model"]->addEntity("characters", loadCharacters());
 
+    m_render_entities["spheres"] = loadSpheres();
+
     // m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
 
@@ -327,6 +329,58 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     }
 
     return f_entity;
+}
+
+std::shared_ptr<RenderEntity> RenderResource::loadSpheres(){
+    auto entity = std::make_shared<RenderEntity>();
+
+    float initialX = -10.0f;
+    float initialY = 3.0f;
+    float initialZ = -10.0f;
+    float deltaX = 3.0f;
+
+    auto path = "./asset/models/sol/sol.obj";
+
+    entity->addEntity("OriginalSphere", RenderResource::loadEntityFromFile(path));
+    //平移移到初始位置
+    entity->getEntity("OriginalSphere")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ)));
+
+    entity->addEntity("ScaledSphere", RenderResource::loadEntityFromFile(path));
+    //缩放0.5倍
+    glm::mat4 scaledMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + deltaX, initialY, initialZ));
+    scaledMatrix = glm::scale(scaledMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+    entity->getEntity("ScaledSphere")->setModelMatrix(scaledMatrix);
+
+    entity->addEntity("TranslatedSphere", RenderResource::loadEntityFromFile(path));
+    //先平移了 (0.0f, 1.0f, 0.0f) 然后沿 X 轴方向平移了 deltaX
+    glm::mat4 translatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 2 * deltaX, initialY, initialZ));
+    translatedMatrix = glm::translate(translatedMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("TranslatedSphere")->setModelMatrix(translatedMatrix);
+
+    //分别围绕 X、Y、Z 轴旋转了45度
+    entity->addEntity("RotatedXSphere", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedXMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 3 * deltaX, initialY, initialZ));
+    rotatedXMatrix = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    entity->getEntity("RotatedXSphere")->setModelMatrix(rotatedXMatrix);
+
+    entity->addEntity("RotatedYSphere", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedYMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 4 * deltaX, initialY, initialZ));
+    rotatedYMatrix = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("RotatedYSphere")->setModelMatrix(rotatedYMatrix);
+
+    entity->addEntity("RotatedZSphere", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedZMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 5 * deltaX, initialY, initialZ));
+    rotatedZMatrix = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    entity->getEntity("RotatedZSphere")->setModelMatrix(rotatedZMatrix);
+
+    //组合了缩放和旋转操作，先缩放了0.75倍然后绕 Y 轴旋转了30度
+    entity->addEntity("CompositeTransformSphere", RenderResource::loadEntityFromFile(path));
+    glm::mat4 compositeMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 6 * deltaX, initialY, initialZ));
+    compositeMatrix = glm::scale(compositeMatrix, glm::vec3(0.75f, 0.75f, 0.75f));
+    compositeMatrix = glm::rotate(compositeMatrix, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("CompositeTransformSphere")->setModelMatrix(compositeMatrix);
+
+    return entity;
 }
 
 } // namespace BJTUGE

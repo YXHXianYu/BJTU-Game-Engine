@@ -1,0 +1,89 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"INSTALL"
+		],
+		"files" : 
+		[
+			"engine/3rdparty/assimp-5.3.1/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 455,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 461,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 734,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "libassimp5.3.0-dev",
+			"destination" : "lib/cmake/assimp-5.3",
+			"paths" : 
+			[
+				"cmake-build-debug/engine/3rdparty/assimp-5.3.1/generated/assimpConfig.cmake",
+				"cmake-build-debug/engine/3rdparty/assimp-5.3.1/generated/assimpConfigVersion.cmake"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "libassimp5.3.0-dev",
+			"destination" : "lib/cmake/assimp-5.3",
+			"exportName" : "assimpTargets",
+			"exportTargets" : 
+			[
+				{
+					"id" : "zlibstatic::@428a606c28b10ffbd21f",
+					"index" : 22
+				},
+				{
+					"id" : "assimp::@d1a56adab0a93c3767a3",
+					"index" : 16
+				}
+			],
+			"paths" : 
+			[
+				"engine/3rdparty/assimp-5.3.1/CMakeFiles/Export/276191b64e4aaa7fa3bf193da4658da2/assimpTargets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "libassimp5.3.0-dev",
+			"destination" : "lib/pkgconfig",
+			"paths" : 
+			[
+				"cmake-build-debug/engine/3rdparty/assimp-5.3.1/assimp.pc"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "engine/3rdparty/assimp-5.3.1",
+		"source" : "engine/3rdparty/assimp-5.3.1"
+	}
+}

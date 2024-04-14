@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "engine/3rdparty/assimp-5.3.1/test",
+		"source" : "engine/3rdparty/assimp-5.3.1/test"
+	}
+}

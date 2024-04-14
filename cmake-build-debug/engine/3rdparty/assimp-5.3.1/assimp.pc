@@ -1,0 +1,9 @@
+libdir=D:/Documents/BJTU-Game-Engine/bin/lib
+includedir=D:/Documents/BJTU-Game-Engine/bin/include
+
+Name: BJTUGE
+Description: Import various well-known 3D model formats in an uniform manner.
+Version: 5.3.0
+Libs: -L${libdir} -lassimp
+Libs.private:  
+Cflags: -I${includedir}

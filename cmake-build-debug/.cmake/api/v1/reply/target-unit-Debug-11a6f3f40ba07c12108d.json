@@ -1,0 +1,1596 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "engine/3rdparty/assimp-5.3.1/bin/unit.exe"
+		},
+		{
+			"path" : "engine/3rdparty/assimp-5.3.1/bin/unit.pdb"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"LINK_DIRECTORIES",
+			"target_link_libraries",
+			"TARGET_LINK_LIBRARIES",
+			"TARGET_COMPILE_OPTIONS",
+			"ADD_DEFINITIONS",
+			"add_definitions",
+			"INCLUDE_DIRECTORIES",
+			"target_sources"
+		],
+		"files" : 
+		[
+			"engine/3rdparty/assimp-5.3.1/test/CMakeLists.txt",
+			"engine/3rdparty/assimp-5.3.1/code/CMakeLists.txt",
+			"engine/3rdparty/assimp-5.3.1/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 215,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 60,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 280,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 1288,
+				"parent" : 4
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 1344,
+				"parent" : 4
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 276,
+				"parent" : 0
+			},
+			{
+				"file" : 2
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 610,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 45,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 44,
+				"parent" : 8
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 255,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 256,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 242,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 245,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 146,
+				"parent" : 8
+			},
+			{
+				"command" : 7,
+				"file" : 2,
+				"line" : 235,
+				"parent" : 8
+			},
+			{
+				"command" : 7,
+				"file" : 2,
+				"line" : 522,
+				"parent" : 8
+			},
+			{
+				"command" : 7,
+				"file" : 0,
+				"line" : 40,
+				"parent" : 0
+			},
+			{
+				"command" : 7,
+				"file" : 0,
+				"line" : 47,
+				"parent" : 0
+			},
+			{
+				"command" : 7,
+				"file" : 0,
+				"line" : 241,
+				"parent" : 0
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 233,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-fno-strict-aliasing -fPIC  -g -std=gnu99 -fdiagnostics-color=always"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Werror"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 9,
+					"define" : "ASSIMP_BUILD_NO_C4D_IMPORTER"
+				},
+				{
+					"backtrace" : 10,
+					"define" : "ASSIMP_BUILD_NO_M3D_EXPORTER"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "ASSIMP_BUILD_NO_M3D_IMPORTER"
+				},
+				{
+					"backtrace" : 12,
+					"define" : "ASSIMP_TEST_MODELS_DIR=\"D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/test/models\""
+				},
+				{
+					"backtrace" : 13,
+					"define" : "ASSIMP_TEST_MODELS_NONBSD_DIR=\"D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/test/models-nonbsd\""
+				},
+				{
+					"backtrace" : 14,
+					"define" : "RAPIDJSON_HAS_STDSTRING=1"
+				},
+				{
+					"backtrace" : 15,
+					"define" : "RAPIDJSON_NOMEMBERITERATORCLASS"
+				},
+				{
+					"backtrace" : 16,
+					"define" : "WIN32_LEAN_AND_MEAN"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/cmake-build-debug/engine/3rdparty/assimp-5.3.1/include"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/cmake-build-debug/engine/3rdparty/assimp-5.3.1"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/include"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/code"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/."
+				},
+				{
+					"backtrace" : 18,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/contrib/zlib"
+				},
+				{
+					"backtrace" : 18,
+					"path" : "D:/Documents/BJTU-Game-Engine/cmake-build-debug/engine/3rdparty/assimp-5.3.1/contrib/zlib"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/test/unit"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/contrib/googletest/googletest/include"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/contrib/googletest/googletest"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/contrib/pugixml/src"
+				},
+				{
+					"backtrace" : 21,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/test/../contrib/rapidjson/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/code/../include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "D:/Documents/BJTU-Game-Engine/cmake-build-debug/engine/3rdparty/assimp-5.3.1/code/../include"
+				}
+			],
+			"language" : "C",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "99"
+			},
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-fvisibility=hidden -fno-strict-aliasing -Wall -Wno-long-long -Wa,-mbig-obj -g -std=gnu++17  -g -std=gnu++17 -fdiagnostics-color=always"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-Werror"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 9,
+					"define" : "ASSIMP_BUILD_NO_C4D_IMPORTER"
+				},
+				{
+					"backtrace" : 10,
+					"define" : "ASSIMP_BUILD_NO_M3D_EXPORTER"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "ASSIMP_BUILD_NO_M3D_IMPORTER"
+				},
+				{
+					"backtrace" : 12,
+					"define" : "ASSIMP_TEST_MODELS_DIR=\"D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/test/models\""
+				},
+				{
+					"backtrace" : 13,
+					"define" : "ASSIMP_TEST_MODELS_NONBSD_DIR=\"D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/test/models-nonbsd\""
+				},
+				{
+					"backtrace" : 14,
+					"define" : "RAPIDJSON_HAS_STDSTRING=1"
+				},
+				{
+					"backtrace" : 15,
+					"define" : "RAPIDJSON_NOMEMBERITERATORCLASS"
+				},
+				{
+					"backtrace" : 16,
+					"define" : "WIN32_LEAN_AND_MEAN"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/cmake-build-debug/engine/3rdparty/assimp-5.3.1/include"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/cmake-build-debug/engine/3rdparty/assimp-5.3.1"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/include"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/code"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/."
+				},
+				{
+					"backtrace" : 18,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/contrib/zlib"
+				},
+				{
+					"backtrace" : 18,
+					"path" : "D:/Documents/BJTU-Game-Engine/cmake-build-debug/engine/3rdparty/assimp-5.3.1/contrib/zlib"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/test/unit"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/contrib/googletest/googletest/include"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/contrib/googletest/googletest"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/contrib/pugixml/src"
+				},
+				{
+					"backtrace" : 21,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/test/../contrib/rapidjson/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "D:/Documents/BJTU-Game-Engine/engine/3rdparty/assimp-5.3.1/code/../include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "D:/Documents/BJTU-Game-Engine/cmake-build-debug/engine/3rdparty/assimp-5.3.1/code/../include"
+				},
+				{
+					"isSystem" : true,
+					"path" : "D:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++"
+				},
+				{
+					"isSystem" : true,
+					"path" : "D:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32"
+				},
+				{
+					"isSystem" : true,
+					"path" : "D:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward"
+				},
+				{
+					"isSystem" : true,
+					"path" : "D:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include"
+				},
+				{
+					"isSystem" : true,
+					"path" : "D:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/include"
+				},
+				{
+					"isSystem" : true,
+					"path" : "D:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed"
+				},
+				{
+					"isSystem" : true,
+					"path" : "D:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/x86_64-w64-mingw32/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "17"
+			},
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				18,
+				19,
+				20,
+				21,
+				23,
+				25,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40,
+				41,
+				42,
+				43,
+				44,
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60,
+				61,
+				62,
+				63,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81,
+				82,
+				83,
+				84,
+				85,
+				86,
+				87,
+				88,
+				89,
+				90,
+				91,
+				92,
+				93,
+				94,
+				96,
+				97,
+				98,
+				99,
+				100,
+				101,
+				102,
+				103,
+				104,
+				105,
+				106,
+				107,
+				108,
+				109,
+				110,
+				111,
+				112,
+				113,
+				114,
+				115,
+				116,
+				117,
+				118,
+				119,
+				120,
+				121,
+				122,
+				123,
+				124,
+				125,
+				126,
+				127,
+				128
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "zlibstatic::@428a606c28b10ffbd21f"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "assimp::@d1a56adab0a93c3767a3"
+		}
+	],
+	"id" : "unit::@4fe2b099d73a205334ed",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-fvisibility=hidden -fno-strict-aliasing -Wall -Wno-long-long -Wa,-mbig-obj -g -std=gnu++17  -g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-LD:\\Documents\\BJTU-Game-Engine\\cmake-build-debug\\engine\\3rdparty\\assimp-5.3.1",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-L\\lib",
+				"role" : "libraryPath"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "engine\\3rdparty\\assimp-5.3.1\\lib\\libassimpd.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "engine\\3rdparty\\assimp-5.3.1\\contrib\\zlib\\libzlibstaticd.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-static-libgcc",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-static-libstdc++",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-Wl,-Bstatic",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-lstdc++",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-lwinpthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "unit",
+	"nameOnDisk" : "unit.exe",
+	"paths" : 
+	{
+		"build" : "engine/3rdparty/assimp-5.3.1/test",
+		"source" : "engine/3rdparty/assimp-5.3.1/test"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "UnitTests\\Compiler",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				3,
+				128
+			]
+		},
+		{
+			"name" : "UnitTests\\Common",
+			"sourceIndexes" : 
+			[
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40,
+				41,
+				42,
+				43
+			]
+		},
+		{
+			"name" : "UnitTests\\GeometryTools",
+			"sourceIndexes" : 
+			[
+				44
+			]
+		},
+		{
+			"name" : "UnitTests\\ImportExport",
+			"sourceIndexes" : 
+			[
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60,
+				61,
+				62,
+				63,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81,
+				82,
+				83,
+				84,
+				85,
+				86,
+				87,
+				88,
+				89,
+				90,
+				91,
+				92,
+				93,
+				94,
+				95,
+				96,
+				97,
+				98,
+				99,
+				100
+			]
+		},
+		{
+			"name" : "UnitTests\\Material",
+			"sourceIndexes" : 
+			[
+				101
+			]
+		},
+		{
+			"name" : "UnitTests\\Math",
+			"sourceIndexes" : 
+			[
+				102,
+				103,
+				104
+			]
+		},
+		{
+			"name" : "UnitTests\\PostProcess",
+			"sourceIndexes" : 
+			[
+				105,
+				106,
+				107,
+				108,
+				109,
+				110,
+				111,
+				112,
+				113,
+				114,
+				115,
+				116,
+				117,
+				118,
+				119,
+				120,
+				121,
+				122,
+				123,
+				124,
+				125,
+				126,
+				127
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/CCompilerTest.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Main.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/code/Common/Version.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/code/Common/Base64.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utSimd.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utIOSystem.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utIOStreamBuffer.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utIssues.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utAnim.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/AssimpAPITest.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/AssimpAPITest_aiMatrix3x3.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/AssimpAPITest_aiMatrix4x4.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/AssimpAPITest_aiQuaternion.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/AssimpAPITest_aiVector2D.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/AssimpAPITest_aiVector3D.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/MathTest.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/MathTest.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/RandomNumberGeneration.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utBatchLoader.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utDefaultIOStream.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utFastAtof.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utMetadata.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/SceneDiffer.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/SceneDiffer.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/UTLogStream.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/AbstractImportExportBase.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/TestIOSystem.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/TestModelFactory.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utTypes.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utVersion.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utProfiler.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utSharedPPData.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utStringUtils.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utMaybe.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utMesh.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utStandardShapes.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/uiScene.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utLineSplitter.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utSpatialSort.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utAssertHandler.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utXmlParser.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utBase64.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utHash.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Common/utBaseProcess.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/Geometry/utGeometryUtils.cpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/Assxml/utAssxmlImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utLWSImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utLWOImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utSMDImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utglTFImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utglTF2ImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utHMPImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utIFCImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utFBXImporterExporter.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utImporter.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utExporter.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ut3DImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ut3DSImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utACImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utAMFImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utASEImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utD3MFImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utQ3DImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utSTLImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utXImporterExporter.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utX3DImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utDXFImporterExporter.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utPMXImporter.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utPLYImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utObjImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utObjTools.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utOpenGEXImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utSIBImporter.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utBlenderIntermediate.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utBlendImportAreaLight.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utBlenderImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utBlendImportMaterials.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utBlenderWork.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utBVHImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utColladaExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utColladaImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utCSMImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utB3DImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utMDCImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utAssbinImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utAssjsonImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utCOBImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utOgreImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utQ3BSPFileImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utOFFImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utNFFImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utXGLImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utMD2Importer.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utMD5Importer.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/utMDLImporter.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/MDL/MDLHL1TestFiles.h",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/MDL/utMDLImporter_HL1_ImportSettings.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/MDL/utMDLImporter_HL1_Materials.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/MDL/utMDLImporter_HL1_Nodes.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/RAW/utRAWImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/ImportExport/Terragen/utTerragenImportExport.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utMaterialSystem.cpp",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utMatrix3x3.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utMatrix4x4.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utVector3.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utImproveCacheLocality.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utFixInfacingNormals.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utGenNormals.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utTriangulate.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utTextureTransform.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utRemoveRedundantMaterials.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utRemoveVCProcess.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utScaleProcess.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utArmaturePopulate.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utJoinVertices.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utRemoveComments.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utRemoveComponent.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utVertexTriangleAdjacency.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utSplitLargeMeshes.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utFindDegenerates.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utFindInvalidData.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utLimitBoneWeights.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utPretransformVertices.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utScenePreprocessor.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utTargetAnimation.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utSortByPType.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utSceneCombiner.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/test/unit/utGenBoundingBoxesProcess.cpp",
+			"sourceGroupIndex" : 7
+		},
+		{
+			"backtrace" : 22,
+			"compileGroupIndex" : 1,
+			"path" : "engine/3rdparty/assimp-5.3.1/contrib/googletest/googletest/src/gtest-all.cc",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "EXECUTABLE"
+}
