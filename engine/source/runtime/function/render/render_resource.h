@@ -85,6 +85,7 @@ public:
      *        `startTransfer` and `endTransfer` must be called before and after adding or removing blocks.
      */
     std::shared_ptr<RenderMinecraftBlocksManager> getRenderMinecraftBlocksManager() { return m_render_minecraft_blocks_manager; }
+    
 
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>>      m_spot_lights;
@@ -93,6 +94,8 @@ private:
     std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>>    m_render_textures;
 
     std::shared_ptr<RenderMinecraftBlocksManager> m_render_minecraft_blocks_manager{nullptr};
+
+    
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
@@ -103,6 +106,11 @@ private:
     std::shared_ptr<RenderEntity> loadMinecraftBlocks();
     std::shared_ptr<RenderEntity> loadCharacters();
     std::shared_ptr<RenderEntity> loadPlainBlocks();
+    
+    // drj
+    std::shared_ptr<RenderMeshBase> loadSquareMesh();
+    std::shared_ptr<RenderEntity> loadSquare();
+    std::shared_ptr<RenderEntity> loadLovekdlSquare();
 };
 
 } // namespace BJTUGE
