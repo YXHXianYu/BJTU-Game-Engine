@@ -116,8 +116,8 @@ void InputSystem::onCursorPos(double xpos, double ypos) {
         m_cursor_delta_x = static_cast<int32_t>(xpos - m_last_cursor_x);
         m_cursor_delta_y = static_cast<int32_t>(ypos - m_last_cursor_y);
     }
-    m_last_cursor_x = static_cast<uint32_t>(xpos);
-    m_last_cursor_y = static_cast<uint32_t>(ypos);
+    m_last_cursor_x = static_cast<int32_t>(xpos);
+    m_last_cursor_y = static_cast<int32_t>(ypos);
 }
 
 void InputSystem::onMouseButton(int button, int action, int mods) {
