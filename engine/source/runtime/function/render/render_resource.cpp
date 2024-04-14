@@ -34,6 +34,10 @@ void RenderResource::initialize() {
     m_render_entities["model"] = std::make_shared<RenderEntity>();
     m_render_entities["model"]->addEntity("characters", loadCharacters());
 
+
+    m_render_entities["cubes"] = std::make_shared<RenderEntity>();
+    m_render_entities["cubes"]->addEntity("cubes", loadCubes());
+
     // m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
 
@@ -327,6 +331,53 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     }
 
     return f_entity;
+}
+
+std::shared_ptr<RenderEntity> RenderResource::loadCubes() {
+    auto entity = std::make_shared<RenderEntity>();
+
+    float initialX = -10.0f;
+    float initialY = 3.0f;
+    float initialZ = -10.0f;
+    float deltaX = 3.0f;
+
+    auto path = "./asset/models/cube/cube.obj";
+
+    entity->addEntity("OriginalCube", RenderResource::loadEntityFromFile(path));
+    entity->getEntity("OriginalCube")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ)));
+
+    entity->addEntity("ScaledCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 scaledMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + deltaX, initialY, initialZ));
+    scaledMatrix = glm::scale(scaledMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+    entity->getEntity("ScaledCube")->setModelMatrix(scaledMatrix);
+
+    entity->addEntity("TranslatedCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 translatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 2 * deltaX, initialY, initialZ));
+    translatedMatrix = glm::translate(translatedMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("TranslatedCube")->setModelMatrix(translatedMatrix);
+
+    entity->addEntity("RotatedXCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedXMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 3 * deltaX, initialY, initialZ));
+    rotatedXMatrix = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    entity->getEntity("RotatedXCube")->setModelMatrix(rotatedXMatrix);
+
+    entity->addEntity("RotatedYCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedYMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 4 * deltaX, initialY, initialZ));
+    rotatedYMatrix = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("RotatedYCube")->setModelMatrix(rotatedYMatrix);
+
+    entity->addEntity("RotatedZCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedZMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 5 * deltaX, initialY, initialZ));
+    rotatedZMatrix = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    entity->getEntity("RotatedZCube")->setModelMatrix(rotatedZMatrix);
+
+    entity->addEntity("CompositeTransformCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 compositeMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 6 * deltaX, initialY, initialZ));
+    compositeMatrix = glm::scale(compositeMatrix, glm::vec3(0.75f, 0.75f, 0.75f));
+    compositeMatrix = glm::rotate(compositeMatrix, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("CompositeTransformCube")->setModelMatrix(compositeMatrix);
+
+    return entity;
 }
 
 } // namespace BJTUGE
