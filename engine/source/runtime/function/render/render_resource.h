@@ -85,6 +85,7 @@ public:
      *        `startTransfer` and `endTransfer` must be called before and after adding or removing blocks.
      */
     std::shared_ptr<RenderMinecraftBlocksManager> getRenderMinecraftBlocksManager() { return m_render_minecraft_blocks_manager; }
+    
 
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>>      m_spot_lights;
@@ -94,15 +95,23 @@ private:
 
     std::shared_ptr<RenderMinecraftBlocksManager> m_render_minecraft_blocks_manager{nullptr};
 
+    
+
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
     std::shared_ptr<RenderMeshBase>    loadCubeMesh();
+    std::shared_ptr<RenderMeshBase>    loadSquareMesh();
 
     void loadLightingCubeToResource(); // TODO: 统一格式
 
     std::shared_ptr<RenderEntity> loadMinecraftBlocks();
     std::shared_ptr<RenderEntity> loadCharacters();
     std::shared_ptr<RenderEntity> loadPlainBlocks();
+    
+    // assignments
+    std::shared_ptr<RenderEntity> load2DShape();
+    std::shared_ptr<RenderEntity> loadSquareLovekdl();
+    std::shared_ptr<RenderEntity> loadCubesFJQ();
     std::shared_ptr<RenderEntity> loadCatsCJX();
 };
 
