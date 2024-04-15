@@ -109,6 +109,7 @@ private:
     std::shared_ptr<RenderEntity> loadPlainBlocks();
     
     // assignments
+    std::shared_ptr<RenderEntity> loadAssignments();
     std::shared_ptr<RenderEntity> load2DShape();
     std::shared_ptr<RenderEntity> loadSquareLovekdl();
     std::shared_ptr<RenderEntity> loadCubesFJQ();

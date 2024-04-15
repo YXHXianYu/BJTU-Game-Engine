@@ -118,7 +118,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     }
 
     // render assignments
-    if(!render_assignment) {
+    if(!render_assignments) {
         auto shader = m_render_shaders["depth"];
         shader->use();
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
