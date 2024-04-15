@@ -117,7 +117,8 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
-    if(!render_square) {
+    // render assignments
+    if(!render_assignment) {
         auto shader = m_render_shaders["depth"];
         shader->use();
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
@@ -125,7 +126,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
 
-        resource->getEntity("squareOfDrj")->draw(shader, resource);
+        resource->getEntity("assignment")->draw(shader, resource);
     }
 }
 

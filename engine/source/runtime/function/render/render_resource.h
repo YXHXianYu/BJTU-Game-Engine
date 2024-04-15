@@ -100,6 +100,7 @@ private:
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
     std::shared_ptr<RenderMeshBase>    loadCubeMesh();
+    std::shared_ptr<RenderMeshBase>    loadSquareMesh();
 
     void loadLightingCubeToResource(); // TODO: 统一格式
 
@@ -108,9 +109,8 @@ private:
     std::shared_ptr<RenderEntity> loadPlainBlocks();
     
     // drj
-    std::shared_ptr<RenderMeshBase> loadSquareMesh();
-    std::shared_ptr<RenderEntity> loadSquare();
-    std::shared_ptr<RenderEntity> loadLovekdlSquare();
+    std::shared_ptr<RenderEntity> load2DShape();
+    std::shared_ptr<RenderEntity> loadSquareLovekdl();
 };
 
 } // namespace BJTUGE
