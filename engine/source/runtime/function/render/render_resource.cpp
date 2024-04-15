@@ -34,7 +34,8 @@ void RenderResource::initialize() {
     m_render_entities["model"] = std::make_shared<RenderEntity>();
     m_render_entities["model"]->addEntity("characters", loadCharacters());
 
-    m_render_entities["Cats"] = loadCats();
+    m_render_entities["assignments"] = std::make_shared<RenderEntity>();
+    m_render_entities["assignments"]->addEntity("cjx", loadCatsCJX());
 
     // m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
@@ -331,24 +332,20 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     return f_entity;
 }
 
-std::shared_ptr<RenderEntity> RenderResource::loadCats(){
+std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX(){
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = 10.0f;
-    float initialY = 3.0f;
-    float initialZ = 0.0f;
+    float initialX = -10.0f;
+    float initialY = 10.0f;
+    float initialZ = -10.0f;
     float deltaX = 3.0f;
 
     auto path = "./asset/models/cat/cat.obj";
 
-    // === Add by YXHXianYu (BEGIN) ===
-    // 这里的entity实际上是一个树形结构，所以对根节点调整了缩放，相当于所有子节点全部都会被一起缩放
-    // 这里，我们通过一个wrapper，减少代码复杂度（比如按照fjq原本的写法，每个变换都要写一个glm::translate，麻烦死了
-    
     //定义了一个常量 scale_coef，用于指定缩放系数，这个系数用于缩放物体的大小。
     // const auto scale_coef = 0.00005f;
     const auto scale_coef = 0.05f;
-    //使用缩放系数创建了一个缩放矩阵 normalize_scale，该矩阵将会用于标准化物体的大小。
+    // 使用缩放系数创建了一个缩放矩阵 normalize_scale，该矩阵将会用于标准化物体的大小。
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
     
     //定义了一个 lambda 函数 wrapper，该函数接受两个参数：一个变换矩阵 transform 和一个浮点数 delta
@@ -358,43 +355,39 @@ std::shared_ptr<RenderEntity> RenderResource::loadCats(){
         //最后，将标准化缩放矩阵 normalize_scale 与之前的结果相乘，以确保物体的大小被缩放到合适的范围内。
         return glm::translate(glm::mat4(1.0f), glm::vec3(initialX + delta * deltaX, initialY, initialZ)) * transform * normalize_scale;
     };
-    // === Add by YXHXianYu (END) ===
 
     entity->addEntity("OriginalCat", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("ScaledCat", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("TranslatedCat", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("RotatedXCat", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("RotatedYCat", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("RotatedZCat", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("CompositeTransformCat", RenderResource::loadEntityFromFile(path));
+
     //平移移到初始位置，并旋转至猫猫站立
     glm::mat4 toOriginalMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     entity->getEntity("OriginalCat")->setModelMatrix(wrapper(toOriginalMatrix,0));
 
-    // ===== 接下来我只给个示例，只改scaled和translated，其他你自己写吧 =====
-
-    entity->addEntity("ScaledCat", RenderResource::loadEntityFromFile(path));
     glm::mat4 scaledMatrix = glm::scale(toOriginalMatrix,glm::vec3(0.5f, 0.5f, 0.5f));
     entity->getEntity("ScaledCat")->setModelMatrix(wrapper(scaledMatrix, 1));
 
-    entity->addEntity("TranslatedCat", RenderResource::loadEntityFromFile(path));
     glm::mat4 translatedMatrix = glm::translate(toOriginalMatrix, glm::vec3(0.0f, 0.0f, 1.0f));
     entity->getEntity("TranslatedCat")->setModelMatrix(wrapper(translatedMatrix, 2));
 
-    // ===== 下面的代码我都没改过 =====
-
     //分别围绕 X、Y、Z 轴旋转了45度
-    entity->addEntity("RotatedXCat", RenderResource::loadEntityFromFile(path));
     glm::mat4 rotatedXMatrix = glm::translate(toOriginalMatrix, glm::vec3(1.0f, 0.0f, 0.0f));
     rotatedXMatrix = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     entity->getEntity("RotatedXCat")->setModelMatrix(wrapper(rotatedXMatrix,3));
 
-    entity->addEntity("RotatedYCat", RenderResource::loadEntityFromFile(path));
     glm::mat4 rotatedYMatrix = glm::translate(toOriginalMatrix, glm::vec3(1.0f, 0.0f, 0.0f));
     rotatedYMatrix = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     entity->getEntity("RotatedYCat")->setModelMatrix(wrapper(rotatedYMatrix,4));
 
-    entity->addEntity("RotatedZCat", RenderResource::loadEntityFromFile(path));
     glm::mat4 rotatedZMatrix = glm::translate(toOriginalMatrix, glm::vec3(1.0f, 0.0f, 0.0f));
     rotatedZMatrix = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     entity->getEntity("RotatedZCat")->setModelMatrix(wrapper(rotatedZMatrix,5));
 
     //先向Z轴平移1，再缩放了0.5倍然后绕Z轴旋转了30度
-    entity->addEntity("CompositeTransformCat", RenderResource::loadEntityFromFile(path));
     glm::mat4 compositeMatrix = glm::translate(toOriginalMatrix, glm::vec3(0.0f, 0.0f, 1.0f));
     compositeMatrix = glm::scale(compositeMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
     compositeMatrix = glm::rotate(compositeMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
