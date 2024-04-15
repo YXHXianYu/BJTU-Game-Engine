@@ -6,3 +6,7 @@ build/
 .vscode/
 .VSCodeCounter/
 .direnv/
+
+.idea/
+CMakeFiles/
+cmake-build-debug/

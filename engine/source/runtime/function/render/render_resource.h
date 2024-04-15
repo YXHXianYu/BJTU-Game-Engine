@@ -107,12 +107,12 @@ private:
     std::shared_ptr<RenderEntity> loadMinecraftBlocks();
     std::shared_ptr<RenderEntity> loadCharacters();
     std::shared_ptr<RenderEntity> loadPlainBlocks();
-
     
     // assignments
     std::shared_ptr<RenderEntity> load2DShape();
     std::shared_ptr<RenderEntity> loadSquareLovekdl();
     std::shared_ptr<RenderEntity> loadCubesFJQ();
+    std::shared_ptr<RenderEntity> loadCatsCJX();
 };
 
 } // namespace BJTUGE
