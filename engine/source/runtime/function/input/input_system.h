@@ -47,8 +47,8 @@ private:
 private:
     uint32_t m_game_command{0};
 
-    uint32_t m_last_cursor_x{0};
-    uint32_t m_last_cursor_y{0};
+    int32_t m_last_cursor_x{0};
+    int32_t m_last_cursor_y{0};
 
     int32_t m_cursor_delta_x{0};
     int32_t m_cursor_delta_y{0};

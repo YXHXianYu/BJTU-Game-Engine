@@ -34,8 +34,9 @@ void RenderResource::initialize() {
     m_render_entities["model"] = std::make_shared<RenderEntity>();
     m_render_entities["model"]->addEntity("characters", loadCharacters());
 
-    m_render_entities["assignment"] = std::make_shared<RenderEntity>();
-    m_render_entities["assignment"]->addEntity("drj", loadSquareLovekdl());
+    m_render_entities["assignments"] = std::make_shared<RenderEntity>();
+    m_render_entities["assignments"]->addEntity("drj", loadSquareLovekdl());
+    m_render_entities["assignments"]->addEntity("fjq", loadCubesFJQ());
 
     // m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
@@ -240,60 +241,6 @@ void RenderResource::loadLightingCubeToResource() {
     m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 0.8f, 0.6f));
 }
 
-// drj
-std::shared_ptr<RenderEntity> RenderResource::load2DShape() {
-    auto entity = std::make_shared<RenderEntity>();
-
-    std::vector<Vertex> square = {
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, 1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   // 第一个三角形
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, -1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第二个三角形
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{1.5f, -1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第三个三角形，稍微向外凸起
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-1.5f, 1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-2, 0, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第四个三角形，稍微向外凹陷
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, -2.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第五个三角形，形成一个尖角
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, 2.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}  // 第六个三角形，形成一个尖角
-    };
-
-    entity->addMesh("square", std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(square, std::vector<uint32_t>{}, std::vector<std::string>{})));
-    return entity;
-}
-
-// drj
-std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
-    auto entity = std::make_shared<RenderEntity>();
-    entity->addEntity("origin", load2DShape());
-    entity->addEntity("scale", load2DShape());
-    entity->addEntity("reflect", load2DShape());
-    entity->addEntity("shear", load2DShape());
-    entity->addEntity("rotate", load2DShape());
-    entity->addEntity("translate", load2DShape());
-    entity->addEntity("combine", load2DShape());
-    entity->setModelMatrix(
-        glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 8.0f, -10.0f)));
-
-    entity->get("translate")->setModelMatrix(
-        glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(4.0f,0.0f,0.0f)), glm::vec3(0.0f, 3.0f, 0.0f)));
-    entity->get("rotate")->setModelMatrix(
-        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(8.0f,0.0f,0.0f)), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-    entity->get("scale")->setModelMatrix(
-        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(12.0f,0.0f,0.0f)), glm::vec3(0.5f, 0.5f, 0.5f)));
-    entity->get("reflect")->setModelMatrix(
-        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(16.0f,0.0f,0.0f)), glm::vec3(-1.0f, 1.0f, 1.0f)));
-    
-    float shearX = 1.0f;  // X轴切变量
-    float shearY = 0.5f;  // Y轴切变量
-    glm::mat4 shearMatrix = glm::mat4(1.0f);
-    shearMatrix[1][0] = shearX;  
-    shearMatrix[0][1] = shearY; 
-    entity->get("shear")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(20.0f,0.0f,0.0f)) * shearMatrix);
-    
-    glm::mat4 rotateMat = glm::rotate(glm::mat4(1.0f), glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    glm::mat4 translateMat = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 scaleMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
-    entity->get("combine")->setModelMatrix(translateMat * glm::translate(rotateMat, glm::vec3(21.0f, -12.0f, 0.0f)) * scaleMat);
-    
-    return entity;
-}
-
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
     std::vector<Vertex> cube = {
         Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
@@ -385,6 +332,108 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     }
 
     return f_entity;
+}
+  
+
+// drj
+std::shared_ptr<RenderEntity> RenderResource::load2DShape() {
+    auto entity = std::make_shared<RenderEntity>();
+
+    std::vector<Vertex> square = {
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, 1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   // 第一个三角形
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, -1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第二个三角形
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{1.5f, -1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第三个三角形，稍微向外凸起
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-1.5f, 1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-2, 0, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第四个三角形，稍微向外凹陷
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, -2.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第五个三角形，形成一个尖角
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, 2.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}  // 第六个三角形，形成一个尖角
+    };
+
+    entity->addMesh("square", std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(square, std::vector<uint32_t>{}, std::vector<std::string>{})));
+    return entity;
+}
+
+// drj
+std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
+    auto entity = std::make_shared<RenderEntity>();
+    entity->addEntity("origin", load2DShape());
+    entity->addEntity("scale", load2DShape());
+    entity->addEntity("reflect", load2DShape());
+    entity->addEntity("shear", load2DShape());
+    entity->addEntity("rotate", load2DShape());
+    entity->addEntity("translate", load2DShape());
+    entity->addEntity("combine", load2DShape());
+    entity->setModelMatrix(
+        glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 8.0f, -10.0f)));
+
+    entity->get("translate")->setModelMatrix(
+        glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(4.0f,0.0f,0.0f)), glm::vec3(0.0f, 3.0f, 0.0f)));
+    entity->get("rotate")->setModelMatrix(
+        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(8.0f,0.0f,0.0f)), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+    entity->get("scale")->setModelMatrix(
+        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(12.0f,0.0f,0.0f)), glm::vec3(0.5f, 0.5f, 0.5f)));
+    entity->get("reflect")->setModelMatrix(
+        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(16.0f,0.0f,0.0f)), glm::vec3(-1.0f, 1.0f, 1.0f)));
+    
+    float shearX = 1.0f;  // X轴切变量
+    float shearY = 0.5f;  // Y轴切变量
+    glm::mat4 shearMatrix = glm::mat4(1.0f);
+    shearMatrix[1][0] = shearX;  
+    shearMatrix[0][1] = shearY; 
+    entity->get("shear")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(20.0f,0.0f,0.0f)) * shearMatrix);
+    
+    glm::mat4 rotateMat = glm::rotate(glm::mat4(1.0f), glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 translateMat = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 scaleMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+    entity->get("combine")->setModelMatrix(translateMat * glm::translate(rotateMat, glm::vec3(21.0f, -12.0f, 0.0f)) * scaleMat);
+    
+    return entity;
+}
+
+std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
+    auto entity = std::make_shared<RenderEntity>();
+
+    float initialX = -10.0f;
+    float initialY = 3.0f;
+    float initialZ = -10.0f;
+    float deltaX = 3.0f;
+
+    auto path = "./asset/models/cube/cube.obj";
+
+    entity->addEntity("OriginalCube", RenderResource::loadEntityFromFile(path));
+    entity->getEntity("OriginalCube")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ)));
+
+    entity->addEntity("ScaledCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 scaledMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + deltaX, initialY, initialZ));
+    scaledMatrix = glm::scale(scaledMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+    entity->getEntity("ScaledCube")->setModelMatrix(scaledMatrix);
+
+    entity->addEntity("TranslatedCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 translatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 2 * deltaX, initialY, initialZ));
+    translatedMatrix = glm::translate(translatedMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("TranslatedCube")->setModelMatrix(translatedMatrix);
+
+    entity->addEntity("RotatedXCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedXMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 3 * deltaX, initialY, initialZ));
+    rotatedXMatrix = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    entity->getEntity("RotatedXCube")->setModelMatrix(rotatedXMatrix);
+
+    entity->addEntity("RotatedYCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedYMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 4 * deltaX, initialY, initialZ));
+    rotatedYMatrix = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("RotatedYCube")->setModelMatrix(rotatedYMatrix);
+
+    entity->addEntity("RotatedZCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 rotatedZMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 5 * deltaX, initialY, initialZ));
+    rotatedZMatrix = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    entity->getEntity("RotatedZCube")->setModelMatrix(rotatedZMatrix);
+
+    entity->addEntity("CompositeTransformCube", RenderResource::loadEntityFromFile(path));
+    glm::mat4 compositeMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 6 * deltaX, initialY, initialZ));
+    compositeMatrix = glm::scale(compositeMatrix, glm::vec3(0.75f, 0.75f, 0.75f));
+    compositeMatrix = glm::rotate(compositeMatrix, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("CompositeTransformCube")->setModelMatrix(compositeMatrix);
+
+    return entity;
 }
 
 } // namespace BJTUGE

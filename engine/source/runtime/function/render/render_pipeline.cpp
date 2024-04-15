@@ -126,7 +126,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
 
-        resource->getEntity("assignment")->draw(shader, resource);
+        resource->getEntity("assignments")->draw(shader, resource);
     }
 }
 
