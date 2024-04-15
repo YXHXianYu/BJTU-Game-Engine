@@ -117,7 +117,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
-    //draw sol
+    //draw cat
     auto shader = m_render_shaders["depth"];
 
     shader->use();
@@ -126,7 +126,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
                         static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
     shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
 
-    resource->getEntity("spheres")->draw(shader, resource);
+    resource->getEntity("Cats")->draw(shader, resource);
 }
 
 void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
