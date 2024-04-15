@@ -35,8 +35,8 @@ void RenderResource::initialize() {
     m_render_entities["model"]->addEntity("characters", loadCharacters());
 
 
-    m_render_entities["cubes"] = std::make_shared<RenderEntity>();
-    m_render_entities["cubes"]->addEntity("cubes", loadCubes());
+    m_render_entities["assignments"] = std::make_shared<RenderEntity>();
+    m_render_entities["assignments"]->addEntity("cubes", loadCubesFJQ());
 
     // m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
@@ -333,7 +333,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     return f_entity;
 }
 
-std::shared_ptr<RenderEntity> RenderResource::loadCubes() {
+std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = -10.0f;

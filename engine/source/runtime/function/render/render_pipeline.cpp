@@ -117,16 +117,17 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
+    {
+        auto shader = m_render_shaders["depth"];
 
-    auto shader = m_render_shaders["depth"];
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
 
-    shader->use();
-    shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
-    shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                        static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-    shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
-
-    resource->getEntity("cubes")->draw(shader, resource);
+        resource->getEntity("assignments")->draw(shader, resource);
+    }
 
 }
 
