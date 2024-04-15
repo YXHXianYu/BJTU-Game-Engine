@@ -334,28 +334,56 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
 std::shared_ptr<RenderEntity> RenderResource::loadSpheres(){
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = -10.0f;
+    float initialX = 10.0f;
     float initialY = 3.0f;
-    float initialZ = -10.0f;
+    float initialZ = 0.0f;
     float deltaX = 3.0f;
 
     auto path = "./asset/models/sol/sol.obj";
 
+
+    // === Add by YXHXianYu (BEGIN) ===
+    // 这里的entity实际上是一个树形结构，所以对根节点调整了缩放，相当于所有子节点全部都会被一起缩放
+    // 这里，我们通过一个wrapper，减少代码复杂度（比如按照fjq原本的写法，每个变换都要写一个glm::translate，麻烦死了
+    
+    const auto scale_coef = 0.00005f;
+    const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
+    
+    auto wrapper = [&](glm::mat4 transform, float delta) {
+        return glm::translate(glm::mat4(1.0f), glm::vec3(initialX + delta * deltaX, initialY, initialZ)) * transform * normalize_scale;
+    };
+    // === Add by YXHXianYu (END) ===
+
+
     entity->addEntity("OriginalSphere", RenderResource::loadEntityFromFile(path));
     //平移移到初始位置
-    entity->getEntity("OriginalSphere")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ)));
+    entity->getEntity("OriginalSphere")->setModelMatrix(wrapper(glm::mat4(1.0f), 0));
+
+    // ===== 接下来我只给个示例，只改scaled和translated，其他你自己写吧 =====
+
+    // entity->addEntity("ScaledSphere", RenderResource::loadEntityFromFile(path));
+    // //缩放0.5倍
+    // glm::mat4 scaledMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + deltaX, initialY, initialZ));
+    // scaledMatrix = glm::scale(scaledMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+    // entity->getEntity("ScaledSphere")->setModelMatrix(scaledMatrix);
+
+    // entity->addEntity("TranslatedSphere", RenderResource::loadEntityFromFile(path));
+    // //先平移了 (0.0f, 1.0f, 0.0f) 然后沿 X 轴方向平移了 deltaX
+    // glm::mat4 translatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 2 * deltaX, initialY, initialZ));
+    // translatedMatrix = glm::translate(translatedMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
+    // entity->getEntity("TranslatedSphere")->setModelMatrix(translatedMatrix);
 
     entity->addEntity("ScaledSphere", RenderResource::loadEntityFromFile(path));
     //缩放0.5倍
-    glm::mat4 scaledMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + deltaX, initialY, initialZ));
-    scaledMatrix = glm::scale(scaledMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
-    entity->getEntity("ScaledSphere")->setModelMatrix(scaledMatrix);
+    glm::mat4 scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+    entity->getEntity("ScaledSphere")->setModelMatrix(wrapper(scaledMatrix, 1));
 
     entity->addEntity("TranslatedSphere", RenderResource::loadEntityFromFile(path));
     //先平移了 (0.0f, 1.0f, 0.0f) 然后沿 X 轴方向平移了 deltaX
-    glm::mat4 translatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 2 * deltaX, initialY, initialZ));
-    translatedMatrix = glm::translate(translatedMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
-    entity->getEntity("TranslatedSphere")->setModelMatrix(translatedMatrix);
+    glm::mat4 translatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("TranslatedSphere")->setModelMatrix(wrapper(translatedMatrix, 2));
+
+    // ===== 下面的代码我都没改过 =====
 
     //分别围绕 X、Y、Z 轴旋转了45度
     entity->addEntity("RotatedXSphere", RenderResource::loadEntityFromFile(path));
