@@ -3,6 +3,8 @@
 #include "runtime/function/render/render_shader.h"
 #include "runtime/function/render/render_mesh_base.h"
 
+#include <iostream>
+
 namespace BJTUGE {
 
 void RenderEntity::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) {
@@ -12,6 +14,20 @@ void RenderEntity::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Re
     }
     for (auto& [key, render_entity] : m_render_entities) {
         render_entity->draw(shader, resource, model);
+    }
+}
+
+void RenderEntity::output(uint32_t level) const {
+    for (auto& [key, render_mesh] : m_render_meshes) {
+        for(int j = 0; j < level; j++) std::cout << "  ";
+        std::cout << "mesh: " << key << std::endl;
+    }
+    for (auto& [key, render_entity] : m_render_entities) {
+        for(int j = 0; j < level; j++) std::cout << "  ";
+        std::cout << "entity: " << key << std::endl;
+
+        render_entity->output(level + 1);
+
     }
 }
 

@@ -45,6 +45,9 @@ public:
     // draw
     void draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model = glm::mat4(1.0f));
 
+    // output
+    void output(uint32_t level = 0) const;
+
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderMeshBase>> m_render_meshes;
     std::unordered_map<std::string, std::shared_ptr<RenderEntity>>   m_render_entities;

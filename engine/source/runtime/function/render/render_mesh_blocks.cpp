@@ -85,7 +85,7 @@ void RenderMeshBlocks::draw(std::shared_ptr<RenderShader> shader, std::shared_pt
         assert(m_cube.size() * sizeof(Vertex) / sizeof(float) == 192);
     }
 
-    resource->getTexture("minecraft_texture")->use(shader, "u_texture", 0);
+    resource->getTexture("minecraft_texture")->use(shader, "u_block_texture", 0);
 
     glBindVertexArray(m_vao);
     glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, m_blocks.size());

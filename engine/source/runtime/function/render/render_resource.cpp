@@ -152,7 +152,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
                 for (uint32_t i = 0; i <= level; i++) {
                     std::cout << " ";
                 }
-                std::cout << "  => " << name << std::endl;
+                std::cout << "  Mesh => " << name << std::endl;
             }
 
             if (entity->hasMesh(name)) {
@@ -411,35 +411,42 @@ std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
 
     auto path = "./asset/models/cube/cube.obj";
 
-    entity->addEntity("OriginalCube", RenderResource::loadEntityFromFile(path));
+    auto model = RenderResource::loadEntityFromFile(path);
+    auto model_wrapper = [&]() {
+        auto model_entity = std::make_shared<RenderEntity>();
+        model_entity->addEntity("cube", model);
+        return model_entity;
+    };
+
+    entity->addEntity("OriginalCube", model_wrapper());
     entity->getEntity("OriginalCube")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ)));
 
-    entity->addEntity("ScaledCube", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("ScaledCube", model_wrapper());
     glm::mat4 scaledMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + deltaX, initialY, initialZ));
     scaledMatrix = glm::scale(scaledMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
     entity->getEntity("ScaledCube")->setModelMatrix(scaledMatrix);
 
-    entity->addEntity("TranslatedCube", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("TranslatedCube", model_wrapper());
     glm::mat4 translatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 2 * deltaX, initialY, initialZ));
     translatedMatrix = glm::translate(translatedMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
     entity->getEntity("TranslatedCube")->setModelMatrix(translatedMatrix);
 
-    entity->addEntity("RotatedXCube", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("RotatedXCube", model_wrapper());
     glm::mat4 rotatedXMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 3 * deltaX, initialY, initialZ));
     rotatedXMatrix = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     entity->getEntity("RotatedXCube")->setModelMatrix(rotatedXMatrix);
 
-    entity->addEntity("RotatedYCube", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("RotatedYCube", model_wrapper());
     glm::mat4 rotatedYMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 4 * deltaX, initialY, initialZ));
     rotatedYMatrix = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     entity->getEntity("RotatedYCube")->setModelMatrix(rotatedYMatrix);
 
-    entity->addEntity("RotatedZCube", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("RotatedZCube", model_wrapper());
     glm::mat4 rotatedZMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 5 * deltaX, initialY, initialZ));
     rotatedZMatrix = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     entity->getEntity("RotatedZCube")->setModelMatrix(rotatedZMatrix);
 
-    entity->addEntity("CompositeTransformCube", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("CompositeTransformCube", model_wrapper());
     glm::mat4 compositeMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 6 * deltaX, initialY, initialZ));
     compositeMatrix = glm::scale(compositeMatrix, glm::vec3(0.75f, 0.75f, 0.75f));
     compositeMatrix = glm::rotate(compositeMatrix, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -452,11 +459,18 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX(){
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = -10.0f;
-    float initialY = 6.5f;
+    float initialY = 6.0f;
     float initialZ = -10.0f;
     float deltaX = 3.0f;
 
     auto path = "./asset/models/cat/cat.obj";
+
+    auto model = RenderResource::loadEntityFromFile(path);
+    auto model_wrapper = [&]() {
+        auto model_entity = std::make_shared<RenderEntity>();
+        model_entity->addEntity("cube", model);
+        return model_entity;
+    };
 
     //定义了一个常量 scale_coef，用于指定缩放系数，这个系数用于缩放物体的大小。
     // const auto scale_coef = 0.00005f;
@@ -472,13 +486,13 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX(){
         return glm::translate(glm::mat4(1.0f), glm::vec3(initialX + delta * deltaX, initialY, initialZ)) * transform * normalize_scale;
     };
 
-    entity->addEntity("OriginalCat", RenderResource::loadEntityFromFile(path));
-    entity->addEntity("ScaledCat", RenderResource::loadEntityFromFile(path));
-    entity->addEntity("TranslatedCat", RenderResource::loadEntityFromFile(path));
-    entity->addEntity("RotatedXCat", RenderResource::loadEntityFromFile(path));
-    entity->addEntity("RotatedYCat", RenderResource::loadEntityFromFile(path));
-    entity->addEntity("RotatedZCat", RenderResource::loadEntityFromFile(path));
-    entity->addEntity("CompositeTransformCat", RenderResource::loadEntityFromFile(path));
+    entity->addEntity("OriginalCat", model_wrapper());
+    entity->addEntity("ScaledCat", model_wrapper());
+    entity->addEntity("TranslatedCat", model_wrapper());
+    entity->addEntity("RotatedXCat", model_wrapper());
+    entity->addEntity("RotatedYCat", model_wrapper());
+    entity->addEntity("RotatedZCat", model_wrapper());
+    entity->addEntity("CompositeTransformCat", model_wrapper());
 
     //平移移到初始位置，并旋转至猫猫站立
     glm::mat4 toOriginalMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));

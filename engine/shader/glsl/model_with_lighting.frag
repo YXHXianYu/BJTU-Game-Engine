@@ -16,6 +16,7 @@ struct DirLight {
     vec3 color;
 };
 
+uniform int u_texture_cnt;
 uniform sampler2D u_texture_diffuse;
 // uniform sampler2D u_texture_specular;
 
@@ -90,6 +91,11 @@ void main() {
     }
     // maybe needs to do a clamp on the light to 0.0~1.0?
 
-    vec4 tex_color = texture(u_texture_diffuse, texcoord);
+    vec4 tex_color;
+    if (u_texture_cnt == 0) {
+        tex_color = vec4(1.0);
+    } else {
+        tex_color = texture(u_texture_diffuse, texcoord);
+    }
     fragcolor = vec4(light * tex_color.rgb, 1.0);
 }

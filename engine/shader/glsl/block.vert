@@ -7,7 +7,8 @@ layout (location = 3) in float v_material_id;
 
 layout (location = 0) out vec3 normal;
 layout (location = 1) out vec2 texcoord;
-layout (location = 2) flat out int material_id;
+layout (location = 2) out vec3 frag_pos;
+layout (location = 3) flat out int material_id;
 
 uniform mat4 u_model;
 uniform mat4 u_view_projection;
@@ -28,7 +29,8 @@ void main() {
 
     gl_Position =  u_view_projection * u_model * vec4(pos, 1.0);
 
-    normal = vec3(u_cube[id + 3], u_cube[id + 4], u_cube[id + 5]);
+    frag_pos = (u_model * vec4(pos, 1.0)).xyz;
+    normal = normalize(vec3(u_cube[id + 3], u_cube[id + 4], u_cube[id + 5]));
     texcoord = vec2(u_cube[id + 6], u_cube[id + 7]);
     material_id = int(v_material_id);
 }
