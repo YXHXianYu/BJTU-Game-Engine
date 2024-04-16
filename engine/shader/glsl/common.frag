@@ -41,6 +41,8 @@ uniform vec3 u_cam_pos;
 
 uniform float u_time;
 
+uniform int u_render_by_depth;
+
 vec3 calc_dirlight(DirLight light) {
     // ambient
     float ambient_strength = 0.1;
@@ -53,11 +55,11 @@ vec3 calc_dirlight(DirLight light) {
     vec3 diffuse = diff * light.color;
 
     // specular
-    float specular_strength = 0.5;
+    float specular_strength = 0.4;
     vec3 cam_dir = normalize(u_cam_pos - frag_pos);
     vec3 reflect_dir = reflect(-light_dir, normal);
 
-    float specular = pow(max(dot(cam_dir, reflect_dir), 0.0), 32); // TODO: add shininess to texture
+    float specular = pow(max(dot(cam_dir, reflect_dir), 0.0), 128); // TODO: add shininess to texture
 
     vec3 res = ambient + diffuse + specular;
 
@@ -93,6 +95,15 @@ vec3 calc_spotlight(SpotLight light) {
 }
 
 void main() {
+
+    if (u_render_by_depth == 1) {
+
+        float v = pow(1.0 - gl_FragCoord.z, 1.0 / 2.0);
+        fragcolor = vec4(vec3(v), 1.0);
+
+        return;
+    }
+
     vec3 light = vec3(0.0);
     for (int i = 0; i < u_spotlights_cnt; i++) {
         light += calc_spotlight(u_spotlights[i]);
@@ -115,5 +126,5 @@ void main() {
     }
 #endif
 
-    fragcolor = vec4(light * tex_color.rgb, 1.0);
+    fragcolor = vec4(light * tex_color.rgb, tex_color.a);
 }

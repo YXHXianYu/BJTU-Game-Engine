@@ -30,6 +30,8 @@ private:
     bool use_ortho{true};
 
     bool render_assignments{true};
+
+    bool render_by_depth{false};
 };
 
 } // namespace BJTUGE

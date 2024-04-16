@@ -58,6 +58,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
         shader->setUniform("u_cam_pos", camera->getPosition());
+        shader->setUniform("u_render_by_depth", render_by_depth);
 
         uint32_t i = 0;
         for (const auto& [key, spot_light] : resource->getSpotLights()) {
@@ -113,6 +114,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
         shader->setUniform("u_cam_pos", camera->getPosition());
+        shader->setUniform("u_render_by_depth", render_by_depth);
 
         uint32_t i = 0;
         for (const auto& [key, spot_light] : resource->getSpotLights()) {
@@ -159,6 +161,12 @@ void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> 
         use_ortho = true;
     } else {
         use_ortho = false;
+    }
+
+    if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_BY_DEPTH)) {
+        render_by_depth = true;
+    } else {
+        render_by_depth = false;
     }
 
     draw(resource, camera);
