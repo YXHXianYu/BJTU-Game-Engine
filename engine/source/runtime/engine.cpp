@@ -8,6 +8,8 @@
 #include "runtime/function/render/render_system.h"
 #include "runtime/function/window/window_system.h"
 
+#include "runtime/core/utils.h"
+
 namespace BJTUGE {
 
 void BJTUEngine::startEngine() {
@@ -20,7 +22,12 @@ void BJTUEngine::shutdownEngine() {
 
 void BJTUEngine::run() {
     while (!g_runtime_global_context.m_window_system->windowShouldClose()) {
-        tick(10);
+
+        g_runtime_global_context.last_time = g_runtime_global_context.cur_time;
+        g_runtime_global_context.cur_time = getCurrentTimeMillis();
+        uint64_t delta = g_runtime_global_context.cur_time - g_runtime_global_context.last_time;
+
+        tick(delta);
     }
 }
 
