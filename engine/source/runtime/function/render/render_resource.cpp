@@ -31,18 +31,15 @@ namespace BJTUGE {
 
 void RenderResource::initialize() {
 
-    m_render_entities["model"] = std::make_shared<RenderEntity>();
-    m_render_entities["model"]->addEntity("characters", loadCharacters());
+    m_render_entities["characters"] = loadCharacters();
 
     m_render_entities["assignments"] = loadAssignments();
 
-    // m_render_entities["minecraft_blocks"]  = loadMinecraftBlocks();
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
 
     m_render_minecraft_blocks_manager = std::make_shared<RenderMinecraftBlocksManager>();
     m_render_minecraft_blocks_manager->initialize();
-
-    addEntity("minecraft_blocks", m_render_minecraft_blocks_manager->getEntity());
+    m_render_entities["minecraft_blocks"] = m_render_minecraft_blocks_manager->getEntity();
 
     loadLightingCubeToResource();
 }
@@ -347,12 +344,12 @@ std::shared_ptr<RenderEntity> RenderResource::load2DShape() {
     auto entity = std::make_shared<RenderEntity>();
 
     std::vector<Vertex> square = {
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, 1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},   // 第一个三角形
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, -1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第二个三角形
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{1.5f, -1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第三个三角形，稍微向外凸起
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-1.5f, 1.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第四个三角形，稍微向外凹陷
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, -2.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, // 第五个三角形，形成一个尖角
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}, Vertex{0.0f, 2.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}  // 第六个三角形，形成一个尖角
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, 1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},   // 第一个三角形
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, -1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第二个三角形
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{1.5f, -1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第三个三角形，稍微向外凸起
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-1.5f, 1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第四个三角形，稍微向外凹陷
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, -2.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第五个三角形，形成一个尖角
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, 2.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}  // 第六个三角形，形成一个尖角
     };
 
     const float coef = 0.5f;

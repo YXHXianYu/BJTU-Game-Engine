@@ -49,8 +49,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     }
 
     // draw characters
-    // 注意这里的判断是反着来的()
-    if (!render_character) {
+    if (render_character || render_assignments) {
         auto shader = m_render_shaders["model"];
 
         shader->use();
@@ -78,11 +77,16 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         }
         shader->setUniform("u_dirlights_cnt", i);
 
-        resource->getEntity("model")->draw(shader, resource);
+        if (render_character) {
+            resource->getEntity("characters")->draw(shader, resource);
+        }
+        if (render_assignments) {
+            resource->getEntity("assignments")->draw(shader, resource);
+        }
     }
 
     // draw light mesh
-    if (!render_light) {
+    if (render_light) {
         auto light_shader = m_render_shaders["light"];
         light_shader->use();
         light_shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
@@ -100,7 +104,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     }
     
     // draw minecraft blocks
-    if (!render_block) {
+    if (render_block) {
         auto shader = m_render_shaders["block"];
 
         shader->use();
@@ -130,38 +134,25 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
-
-    // render assignments
-    if(!render_assignments) {
-        // auto shader = m_render_shaders["depth"];
-        auto shader = m_render_shaders["model"];
-        shader->use();
-        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
-        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
-
-        resource->getEntity("assignments")->draw(shader, resource);
-    }
 }
 
 void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_BLOCK)) {
-        render_block = true;
-    } else {
         render_block = false;
+    } else {
+        render_block = true;
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_CHARACTER)) {
-        render_character = true;
-    } else {
         render_character = false;
+    } else {
+        render_character = true;
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_LIGHT)) {
-        render_light = true;
-    } else {
         render_light = false;
+    } else {
+        render_light = true;
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::USE_ORTHO)) {
@@ -169,6 +160,7 @@ void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> 
     } else {
         use_ortho = false;
     }
+
     draw(resource, camera);
 }
 } // namespace BJTUGE

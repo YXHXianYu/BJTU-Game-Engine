@@ -67,6 +67,11 @@ void WorldManager::tick(float delta_time) {
             remove_block(sx + 2, 1, sz + 5);
             remove_block(sx + 3, 0, sz + 5);
             remove_block(sx + 3, 1, sz + 5);
+
+            // test
+            for(uint32_t i = 0; i < static_cast<uint32_t>(BlockId::block_id_count); i++) {
+                add_block(5, 0, -10 + i, BlockId(i));
+            }
         }
     }
 
