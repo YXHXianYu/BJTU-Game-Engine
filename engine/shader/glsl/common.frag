@@ -1,5 +1,4 @@
 #ifdef BLOCK_SHADER
-
 #include "./glsl/material_id.glsl"
 
 layout (location = 0) in vec3 normal;
@@ -7,12 +6,13 @@ layout (location = 1) in vec2 texcoord;
 layout (location = 2) in vec3 frag_pos;
 layout (location = 3) flat in int material_id;
 
-#elif MODEL_SHADER
+uniform sampler3D u_block_texture;
+#endif
 
+#ifdef MODEL_SHADER
 layout (location = 0) in vec3 normal;
 layout (location = 1) in vec2 texcoord;
 layout (location = 2) in vec3 frag_pos;
-
 #endif
 
 layout(location = 0) out vec4 fragcolor;
@@ -30,8 +30,6 @@ struct DirLight {
 uniform int u_texture_cnt;
 uniform sampler2D u_texture_diffuse;
 // uniform sampler2D u_texture_specular;
-
-uniform sampler3D u_block_texture;
 
 uniform int u_spotlights_cnt;
 uniform SpotLight u_spotlights[10];
@@ -68,7 +66,7 @@ vec3 calc_dirlight(DirLight light) {
 
 vec3 calc_spotlight(SpotLight light) {
     // ambient
-    float ambient_strength = 0.1;
+    float ambient_strength = 0.4;
     vec3 ambient = ambient_strength * light.color;
 
     // diffuse
@@ -105,18 +103,16 @@ void main() {
     // maybe needs to do a clamp on the light to 0.0~1.0?
 
 #ifdef BLOCK_SHADER
-
     vec4 tex_color = texture(u_block_texture, vec3(texcoord, float(material_id) / float(MATERIAL_ID_SUM - 1)));
+#endif
 
-#elif MODEL_SHADER
-
+#ifdef MODEL_SHADER
     vec4 tex_color;
     if (u_texture_cnt == 0) {
         tex_color = vec4(1.0);
     } else {
         tex_color = texture(u_texture_diffuse, texcoord);
     }
-
 #endif
 
     fragcolor = vec4(light * tex_color.rgb, 1.0);
