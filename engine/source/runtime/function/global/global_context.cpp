@@ -6,6 +6,8 @@
 #include "runtime/function/swap/swap_context.h"
 #include "runtime/function/window/window_system.h"
 
+#include "runtime/core/utils.h"
+
 namespace BJTUGE {
 
 RuntimeGlobalContext g_runtime_global_context;
@@ -25,6 +27,9 @@ void RuntimeGlobalContext::initialize() {
 
     m_swap_context = std::make_shared<SwapContext>();
     m_swap_context->initialize();
+
+    last_time = getCurrentTimeMillis();
+    cur_time = getCurrentTimeMillis();
 }
 
 void RuntimeGlobalContext::clear() {

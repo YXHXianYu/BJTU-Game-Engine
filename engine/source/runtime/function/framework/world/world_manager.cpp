@@ -29,30 +29,44 @@ void WorldManager::tick(float delta_time) {
         static uint32_t tick_count = 0;
         tick_count += 1;
 
-        if (tick_count == 1) {
-            int len  = 20;
-            int len2 = 5;
-            for (int i = -len; i <= len; i++) {
-                for (int j = -len; j <= len; j++) {
-                    for (int k = 0; k < len2; k++) {
-                        int     h  = ((i + j + k) % 10 + 10) % 10 - 5;
-                        BlockId id = (h == 4) ? (BlockId::grass) : (h >= 0) ? (BlockId::dirt) : (BlockId::stone);
-                        std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->add_block(i, h - 5, j, id);
-                    }
-                }
-            }
-        }
 
         if (tick_count == 1) {
-            int len = 3;
+            auto add_block = [&](int x, int y, int z, BlockId id) {
+                std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->add_block(x, y, z, id);
+            };
+            auto remove_block = [&](int x, int y, int z) {
+                std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->remove_block(x, y, z);
+            };
+
+            int len = 20;
             for (int i = -len; i <= len; i++) {
                 for (int j = -len; j <= len; j++) {
-                    for (int h = 11; h <= 15; h++) {
-                        BlockId id = BlockId::grass;
-                        std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->add_block(i, h, j, id);
+                    for (int h = -10; h <= -1; h++) {
+                        BlockId id = (h == -1) ? (BlockId::grass) : (h >= -4) ? (BlockId::dirt) : (BlockId::stone);
+                        add_block(i, h, j, id);
                     }
                 }
             }
+
+            // building
+            int sx = -10; // start x
+            int sz = -10; // start z
+            for(int y = 0; y <= 3; y++) {
+                add_block(sx    , y, sz    , BlockId::oak_log);
+                add_block(sx    , y, sz + 5, BlockId::oak_log);
+                add_block(sx + 5, y, sz    , BlockId::oak_log);
+                add_block(sx + 5, y, sz + 5, BlockId::oak_log);
+
+                for(int x = sx + 1; x <= sx + 4; x++) add_block(x, y, sz, BlockId::oak_planks);
+                for(int x = sx + 1; x <= sx + 4; x++) add_block(x, y, sz + 5, BlockId::oak_planks);
+                for(int z = sz + 1; z <= sz + 4; z++) add_block(sx, y, z, BlockId::oak_planks);
+                for(int z = sz + 1; z <= sz + 4; z++) add_block(sx + 5, y, z, BlockId::oak_planks);
+            }
+
+            remove_block(sx + 2, 0, sz + 5);
+            remove_block(sx + 2, 1, sz + 5);
+            remove_block(sx + 3, 0, sz + 5);
+            remove_block(sx + 3, 1, sz + 5);
         }
     }
 
