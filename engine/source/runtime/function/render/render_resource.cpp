@@ -233,7 +233,7 @@ void RenderResource::loadLightingCubeToResource() {
     m_spot_lights["light_cube_2"] = create_light_cube(glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_spot_lights["light_cube_3"] = create_light_cube(glm::vec3(0.5f, -0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 0.8f, 0.6f));
+    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 0.8f, 0.8f));
 }
 
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {

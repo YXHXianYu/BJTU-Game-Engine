@@ -98,7 +98,7 @@ void main() {
 
     if (u_render_by_depth == 1) {
 
-        float v = pow(1.0 - gl_FragCoord.z, 1.0 / 2.0);
+        float v = pow(1.0 - gl_FragCoord.z, 1.0 / 3.0);
         fragcolor = vec4(vec3(v), 1.0);
 
         return;
