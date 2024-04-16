@@ -16,6 +16,9 @@ void InputSystem::initialize() {
     window_system->registerOnCursorPosFunc(std::bind(&InputSystem::onCursorPos, this, std::placeholders::_1, std::placeholders::_2));
     window_system->registerOnMouseButtonFunc(
         std::bind(&InputSystem::onMouseButton, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
+    m_game_command ^= (uint32_t)GameCommand::RENDER_CHARACTER; 
+    m_game_command ^= (uint32_t)GameCommand::RENDER_LIGHT; 
 }
 void InputSystem::tick() {}
 void InputSystem::clear() {
@@ -68,6 +71,10 @@ void InputSystem::onKey(int key, int scancode, int action, int mods) {
             }
             case GLFW_KEY_O: {
                 if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::USE_ORTHO; }
+                break;
+            }
+            case GLFW_KEY_P: {
+                if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::RENDER_BY_DEPTH; }
                 break;
             }
             default: {

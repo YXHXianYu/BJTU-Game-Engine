@@ -45,3 +45,4 @@ just
    *  Press `Shift + J` to control whether to render the block
    *  Press `Shift + L` to control whether to render the light mesh
    *  Press `Shift + O` to control whether to use the orthogonal projection
+   *  Press `Shift + P` to control whether to render scene by depth (z-buffer)

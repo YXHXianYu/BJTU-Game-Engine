@@ -18,13 +18,6 @@ void RenderMinecraftBlocksManager::initialize() {
     m_entity = std::make_shared<RenderEntity>();
 
     addBuffer(false);
-
-    // ===== For Test =====
-    startTransfer();
-    for (int i = 0; i < 9; i++) {
-        insert(FaceInfo{0.0f, 10.0f, i * 1.0f, 0.f, (float)(i % 9)});
-    }
-    endTransfer();
 }
 
 void RenderMinecraftBlocksManager::clear() {

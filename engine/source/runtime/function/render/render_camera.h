@@ -20,7 +20,7 @@ struct CameraCreateInfo {
     float top{10.0f};
     float buttom{-10.0f};
 
-    float move_speed{0.002f};
+    float move_speed{0.004f};
     float mouse_sensitivity{0.3f};
 };
 
