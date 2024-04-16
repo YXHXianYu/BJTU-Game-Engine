@@ -14,17 +14,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <basic_frag.h>
-#include <basic_vert.h>
 #include <block_frag.h>
 #include <block_vert.h>
-#include <depth_rendering_frag.h>
-#include <depth_rendering_vert.h>
+#include <depth_frag.h>
+#include <depth_vert.h>
 #include <light_frag.h>
 #include <model_frag.h>
 #include <model_vert.h>
-#include <model_with_lighting_frag.h>
-#include <model_with_lighting_vert.h>
 
 #include "render_pipeline.h"
 #include <iostream>
@@ -35,11 +31,10 @@ namespace BJTUGE {
 unsigned int texture1, texture2;
 
 void RenderPipeline::initialize() {
-    m_render_shaders["model"]               = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
-    m_render_shaders["depth"]               = std::make_shared<RenderShader>(DEPTH_RENDERING_VERT, DEPTH_RENDERING_FRAG);
-    m_render_shaders["block"]               = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
-    m_render_shaders["model_with_lighting"] = std::make_shared<RenderShader>(MODEL_WITH_LIGHTING_VERT, MODEL_WITH_LIGHTING_FRAG);
-    m_render_shaders["light"]               = std::make_shared<RenderShader>(MODEL_VERT, LIGHT_FRAG);
+    m_render_shaders["depth"] = std::make_shared<RenderShader>(DEPTH_VERT, DEPTH_FRAG);
+    m_render_shaders["block"] = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
+    m_render_shaders["model"] = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
+    m_render_shaders["light"] = std::make_shared<RenderShader>(MODEL_VERT, LIGHT_FRAG);
 }
 
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
@@ -56,7 +51,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     // draw characters
     // 注意这里的判断是反着来的()
     if (!render_character) {
-        auto shader = m_render_shaders["model_with_lighting"];
+        auto shader = m_render_shaders["model"];
 
         shader->use();
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
@@ -139,7 +134,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     // render assignments
     if(!render_assignments) {
         // auto shader = m_render_shaders["depth"];
-        auto shader = m_render_shaders["model_with_lighting"];
+        auto shader = m_render_shaders["model"];
         shader->use();
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
