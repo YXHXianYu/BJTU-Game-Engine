@@ -29,7 +29,7 @@ private:
     bool render_light{false};
     bool use_ortho{false};
 
-    bool render_assignment{false};
+    bool render_assignments{false};
 };
 
 } // namespace BJTUGE

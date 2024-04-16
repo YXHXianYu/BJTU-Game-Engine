@@ -113,13 +113,33 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
+        shader->setUniform("u_cam_pos", camera->getPosition());
+
+        uint32_t i = 0;
+        for (const auto& [key, spot_light] : resource->getSpotLights()) {
+            auto&& index = std::to_string(i);
+            shader->setUniform(("u_spotlights[" + index + "].pos").c_str(), spot_light->getPosition());
+            shader->setUniform(("u_spotlights[" + index + "].color").c_str(), spot_light->getColor());
+            i += 1;
+        }
+        shader->setUniform("u_spotlights_cnt", i);
+
+        i = 0;
+        for (const auto& [key, spot_light] : resource->getDirectionLights()) {
+            auto&& index = std::to_string(i);
+            shader->setUniform(("u_dirlights[" + index + "].dir").c_str(), spot_light->getDirection());
+            shader->setUniform(("u_dirlights[" + index + "].color").c_str(), spot_light->getColor());
+            i += 1;
+        }
+        shader->setUniform("u_dirlights_cnt", i);
 
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
     // render assignments
-    if(!render_assignment) {
-        auto shader = m_render_shaders["depth"];
+    if(!render_assignments) {
+        // auto shader = m_render_shaders["depth"];
+        auto shader = m_render_shaders["model_with_lighting"];
         shader->use();
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),

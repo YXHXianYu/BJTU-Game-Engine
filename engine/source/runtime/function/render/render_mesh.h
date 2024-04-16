@@ -30,6 +30,8 @@ public:
      */
     void addTexture(const std::string& path, std::shared_ptr<RenderTexture> texture, std::shared_ptr<RenderResource> resource);
 
+    void resetTexture() { m_textures.clear(); }
+
     virtual void draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) override;
 
     void setModelMatrix(const glm::mat4& model) { m_model = model; }
