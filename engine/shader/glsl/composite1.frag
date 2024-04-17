@@ -11,18 +11,15 @@ uniform sampler2D u_depth_texture;
 
 
 vec4 sky() {
-    return vec4(1.0, 0.0, 0.0, 1.0);
-    return vec4( sin(u_time)*0.5+0.5, cos(u_time)*0.5+0.5, 0.0, 1.0);
+    return vec4(0.53, 0.81, 0.92, 1.0);
 }
 
 void main() {
     float depth = texture(u_depth_texture, texcoord).r;
     vec4 color = texture(u_color_texture, texcoord).rgba;
 
-    if (depth > 0.8f) {
+    if (depth == 1.0f) {
         color = sky();
     }
     fragcolor = color;
-
-    fragcolor = vec4(vec3(depth), 1.0f);
 }

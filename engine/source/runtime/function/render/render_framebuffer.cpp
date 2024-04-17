@@ -6,6 +6,7 @@
 
 #include <glad/glad.h>
 
+#include <iostream>
 #include <cassert>
 
 namespace BJTUGE {
@@ -41,7 +42,10 @@ RenderFramebuffer::RenderFramebuffer(uint32_t width, uint32_t height) {
     // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_renderbuffer);
 
     // check
-    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Framebuffer is not complete!" << std::endl;
+        assert(false);
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // bind resize callback
@@ -84,8 +88,10 @@ void RenderFramebuffer::updateFramebufferSize(uint32_t width, uint32_t height) {
     glBindTexture(GL_TEXTURE_2D, m_depth_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
-    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Framebuffer is not complete!" << std::endl;
+        assert(false);
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
