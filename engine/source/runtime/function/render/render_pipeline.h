@@ -1,7 +1,6 @@
 #pragma once
 
 #include "runtime/function/input/input_system.h"
-#include "runtime/function/render/render_shader.h"
 
 #include <memory>
 #include <string>
@@ -11,6 +10,8 @@ namespace BJTUGE {
 
 class RenderResource;
 class RenderCamera;
+class RenderShader;
+class RenderFramebuffer;
 
 class RenderPipeline {
 
@@ -23,6 +24,8 @@ public:
 
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderShader>> m_render_shaders;
+
+    std::unordered_map<std::string, std::shared_ptr<RenderFramebuffer>> m_render_framebuffers;
 
     bool render_block{true};
     bool render_character{true};

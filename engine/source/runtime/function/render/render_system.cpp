@@ -25,6 +25,7 @@ void RenderSystem::initialize() {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glEnable(GL_TEXTURE_3D);
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
     stbi_set_flip_vertically_on_load(true);
 
     m_render_resource = std::make_shared<RenderResource>();

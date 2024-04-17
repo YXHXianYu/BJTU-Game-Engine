@@ -1,0 +1,14 @@
+#version 410 core
+
+layout (location = 0) in vec2 texcoord;
+
+layout (location = 0) out vec4 fragcolor;
+
+uniform sampler2D u_color_texture;
+uniform sampler2D u_depth_texture;
+
+void main() {
+    vec4 color = texture(u_texture, texcoord).rgba;
+    color.r = 0;
+    fragcolor = color;
+}

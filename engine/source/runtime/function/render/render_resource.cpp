@@ -41,6 +41,8 @@ void RenderResource::initialize() {
     m_render_minecraft_blocks_manager->initialize();
     m_render_entities["minecraft_blocks"] = m_render_minecraft_blocks_manager->getEntity();
 
+    m_render_entities["postprocess"] = loadPostprocessRectangle();
+
     loadLightingCubeToResource();
 }
 
@@ -327,6 +329,27 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     }
 
     return f_entity;
+}
+
+
+std::shared_ptr<RenderEntity> RenderResource::loadPostprocessRectangle() {
+    // mesh
+    std::vector<Vertex> rect = {
+        Vertex{-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        Vertex{-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+        Vertex{1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+
+        Vertex{-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        Vertex{1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+    };
+
+    auto mesh = std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(rect, std::vector<uint32_t>{}, std::vector<std::string>{}));
+
+    // entity
+    auto entity = std::make_shared<RenderEntity>();
+    entity->addMesh("rect", mesh);
+    return entity;
 }
   
 /* ===== Assignments ===== */
