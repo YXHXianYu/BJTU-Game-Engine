@@ -16,7 +16,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-// normal
+// origin
 #include <block_frag.h>
 #include <block_vert.h>
 #include <depth_frag.h>
@@ -26,7 +26,10 @@
 #include <model_vert.h>
 // postprocess
 #include <postprocess_vert.h>
+#include <composite0_frag.h>
 #include <composite1_frag.h>
+#include <composite2_frag.h>
+#include <final_frag.h>
 
 #include "render_pipeline.h"
 #include <iostream>
@@ -37,18 +40,29 @@ namespace BJTUGE {
 unsigned int texture1, texture2;
 
 void RenderPipeline::initialize() {
+    // origin
     m_render_shaders["depth"] = std::make_shared<RenderShader>(DEPTH_VERT, DEPTH_FRAG);
     m_render_shaders["block"] = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
     m_render_shaders["model"] = std::make_shared<RenderShader>(MODEL_VERT, MODEL_FRAG);
     m_render_shaders["light"] = std::make_shared<RenderShader>(MODEL_VERT, LIGHT_FRAG);
 
+    // postprocess (composite)
+    m_render_shaders["composite0"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE0_FRAG);
     m_render_shaders["composite1"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE1_FRAG);
+    m_render_shaders["composite2"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE2_FRAG);
+    m_render_shaders["final"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, FINAL_FRAG);
 
+    // framebuffer
     int width = g_runtime_global_context.m_window_system->getWidth();
     int height = g_runtime_global_context.m_window_system->getHeight();
+
     m_render_framebuffers["origin"] = std::make_shared<RenderFramebuffer>(width, height);
+    m_render_framebuffers["composite0"] = std::make_shared<RenderFramebuffer>(width, height);
+    m_render_framebuffers["composite1"] = std::make_shared<RenderFramebuffer>(width, height);
+    m_render_framebuffers["composite2"] = std::make_shared<RenderFramebuffer>(width, height);
 }
 
+// TODO: 这里可以将很多framebuffer的depth texture优化成render buffer来加速渲染
 void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     // change the position of the spot lights (should be moved to the logic in the future)
     {
@@ -60,7 +74,6 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         }
     }
 
-    // bind to origin framebuffer
     m_render_framebuffers["origin"]->bind();
 
     // draw characters
@@ -152,8 +165,25 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
-    // unbind
     m_render_framebuffers["origin"]->unbind();
+    m_render_framebuffers["composite0"]->bind();
+
+    {
+        auto shader = m_render_shaders["composite0"];
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        m_render_framebuffers["origin"]->useColorTexture(shader, "u_color_texture", 10);
+        m_render_framebuffers["origin"]->useDepthTexture(shader, "u_depth_texture", 11);
+
+        resource->getEntity("postprocess")->draw(shader, resource);
+    }
+
+    m_render_framebuffers["composite0"]->unbind();
+    m_render_framebuffers["composite1"]->bind();
 
     {
         auto shader = m_render_shaders["composite1"];
@@ -163,8 +193,44 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
-        m_render_framebuffers["origin"]->useColorTexture(shader, "u_color_texture", 10);
-        m_render_framebuffers["origin"]->useDepthTexture(shader, "u_depth_texture", 11);
+        m_render_framebuffers["composite0"]->useColorTexture(shader, "u_color_texture", 10);
+        // m_render_framebuffers["composite0"]->useDepthTexture(shader, "u_depth_texture", 11);
+
+        resource->getEntity("postprocess")->draw(shader, resource);
+    }
+
+    m_render_framebuffers["composite1"]->unbind();
+    m_render_framebuffers["composite2"]->bind();
+
+    {
+        auto shader = m_render_shaders["composite2"];
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        m_render_framebuffers["composite1"]->useColorTexture(shader, "u_color_texture", 10);
+        // m_render_framebuffers["composite1"]->useDepthTexture(shader, "u_depth_texture", 11);
+
+        resource->getEntity("postprocess")->draw(shader, resource);
+    }
+
+    m_render_framebuffers["composite2"]->unbind();
+
+    // draw to final framebuffer (default framebuffer)
+    {
+        auto shader = m_render_shaders["final"];
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        m_render_framebuffers["composite0"]->useColorTexture(shader, "u_origin_texture", 10);
+        m_render_framebuffers["composite2"]->useColorTexture(shader, "u_blur_texture", 11);
+        // m_render_framebuffers["composite0"]->useDepthTexture(shader, "u_depth_texture", ..);
+        // m_render_framebuffers["composite2"]->useDepthTexture(shader, "u_depth_texture", ..);
 
         resource->getEntity("postprocess")->draw(shader, resource);
     }
