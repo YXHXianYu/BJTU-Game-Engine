@@ -12,6 +12,7 @@ class RenderResource;
 class RenderCamera;
 class RenderShader;
 class RenderFramebuffer;
+class RenderShadowFramebuffer;
 
 class RenderPipeline {
 
@@ -20,12 +21,19 @@ public:
 
     void draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
 
+    void draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
+
     void tick(uint32_t GameCommand, std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
 
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderShader>> m_render_shaders;
 
     std::unordered_map<std::string, std::shared_ptr<RenderFramebuffer>> m_render_framebuffers;
+
+    std::shared_ptr<RenderShadowFramebuffer> m_render_shadow_framebuffer;
+
+    uint32_t shadow_map_width{1024};
+    uint32_t shadow_map_height{1024};
 
     bool render_block{true};
     bool render_character{true};

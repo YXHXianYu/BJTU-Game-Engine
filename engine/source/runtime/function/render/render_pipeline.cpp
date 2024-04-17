@@ -8,6 +8,7 @@
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_shader.h"
 #include "runtime/function/render/render_framebuffer.h"
+#include "runtime/function/render/render_shadow_framebuffer.h"
 #include "runtime/function/window/window_system.h"
 
 #include <glad/glad.h>
@@ -52,6 +53,9 @@ void RenderPipeline::initialize() {
     m_render_shaders["composite2"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE2_FRAG);
     m_render_shaders["final"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, FINAL_FRAG);
 
+    // shadow map
+    // m_render_shaders["shadow_map"] = std::make_shared<RenderShader>(...);
+
     // framebuffer
     int width = g_runtime_global_context.m_window_system->getWidth();
     int height = g_runtime_global_context.m_window_system->getHeight();
@@ -60,6 +64,9 @@ void RenderPipeline::initialize() {
     m_render_framebuffers["composite0"] = std::make_shared<RenderFramebuffer>(width, height);
     m_render_framebuffers["composite1"] = std::make_shared<RenderFramebuffer>(width, height);
     m_render_framebuffers["composite2"] = std::make_shared<RenderFramebuffer>(width, height);
+
+    // shadow map
+    m_render_shadow_framebuffer = std::make_shared<RenderShadowFramebuffer>(m_shadow_map_width, m_shadow_map_height);
 }
 
 // TODO: 这里可以将很多framebuffer的depth texture优化成render buffer来加速渲染
@@ -73,6 +80,9 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
             i += 1;
         }
     }
+
+    /* Shadow Map */
+    draw_shadow_map(resource, camera);
 
     m_render_framebuffers["origin"]->bind();
 
@@ -219,6 +229,8 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     m_render_framebuffers["composite2"]->unbind();
 
     // draw to final framebuffer (default framebuffer)
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     {
         auto shader = m_render_shaders["final"];
 
@@ -235,6 +247,18 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         resource->getEntity("postprocess")->draw(shader, resource);
     }
 
+}
+
+void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
+    glViewport(0, 0, m_shadow_map_width, m_shadow_map_height);
+    m_render_shadow_framebuffer->bind();
+
+    // auto shader = m_render_shaders["shadow_map"]; // TODO: shadow map shader
+    
+    // TODO: draw entities
+
+    m_render_shadow_framebuffer->unbind();
+    glViewport(0, 0, g_runtime_global_context.m_window_system->getWidth(), g_runtime_global_context.m_window_system->getHeight());
 }
 
 void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {

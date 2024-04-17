@@ -41,9 +41,6 @@ void RenderSystem::initialize() {
 }
 
 void RenderSystem::tick(float delta_time) {
-    // pre tick
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // input
     auto input_system = g_runtime_global_context.m_input_system;
