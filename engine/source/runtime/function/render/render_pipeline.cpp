@@ -1,4 +1,4 @@
-#include "runtime/function/render/render_pipeline.h"
+﻿#include "runtime/function/render/render_pipeline.h"
 
 #include "runtime/function/global/global_context.h"
 #include "runtime/function/render/lighting/render_spot_light.h"
@@ -31,6 +31,10 @@
 #include <composite1_frag.h>
 #include <composite2_frag.h>
 #include <final_frag.h>
+// shadow map
+#include <shadow_map_vert.h>
+#include <shadow_map_frag.h>
+#include <shadow_map_block_vert.h>
 
 #include "render_pipeline.h"
 #include <iostream>
@@ -41,6 +45,7 @@ namespace BJTUGE {
 unsigned int texture1, texture2;
 
 void RenderPipeline::initialize() {
+    // === Shaders ===
     // origin
     m_render_shaders["depth"] = std::make_shared<RenderShader>(DEPTH_VERT, DEPTH_FRAG);
     m_render_shaders["block"] = std::make_shared<RenderShader>(BLOCK_VERT, BLOCK_FRAG);
@@ -54,9 +59,10 @@ void RenderPipeline::initialize() {
     m_render_shaders["final"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, FINAL_FRAG);
 
     // shadow map
-    // m_render_shaders["shadow_map"] = std::make_shared<RenderShader>(...);
+    m_render_shaders["shadow_map"] = std::make_shared<RenderShader>(SHADOW_MAP_VERT, SHADOW_MAP_FRAG);
+    m_render_shaders["shadow_map_block"] = std::make_shared<RenderShader>(SHADOW_MAP_BLOCK_VERT, SHADOW_MAP_FRAG);
 
-    // framebuffer
+    // === framebuffer ===
     int width = g_runtime_global_context.m_window_system->getWidth();
     int height = g_runtime_global_context.m_window_system->getHeight();
 
@@ -67,6 +73,9 @@ void RenderPipeline::initialize() {
 
     // shadow map
     m_render_shadow_framebuffer = std::make_shared<RenderShadowFramebuffer>(m_shadow_map_width, m_shadow_map_height);
+
+    // === Matrix ===
+    m_light_space_matrix = getLightSpaceMatrix();
 }
 
 // TODO: 这里可以将很多framebuffer的depth texture优化成render buffer来加速渲染
@@ -97,6 +106,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
         shader->setUniform("u_cam_pos", camera->getPosition());
         shader->setUniform("u_render_by_depth", render_by_depth);
+        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
 
         uint32_t i = 0;
         for (const auto& [key, spot_light] : resource->getSpotLights()) {
@@ -115,6 +125,8 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
             i += 1;
         }
         shader->setUniform("u_dirlights_cnt", i);
+
+        m_render_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
 
         if (render_character) {
             resource->getEntity("characters")->draw(shader, resource);
@@ -153,6 +165,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
         shader->setUniform("u_cam_pos", camera->getPosition());
         shader->setUniform("u_render_by_depth", render_by_depth);
+        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
 
         uint32_t i = 0;
         for (const auto& [key, spot_light] : resource->getSpotLights()) {
@@ -171,6 +184,8 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
             i += 1;
         }
         shader->setUniform("u_dirlights_cnt", i);
+
+        m_render_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
 
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
@@ -249,14 +264,44 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 
 }
 
+glm::mat4 RenderPipeline::getLightSpaceMatrix() {
+    glm::mat4 light_projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
+    glm::mat4 light_view = glm::lookAt(glm::vec3(5.0f, 10.0f, 5.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 light_space_matrix = light_projection * light_view;
+    return light_space_matrix;
+}
+
 void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     glViewport(0, 0, m_shadow_map_width, m_shadow_map_height);
     m_render_shadow_framebuffer->bind();
+    glCullFace(GL_FRONT); // to fix peter panning
 
-    // auto shader = m_render_shaders["shadow_map"]; // TODO: shadow map shader
-    
-    // TODO: draw entities
+    {
+        auto shader = m_render_shaders["shadow_map"];
+        shader->use();
 
+        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
+
+        if (render_character) {
+            resource->getEntity("characters")->draw(shader, resource);
+        }
+        if (render_assignments) {
+            resource->getEntity("assignments")->draw(shader, resource);
+        }
+    }
+
+    {
+        auto shader = m_render_shaders["shadow_map_block"];
+        shader->use();
+
+        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
+
+        if (render_block) {
+            resource->getEntity("minecraft_blocks")->draw(shader, resource);
+        }
+    }
+
+    glCullFace(GL_BACK); // to fix peter panning
     m_render_shadow_framebuffer->unbind();
     glViewport(0, 0, g_runtime_global_context.m_window_system->getWidth(), g_runtime_global_context.m_window_system->getHeight());
 }

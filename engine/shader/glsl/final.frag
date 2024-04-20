@@ -13,5 +13,6 @@ void main() {
     vec3 origin = texture(u_origin_texture, texcoord).rgb;
     vec3 blur = texture(u_blur_texture, texcoord).rgb;
 
-    fragcolor = vec4(origin + blur, 1.0);
+    // fragcolor = vec4(origin + blur, 1.0);
+    fragcolor = vec4(origin, 1.0);
 }

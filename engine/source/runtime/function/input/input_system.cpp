@@ -16,9 +16,6 @@ void InputSystem::initialize() {
     window_system->registerOnCursorPosFunc(std::bind(&InputSystem::onCursorPos, this, std::placeholders::_1, std::placeholders::_2));
     window_system->registerOnMouseButtonFunc(
         std::bind(&InputSystem::onMouseButton, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-
-    m_game_command ^= (uint32_t)GameCommand::RENDER_CHARACTER; 
-    m_game_command ^= (uint32_t)GameCommand::RENDER_LIGHT; 
 }
 void InputSystem::tick() {}
 void InputSystem::clear() {

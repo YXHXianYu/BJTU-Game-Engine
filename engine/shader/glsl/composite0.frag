@@ -9,7 +9,6 @@ uniform float u_time;
 uniform sampler2D u_color_texture;
 uniform sampler2D u_depth_texture;
 
-
 vec4 sky() {
     return vec4(0.53, 0.81, 0.92, 1.0);
 }

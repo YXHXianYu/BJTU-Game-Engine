@@ -2,6 +2,8 @@
 
 #include "runtime/function/input/input_system.h"
 
+#include <glm/glm.hpp>
+
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -25,6 +27,8 @@ public:
 
     void tick(uint32_t GameCommand, std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
 
+    glm::mat4 getLightSpaceMatrix();
+
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderShader>> m_render_shaders;
 
@@ -32,8 +36,9 @@ private:
 
     std::shared_ptr<RenderShadowFramebuffer> m_render_shadow_framebuffer;
 
-    uint32_t shadow_map_width{1024};
-    uint32_t shadow_map_height{1024};
+    uint32_t m_shadow_map_width{2048 * 4};
+    uint32_t m_shadow_map_height{2048 * 4};
+    glm::mat4 m_light_space_matrix;
 
     bool render_block{true};
     bool render_character{true};
