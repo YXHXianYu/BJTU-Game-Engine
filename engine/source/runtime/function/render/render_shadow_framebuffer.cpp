@@ -1,9 +1,12 @@
 #include "runtime/function/render/render_shadow_framebuffer.h"
 
 #include "runtime/function/render/render_shader.h"
+#include "runtime/function/window/window_system.h"
+#include "runtime/function/global/global_context.h"
 
 #include <glad/glad.h>
 
+#include <functional>
 #include <iostream>
 #include <cassert>
 
@@ -37,6 +40,9 @@ RenderShadowFramebuffer::RenderShadowFramebuffer(uint32_t width, uint32_t height
         assert(false);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // resize update
+    // g_runtime_global_context.m_window_system->registerOnResizeFunc(std::bind(&RenderShadowFramebuffer::updateFramebufferSize, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 RenderShadowFramebuffer::~RenderShadowFramebuffer() {
@@ -60,10 +66,13 @@ void RenderShadowFramebuffer::useDepthTexture(std::shared_ptr<RenderShader> shad
 }
 
 void RenderShadowFramebuffer::updateFramebufferSize(uint32_t width, uint32_t height) {
+    m_width = width;
+    m_height = height;
+
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
 
     glBindTexture(GL_TEXTURE_2D, m_depth_texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_width, m_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer is not complete!" << std::endl;

@@ -98,6 +98,7 @@ vec3 calc_spotlight(SpotLight light, float shadow) {
 
 // === Shadow Map ===
 
+uniform int u_is_enable_shadow_map;
 uniform sampler2D u_shadow_texture;
 
 float shadow_calculate(vec4 frag_pos_light_space) {
@@ -124,7 +125,8 @@ void main() {
         return;
     }
 
-    float shadow = shadow_calculate(frag_pos_light_space);
+
+    float shadow = (u_is_enable_shadow_map > EPS ? shadow_calculate(frag_pos_light_space) : 0.0);
 
     vec3 light = vec3(0.0);
     for (int i = 0; i < u_spotlights_cnt; i++) {

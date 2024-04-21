@@ -91,7 +91,9 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     }
 
     /* Shadow Map */
-    draw_shadow_map(resource, camera);
+    if (m_is_enable_shadow_map) {
+        draw_shadow_map(resource, camera);
+    }
 
     m_render_framebuffers["origin"]->bind();
 
@@ -106,7 +108,6 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
         shader->setUniform("u_cam_pos", camera->getPosition());
         shader->setUniform("u_render_by_depth", render_by_depth);
-        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
 
         uint32_t i = 0;
         for (const auto& [key, spot_light] : resource->getSpotLights()) {
@@ -126,6 +127,9 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         }
         shader->setUniform("u_dirlights_cnt", i);
 
+        // shadow
+        shader->setUniform("u_is_enable_shadow_map", m_is_enable_shadow_map);
+        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
         m_render_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
 
         if (render_character) {
@@ -165,7 +169,6 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
         shader->setUniform("u_cam_pos", camera->getPosition());
         shader->setUniform("u_render_by_depth", render_by_depth);
-        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
 
         uint32_t i = 0;
         for (const auto& [key, spot_light] : resource->getSpotLights()) {
@@ -185,6 +188,9 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
         }
         shader->setUniform("u_dirlights_cnt", i);
 
+        // shadow
+        shader->setUniform("u_is_enable_shadow_map", m_is_enable_shadow_map);
+        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
         m_render_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
 
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
@@ -335,6 +341,12 @@ void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> 
         render_by_depth = true;
     } else {
         render_by_depth = false;
+    }
+
+    if (GameCommand & static_cast<uint32_t>(GameCommand::IS_ENABLE_SHADOW_MAP)) {
+        m_is_enable_shadow_map = true;
+    } else {
+        m_is_enable_shadow_map = false;
     }
 
     draw(resource, camera);

@@ -74,6 +74,10 @@ void InputSystem::onKey(int key, int scancode, int action, int mods) {
                 if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::RENDER_BY_DEPTH; }
                 break;
             }
+            case GLFW_KEY_B: {
+                if (mods & GLFW_MOD_SHIFT) { m_game_command ^= (uint32_t)GameCommand::IS_ENABLE_SHADOW_MAP; }
+                break;
+            }
             default: {
                 break;
             }

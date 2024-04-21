@@ -34,12 +34,6 @@ public:
     float    getAspect() const { return static_cast<float>(m_width) / static_cast<float>(m_height); }
 
     /**
-     * @brief Set the resize callback object
-     * @param callback the resize callback function, type is void(GLFWwindow*, int, int)
-     */
-    void setResizeCallback(GLFWframebuffersizefun callback);
-
-    /**
      * @brief Check if the window should close
      * @return int 1 if the window should close, 0 otherwise
      */

@@ -33,7 +33,7 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
 
     // viewport
     // glViewport(0, 0, m_width, m_height);
-    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); });
+    // glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); });
 
     // ===== Event System =====
     // initialize event system
@@ -54,17 +54,13 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
 }
 
 void WindowSystem::tick(float delta_time) {
-    glfwGetWindowSize(m_window, &m_width, &m_height);
+    // glfwGetWindowSize(m_window, &m_width, &m_height); // This command has bug in HyprLand in Linux Platform. Fk
     m_window_should_close = glfwWindowShouldClose(m_window);
 }
 
 void WindowSystem::clear() {
     glfwDestroyWindow(m_window);
     glfwTerminate();
-}
-
-void WindowSystem::setResizeCallback(GLFWframebuffersizefun callback) {
-    glfwSetFramebufferSizeCallback(m_window, callback);
 }
 
 void WindowSystem::onKeyEscape(int key, int scancode, int action, int mods) {

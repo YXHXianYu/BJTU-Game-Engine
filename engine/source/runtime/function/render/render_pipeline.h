@@ -48,6 +48,7 @@ private:
     bool render_assignments{true};
 
     bool render_by_depth{false};
+    bool m_is_enable_shadow_map{true};
 };
 
 } // namespace BJTUGE

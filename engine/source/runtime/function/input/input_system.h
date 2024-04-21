@@ -20,6 +20,7 @@ enum class GameCommand : uint32_t {
     RENDER_LIGHT     = 1U << 12,
     USE_ORTHO        = 1U << 13,
     RENDER_BY_DEPTH  = 1U << 14,
+    IS_ENABLE_SHADOW_MAP = 1U << 15,
 
     INVALID = 1U << 31,
 };
