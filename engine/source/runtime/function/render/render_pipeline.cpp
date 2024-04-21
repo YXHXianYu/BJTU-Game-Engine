@@ -344,9 +344,9 @@ void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> 
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::IS_ENABLE_SHADOW_MAP)) {
-        m_is_enable_shadow_map = true;
-    } else {
         m_is_enable_shadow_map = false;
+    } else {
+        m_is_enable_shadow_map = true;
     }
 
     draw(resource, camera);
