@@ -60,6 +60,4 @@ void main() {
         color = sky();
     }
     fragcolor = vec4(color, 1.0);
-
-    // fragcolor = vec4(getRayDirection(), 1.0);
 }
