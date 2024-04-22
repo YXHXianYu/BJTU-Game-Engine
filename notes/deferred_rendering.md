@@ -12,4 +12,6 @@
   * ![image-20240422223934387](./deferred_rendering/image-20240422223934387.png)
 * Depth（深度，通常Gbuffer中没有，但这里也记录了）
   * ![image-20240422224144865](./deferred_rendering/image-20240422224144865.png)
+* Final
+  * ![image-20240423021656468](./deferred_rendering/image-20240423021656468.png)
 
