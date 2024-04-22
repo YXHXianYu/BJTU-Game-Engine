@@ -1,8 +1,14 @@
 # BJTU-Game-Engine
 
-## 1. Render Module
+## 1. Render Pipeline
 
-### 1.1 类的结构
+* origin shader => composite0
+* composite0 => composite1 => composite2
+* composite0 + composite2 => final
+
+## 2. Render Module
+
+### 2.1 类的结构
 
 * 类的结构为如下树状结构
   * WindowSystem：管理窗口（单一）
@@ -19,7 +25,7 @@
 * 同时，所有具体的渲染的操作，都在RenderPipeline中执行
   * RenderSystem只负责调用RenderPipeline，并将RenderResource传入Pipeline
 
-### 1.2 注意事项
+### 2.2 注意事项
 
 * 类的类别
   * 注意，在Render Module中，类的初始化默认不在构造函数中实现，而在 `initialize` 函数中实现

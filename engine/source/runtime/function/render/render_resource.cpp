@@ -41,6 +41,8 @@ void RenderResource::initialize() {
     m_render_minecraft_blocks_manager->initialize();
     m_render_entities["minecraft_blocks"] = m_render_minecraft_blocks_manager->getEntity();
 
+    m_render_entities["postprocess"] = loadPostprocessRectangle();
+
     loadLightingCubeToResource();
 }
 
@@ -233,7 +235,7 @@ void RenderResource::loadLightingCubeToResource() {
     m_spot_lights["light_cube_2"] = create_light_cube(glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_spot_lights["light_cube_3"] = create_light_cube(glm::vec3(0.5f, -0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-0.5, -0.5, -0.5), glm::vec3(1.0f, 0.8f, 0.8f));
+    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-1.0, -2.0, -1.0), glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
@@ -268,10 +270,11 @@ std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
 
 std::shared_ptr<RenderEntity> RenderResource::loadCharacters() {
     auto entity = std::make_shared<RenderEntity>();
+    auto delta_height = -0.25f;
 
     entity->addEntity("aris", RenderResource::loadEntityFromFile("./asset/models/characters/aris/CH0200.fbx"));
     entity->get("aris")->setModelMatrix(
-        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(-1.0f, 0.0f, 0.0f)));
+        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(-1.0f, 0.0f, delta_height)));
     entity->get("aris")->get("CH0200")->removeEntity("bone_root");
     entity->get("aris")->get("CH0200")->removeEntity("Aris_Original_Weapon");
     entity->get("aris")->get("CH0200")->removeEntity("CH0200_SkillProp_Outline");
@@ -283,7 +286,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCharacters() {
 
     entity->addEntity("miyako", loadEntityFromFile("./asset/models/characters/miyako/CH0215.fbx"));
     entity->get("miyako")->setModelMatrix(
-        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(0.0f, 0.0f, 0.0f)));
+        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(0.0f, 0.0f, delta_height)));
     entity->get("miyako")->get("CH0215")->removeEntity("bone_root");
     entity->get("miyako")->get("CH0215")->removeEntity("CH0215_Prop_Outline");
     entity->get("miyako")->get("CH0215")->removeEntity("Miyako_Original_Weapon");
@@ -292,7 +295,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCharacters() {
 
     entity->addEntity("koharu", loadEntityFromFile("./asset/models/characters/koharu/Koharu_Original.fbx"));
     entity->get("koharu")->setModelMatrix(
-        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.0f, 0.0f, 0.0f)));
+        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.0f, 0.0f, delta_height)));
     entity->get("koharu")->get("Koharu_Original")->removeEntity("bone_root");
     entity->get("koharu")->get("Koharu_Original")->removeEntity("Koharu_Original_Book");
     entity->get("koharu")->get("Koharu_Original")->removeEntity("Koharu_Original_Grenade");
@@ -327,6 +330,27 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     }
 
     return f_entity;
+}
+
+
+std::shared_ptr<RenderEntity> RenderResource::loadPostprocessRectangle() {
+    // mesh
+    std::vector<Vertex> rect = {
+        Vertex{-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        Vertex{-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+        Vertex{1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+
+        Vertex{-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        Vertex{1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+    };
+
+    auto mesh = std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(rect, std::vector<uint32_t>{}, std::vector<std::string>{}));
+
+    // entity
+    auto entity = std::make_shared<RenderEntity>();
+    entity->addMesh("rect", mesh);
+    return entity;
 }
   
 /* ===== Assignments ===== */
