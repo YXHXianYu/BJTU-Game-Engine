@@ -15,6 +15,7 @@ class RenderCamera;
 class RenderShader;
 class RenderFramebuffer;
 class RenderShadowFramebuffer;
+class RenderGBufferFramebuffer;
 
 class RenderPipeline {
 
@@ -22,6 +23,8 @@ public:
     void initialize();
 
     void draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
+
+    void draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
 
     void draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
 
@@ -35,6 +38,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<RenderFramebuffer>> m_render_framebuffers;
 
     std::shared_ptr<RenderShadowFramebuffer> m_render_shadow_framebuffer;
+    std::shared_ptr<RenderGBufferFramebuffer> m_render_gbuffer_framebuffer;
 
     uint32_t m_shadow_map_width{2048 * 4};
     uint32_t m_shadow_map_height{2048 * 4};

@@ -102,85 +102,8 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     draw_gbuffer(resource, camera);
 
     /* Origin */
+
     m_render_framebuffers["origin"]->bind();
-
-
-    m_render_framebuffers["origin"]->unbind();
-    m_render_framebuffers["composite0"]->bind();
-
-    {
-        auto shader = m_render_shaders["composite0"];
-
-        shader->use();
-        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
-        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-
-        m_render_framebuffers["origin"]->useColorTexture(shader, "u_color_texture", 10);
-        m_render_framebuffers["origin"]->useDepthTexture(shader, "u_depth_texture", 11);
-
-        resource->getEntity("postprocess")->draw(shader, resource);
-    }
-
-    m_render_framebuffers["composite0"]->unbind();
-    m_render_framebuffers["composite1"]->bind();
-
-    {
-        auto shader = m_render_shaders["composite1"];
-
-        shader->use();
-        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
-        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-
-        m_render_framebuffers["composite0"]->useColorTexture(shader, "u_color_texture", 10);
-        // m_render_framebuffers["composite0"]->useDepthTexture(shader, "u_depth_texture", 11);
-
-        resource->getEntity("postprocess")->draw(shader, resource);
-    }
-
-    m_render_framebuffers["composite1"]->unbind();
-    m_render_framebuffers["composite2"]->bind();
-
-    {
-        auto shader = m_render_shaders["composite2"];
-
-        shader->use();
-        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
-        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-
-        m_render_framebuffers["composite1"]->useColorTexture(shader, "u_color_texture", 10);
-        // m_render_framebuffers["composite1"]->useDepthTexture(shader, "u_depth_texture", 11);
-
-        resource->getEntity("postprocess")->draw(shader, resource);
-    }
-
-    m_render_framebuffers["composite2"]->unbind();
-
-    // draw to final framebuffer (default framebuffer)
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    {
-        auto shader = m_render_shaders["final"];
-
-        shader->use();
-        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
-        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
-                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-
-        m_render_framebuffers["composite0"]->useColorTexture(shader, "u_origin_texture", 10);
-        m_render_framebuffers["composite2"]->useColorTexture(shader, "u_blur_texture", 11);
-        // m_render_framebuffers["composite0"]->useDepthTexture(shader, "u_depth_texture", ..);
-        // m_render_framebuffers["composite2"]->useDepthTexture(shader, "u_depth_texture", ..);
-
-        resource->getEntity("postprocess")->draw(shader, resource);
-    }
-
-}
-
-void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
-    m_render_gbuffer_framebuffer->bind();
 
     // draw characters
     if (render_character || render_assignments) {
@@ -280,6 +203,84 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
 
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
+
+    m_render_framebuffers["origin"]->unbind();
+    m_render_framebuffers["composite0"]->bind();
+
+    {
+        auto shader = m_render_shaders["composite0"];
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        m_render_framebuffers["origin"]->useColorTexture(shader, "u_color_texture", 10);
+        m_render_framebuffers["origin"]->useDepthTexture(shader, "u_depth_texture", 11);
+
+        resource->getEntity("postprocess")->draw(shader, resource);
+    }
+
+    m_render_framebuffers["composite0"]->unbind();
+    m_render_framebuffers["composite1"]->bind();
+
+    {
+        auto shader = m_render_shaders["composite1"];
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        m_render_framebuffers["composite0"]->useColorTexture(shader, "u_color_texture", 10);
+        // m_render_framebuffers["composite0"]->useDepthTexture(shader, "u_depth_texture", 11);
+
+        resource->getEntity("postprocess")->draw(shader, resource);
+    }
+
+    m_render_framebuffers["composite1"]->unbind();
+    m_render_framebuffers["composite2"]->bind();
+
+    {
+        auto shader = m_render_shaders["composite2"];
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        m_render_framebuffers["composite1"]->useColorTexture(shader, "u_color_texture", 10);
+        // m_render_framebuffers["composite1"]->useDepthTexture(shader, "u_depth_texture", 11);
+
+        resource->getEntity("postprocess")->draw(shader, resource);
+    }
+
+    m_render_framebuffers["composite2"]->unbind();
+
+    // draw to final framebuffer (default framebuffer)
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    {
+        auto shader = m_render_shaders["final"];
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+
+        m_render_framebuffers["composite0"]->useColorTexture(shader, "u_origin_texture", 10);
+        m_render_framebuffers["composite2"]->useColorTexture(shader, "u_blur_texture", 11);
+        // m_render_framebuffers["composite0"]->useDepthTexture(shader, "u_depth_texture", ..);
+        // m_render_framebuffers["composite2"]->useDepthTexture(shader, "u_depth_texture", ..);
+
+        resource->getEntity("postprocess")->draw(shader, resource);
+    }
+
+}
+
+void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
+    m_render_gbuffer_framebuffer->bind();
+
 
 
     m_render_gbuffer_framebuffer->unbind();
