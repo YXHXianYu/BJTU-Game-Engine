@@ -47,14 +47,14 @@ private:
     uint32_t m_shadow_map_height{2048 * 4};
     glm::mat4 m_light_space_matrix;
 
-    bool render_block{true};
-    bool render_character{true};
-    bool render_light{true};
-    bool use_ortho{true};
+    bool m_render_block{true};
+    bool m_render_character{true};
+    bool m_render_light{true};
+    bool m_use_ortho{true};
 
-    bool render_assignments{false};
+    bool m_render_assignments{true};
 
-    bool render_by_depth{false};
+    bool m_render_by_depth{false};
     bool m_is_enable_shadow_map{true};
 };
 

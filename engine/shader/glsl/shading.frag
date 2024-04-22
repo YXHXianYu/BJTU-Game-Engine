@@ -12,8 +12,7 @@ uniform sampler2D u_gbuffer_color;
 uniform sampler2D u_depth_texture;
 
 uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec3 u_camera_pos;
+uniform vec3 u_camera_position;
 
 uniform int u_is_enable_depth_rendering;
 
@@ -43,7 +42,7 @@ void calc_light(
 
     // light_dir = normalize(light_dir);
     if (dot(light_dir, normal) > 0.0) {
-        vec3 cam_dir = normalize(u_camera_pos - frag_pos);
+        vec3 cam_dir = normalize(u_camera_position - frag_pos);
         vec3 reflect_dir = reflect(-light_dir, normal);
         specular = pow(max(dot(cam_dir, reflect_dir), 0.0), 64) * light_color;
     } else {

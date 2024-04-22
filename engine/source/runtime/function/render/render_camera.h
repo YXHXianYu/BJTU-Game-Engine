@@ -34,16 +34,33 @@ public:
         updateViewMatrix();
         return m_view_matrix;
     }
+    glm::mat4 getInverseViewMatrix() {
+        updateViewMatrix();
+        return m_inverse_view_matrix;
+    }
     glm::mat4 getProjectionMatrix(bool use_ortho = false) {
         updateProjectionMatrix(use_ortho);
         return m_projection_matrix;
+    }
+    glm::mat4 getInverseProjectionMatrix(bool use_ortho = false) {
+        updateProjectionMatrix(use_ortho);
+        return m_inverse_projection_matrix;
     }
     glm::mat4 getViewProjectionMatrix(bool use_ortho = false) {
         updateViewProjectionMatrix(use_ortho);
         return m_view_projection_matrix;
     }
+    glm::mat4 getInverseViewProjectionMatrix(bool use_ortho = false) {
+        updateViewProjectionMatrix(use_ortho);
+        return m_inverse_view_projection_matrix;
+    }
 
-    glm::vec3 getPosition() { return m_position; }
+    glm::vec3 getPosition() const { return m_position; }
+
+    float getNear() const { return m_near; }
+    float getFar() const { return m_far; }
+    float getFovY() const { return m_fovy; }
+    float getAspect() const { return m_aspect; }
 
     // setter
     void tick(float delta_time, uint32_t camera_movement, float mouse_x, float mouse_y);
@@ -86,10 +103,13 @@ private:
     // matrices
     bool      m_view_matrix_dirty{true};
     glm::mat4 m_view_matrix{1.0f};
+    glm::mat4 m_inverse_view_matrix{1.0f};
     bool      m_projection_matrix_dirty{true};
     glm::mat4 m_projection_matrix{1.0f};
+    glm::mat4 m_inverse_projection_matrix{1.0f};
     bool      m_view_projection_matrix_dirty{true};
     glm::mat4 m_view_projection_matrix{1.0f};
+    glm::mat4 m_inverse_view_projection_matrix{1.0f};
 
     bool current_ortho{false};
 };

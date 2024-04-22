@@ -114,18 +114,18 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
     m_gbuffer_framebuffer->bind();
 
     // draw characters
-    if (render_character || render_assignments || render_light) {
+    if (m_render_character || m_render_assignments || m_render_light) {
         auto shader = getShader("gbuffer_textured");
         shader->use();
-        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
 
-        if (render_character) {
+        if (m_render_character) {
             resource->getEntity("characters")->draw(shader, resource);
         }
-        if (render_assignments) {
+        if (m_render_assignments) {
             resource->getEntity("assignments")->draw(shader, resource);
         }
-        if (render_light) {
+        if (m_render_light) {
             for (const auto& [key, spot_light] : resource->getSpotLights()) {
                 spot_light->draw(shader, resource);
             }
@@ -133,10 +133,10 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
     }
     
     // draw minecraft blocks
-    if (render_block) {
+    if (m_render_block) {
         auto shader = getShader("gbuffer_block");
         shader->use();
-        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(use_ortho));
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
@@ -160,10 +160,10 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-        shader->setUniform("u_camera_pos", camera->getPosition());
+        shader->setUniform("u_camera_position", camera->getPosition());
 
         // settings
-        shader->setUniform("u_is_enable_depth_rendering", render_by_depth);
+        shader->setUniform("u_is_enable_depth_rendering", m_render_by_depth);
 
         // lights
         uint32_t i = 0;
@@ -208,10 +208,10 @@ void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, s
 
         shader->setUniform("u_light_space_matrix", m_light_space_matrix);
 
-        if (render_character) {
+        if (m_render_character) {
             resource->getEntity("characters")->draw(shader, resource);
         }
-        if (render_assignments) {
+        if (m_render_assignments) {
             resource->getEntity("assignments")->draw(shader, resource);
         }
     }
@@ -222,7 +222,7 @@ void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, s
 
         shader->setUniform("u_light_space_matrix", m_light_space_matrix);
 
-        if (render_block) {
+        if (m_render_block) {
             resource->getEntity("minecraft_blocks")->draw(shader, resource);
         }
     }
@@ -241,9 +241,14 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+        shader->setUniform("u_near", camera->getNear());
+        shader->setUniform("u_camera_position", camera->getPosition());
+        shader->setUniform("u_inverse_view", camera->getInverseViewMatrix());
+        shader->setUniform("u_inverse_projection", camera->getInverseProjectionMatrix(m_use_ortho));
 
         getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", 0);
         m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 1);
+        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", 2);
 
         resource->getEntity("postprocess")->draw(shader, resource);
     }
@@ -303,33 +308,33 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
 
 void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_BLOCK)) {
-        render_block = false;
+        m_render_block = false;
     } else {
-        render_block = true;
+        m_render_block = true;
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_CHARACTER)) {
-        render_character = false;
+        m_render_character = false;
     } else {
-        render_character = true;
+        m_render_character = true;
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_LIGHT)) {
-        render_light = false;
+        m_render_light = false;
     } else {
-        render_light = true;
+        m_render_light = true;
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::USE_ORTHO)) {
-        use_ortho = true;
+        m_use_ortho = true;
     } else {
-        use_ortho = false;
+        m_use_ortho = false;
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::RENDER_BY_DEPTH)) {
-        render_by_depth = true;
+        m_render_by_depth = true;
     } else {
-        render_by_depth = false;
+        m_render_by_depth = false;
     }
 
     if (GameCommand & static_cast<uint32_t>(GameCommand::IS_ENABLE_SHADOW_MAP)) {
