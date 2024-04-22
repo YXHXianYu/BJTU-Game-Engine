@@ -34,17 +34,17 @@ vec3 cloud(vec3 start_point, vec3 direction, float max_dis) {
     return SKY_COLOR + vec3(sum);
 }
 
-vec4 sky() {
-    // return vec4(cloud(..), 1.0);
-    return vec4(SKY_COLOR, 1.0);
+vec3 sky() {
+    // return cloud(..);
+    return SKY_COLOR;
 }
 
 void main() {
     float depth = texture(u_depth_texture, texcoord).r;
-    vec4 color = texture(u_color_texture, texcoord).rgba;
+    vec3 color = texture(u_color_texture, texcoord).rgb;
 
     if (depth == 1.0f) {
         color = sky();
     }
-    fragcolor = color;
+    fragcolor = vec4(color, 1.0);
 }

@@ -2,4 +2,4 @@
 
 #define MODEL_SHADER true
 
-#include "./glsl/common.vert"
+#include "./glsl/gbuffer.vert"

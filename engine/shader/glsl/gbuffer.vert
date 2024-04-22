@@ -1,11 +1,10 @@
+// Input
+
 #ifdef BLOCK_SHADER
 layout (location = 0) in float v_id;
 layout (location = 1) in vec3 v_position;
 layout (location = 2) in float v_face;
 layout (location = 3) in float v_material_id;
-
-layout (location = 3) flat out int material_id;
-uniform float u_cube[192];
 #endif
 
 #ifdef MODEL_SHADER
@@ -14,11 +13,19 @@ layout (location = 1) in vec3 v_normal;
 layout (location = 2) in vec2 v_texcoord;
 #endif
 
+// Ouput
+
 layout (location = 0) out vec3 normal;
 layout (location = 1) out vec2 texcoord;
 layout (location = 2) out vec3 frag_pos;
 
+#ifdef BLOCK_SHADER
+uniform float u_cube[192];
+layout (location = 3) flat out int material_id;
+#endif
+
 uniform mat4 u_model;
+uniform mat4 u_normal;
 uniform mat4 u_view_projection;
 
 void main() {
@@ -30,7 +37,6 @@ void main() {
         texcoord = vec2(0.0f);
         material_id = int(v_material_id);
         frag_pos = vec3(100.f);
-        frag_pos_light_space = vec4(100.0f);
         return;
     }
     
@@ -51,5 +57,6 @@ void main() {
 
     gl_Position =  u_view_projection * u_model * vec4(pos, 1.0);
     frag_pos = (u_model * vec4(pos, 1.0)).xyz;
+    normal = (u_normal * vec4(normal, 1.0)).xyz; // normal transform
 }
 

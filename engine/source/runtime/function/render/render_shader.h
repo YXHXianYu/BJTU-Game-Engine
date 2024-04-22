@@ -15,7 +15,7 @@ namespace BJTUGE {
 class RenderShader {
 
 public:
-    RenderShader(const char* vertex_shader, const char* fragment_shader);
+    RenderShader(const char* vertex_shader, const char* fragment_shader, const std::string& shader_name);
     ~RenderShader();
 
     uint32_t get() const { return m_shader_program; }
@@ -46,9 +46,9 @@ private:
     uint32_t m_shader_program;
 
     std::optional<std::string> getShaderCompileInfo(uint32_t shader);
-    void                       assertShaderCompileSuccess(uint32_t shader);
+    void                       assertShaderCompileSuccess(uint32_t shader, const std::string& shader_name);
     std::optional<std::string> getProgramCompileInfo(uint32_t program);
-    void                       assertProgramCompileSuccess(uint32_t program);
+    void                       assertProgramCompileSuccess(uint32_t program, const std::string& shader_name);
 };
 
 } // namespace BJTUGE

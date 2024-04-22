@@ -24,21 +24,24 @@ public:
 
     void draw(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
 
-    void draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
-
-    void draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
-
     void tick(uint32_t GameCommand, std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
+
+private:
+    void draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
+    void draw_shading(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
+    void draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
+    void draw_postprocess(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
 
     glm::mat4 getLightSpaceMatrix();
 
+    std::shared_ptr<RenderShader>& getShader(const char* name);
+    std::shared_ptr<RenderFramebuffer>& getFramebuffer(const char* name);
+
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderShader>> m_render_shaders;
-
     std::unordered_map<std::string, std::shared_ptr<RenderFramebuffer>> m_render_framebuffers;
-
-    std::shared_ptr<RenderShadowFramebuffer> m_render_shadow_framebuffer;
-    std::shared_ptr<RenderGBufferFramebuffer> m_render_gbuffer_framebuffer;
+    std::shared_ptr<RenderShadowFramebuffer> m_shadow_framebuffer;
+    std::shared_ptr<RenderGBufferFramebuffer> m_gbuffer_framebuffer;
 
     uint32_t m_shadow_map_width{2048 * 4};
     uint32_t m_shadow_map_height{2048 * 4};
@@ -49,7 +52,7 @@ private:
     bool render_light{true};
     bool use_ortho{true};
 
-    bool render_assignments{true};
+    bool render_assignments{false};
 
     bool render_by_depth{false};
     bool m_is_enable_shadow_map{true};

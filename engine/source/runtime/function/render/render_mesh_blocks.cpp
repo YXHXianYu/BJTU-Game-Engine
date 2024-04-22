@@ -78,7 +78,9 @@ RenderMeshBlocks::~RenderMeshBlocks() {
 }
 
 void RenderMeshBlocks::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) {
-    shader->setUniform("u_model", model * m_model);
+    model = model * m_model;
+    shader->setUniform("u_model", model);
+    shader->setUniform("u_normal", glm::transpose(glm::inverse(model)));
     if (m_shader_tag.find(shader.get()) == m_shader_tag.end()) { // 只初始化一次 u_cube
         m_shader_tag.insert(shader.get());
         shader->setUniform("u_cube", m_cube.size() * sizeof(Vertex) / sizeof(float), &m_cube[0].position.x);

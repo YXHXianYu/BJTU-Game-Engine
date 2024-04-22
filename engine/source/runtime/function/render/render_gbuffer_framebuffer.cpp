@@ -21,7 +21,7 @@ RenderGBufferFramebuffer::RenderGBufferFramebuffer(uint32_t width, uint32_t heig
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
 
     // position texture
-    glGenTexture(1, &m_gbuffer_position);
+    glGenTextures(1, &m_gbuffer_position);
     glBindTexture(GL_TEXTURE_2D, m_gbuffer_position);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -29,7 +29,7 @@ RenderGBufferFramebuffer::RenderGBufferFramebuffer(uint32_t width, uint32_t heig
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_gbuffer_position, 0);
 
     // normal texture
-    glGenTexture(1, &m_gbuffer_normal);
+    glGenTextures(1, &m_gbuffer_normal);
     glBindTexture(GL_TEXTURE_2D, m_gbuffer_normal);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -37,7 +37,7 @@ RenderGBufferFramebuffer::RenderGBufferFramebuffer(uint32_t width, uint32_t heig
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_gbuffer_normal, 0);
 
     // color (diffuse + specular) texture
-    glGenTexture(1, &m_gbuffer_color);
+    glGenTextures(1, &m_gbuffer_color);
     glBindTexture(GL_TEXTURE_2D, m_gbuffer_color);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -49,14 +49,16 @@ RenderGBufferFramebuffer::RenderGBufferFramebuffer(uint32_t width, uint32_t heig
         GL_COLOR_ATTACHMENT0,
         GL_COLOR_ATTACHMENT1,
         GL_COLOR_ATTACHMENT2,
-    }
+    };
     glDrawBuffers(3, attachments);
 
-    // depth (render buffer)
-    glGenRenderbuffers(1, &m_depth_renderbuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_depth_renderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depth_renderbuffer);
+    // depth texture
+    glGenTextures(1, &m_depth_texture);
+    glBindTexture(GL_TEXTURE_2D, m_depth_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depth_texture, 0);
 
     // check
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -75,7 +77,7 @@ RenderGBufferFramebuffer::~RenderGBufferFramebuffer() {
 
 void RenderGBufferFramebuffer::bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
-    // glClearColor(...);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -102,6 +104,12 @@ void RenderGBufferFramebuffer::useGBufferColor(std::shared_ptr<RenderShader> sha
     shader->setUniform(name.c_str(), texture_id);
 }
 
+void RenderGBufferFramebuffer::useDepthTexture(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const {
+    glActiveTexture(GL_TEXTURE0 + texture_id);
+    glBindTexture(GL_TEXTURE_2D, m_depth_texture);
+    shader->setUniform(name.c_str(), texture_id);
+}
+
 void RenderGBufferFramebuffer::updateFramebufferSize(uint32_t width, uint32_t height) {
     m_width = width;
     m_height = height;
@@ -117,8 +125,8 @@ void RenderGBufferFramebuffer::updateFramebufferSize(uint32_t width, uint32_t he
     glBindTexture(GL_TEXTURE_2D, m_gbuffer_color);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-    glBindRenderbuffer(GL_RENDERBUFFER, m_depth_renderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    glBindTexture(GL_TEXTURE_2D, m_depth_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer is not complete!" << std::endl;

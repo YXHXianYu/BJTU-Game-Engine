@@ -2,4 +2,4 @@
 
 #define MODEL_SHADER true
 
-#include "./glsl/common.frag"
+#include "./glsl/gbuffer.frag"

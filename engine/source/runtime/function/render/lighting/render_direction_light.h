@@ -26,9 +26,9 @@ public:
     std::shared_ptr<RenderMeshBase> getMesh(const std::string& key) const { return m_render_meshes.at(key); }
     bool                            hasMesh(const std::string& key) const { return m_render_meshes.find(key) != m_render_meshes.end(); }
 
-    // position
+    // direction
     void setDirection(const glm::vec3& direction) {
-        m_direction = glm::normalize(direction);
+        m_direction = glm::normalize(direction); // we have normalized the direction of lights
         m_model     = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), m_direction, glm::vec3(0.0f, 1.0f, 1.0f));
     }
     glm::vec3 getDirection() const { return m_direction; }
