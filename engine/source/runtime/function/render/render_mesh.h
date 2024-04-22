@@ -36,12 +36,15 @@ public:
 
     void setModelMatrix(const glm::mat4& model) { m_model = model; }
 
+    void setDiffuseColor(const glm::vec3& color) { m_diffuse_color = color; }
+
     void output() const;
 
 private:
     std::vector<Vertex>      m_vertices;
     std::vector<uint32_t>    m_indices;
     std::vector<std::string> m_textures;
+    glm::vec3                m_diffuse_color{1.0f};
     glm::mat4                m_model{1.0f};
 
     uint32_t m_vao{0};

@@ -2,4 +2,4 @@
 
 #define BLOCK_SHADER true
 
-#include "./glsl/common.frag"
+#include "./glsl/gbuffer.vert"

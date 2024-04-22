@@ -2,7 +2,7 @@
 
 * record some problem when I construct this project
 
-## 1. CMake
+## State 1
 
 * fking cpp
 
@@ -88,3 +88,43 @@
   * 正确：![image-20240307194856641](./config_notes/image-20240307194856641.png)
 * Solution
   * 改成GL_LINK_STATUS就行了
+
+## State 2
+
+### 2.1 延迟渲染
+
+* 盲写写了半天，把前向渲染一口气改成延迟渲染了
+* Problem
+  * preview：恐怖游戏渲染
+  * ![image-20240422223611841](./config_notes/image-20240422223611841.png)
+* Cause1
+  * 修改架构的时候，location没对上，一个3写成4了
+    * 错误：![image-20240422224958148](./config_notes/image-20240422224958148.png)
+    * 正确：![image-20240422225007403](./config_notes/image-20240422225007403.png)
+* Cause2
+  * 人物模型进行Model Transform的时候，法线也需要一起变换！我忘记了，所以人物的法线是错误的（导致人物很暗）
+  * 错误效果
+    * ![image-20240422231048211](./config_notes/image-20240422231048211.png)
+    * 可以注意到，背后旋转的方块，法线的方向是错误的！
+  * 法线是向量，不能和点一样直接进行Model Transform，需要得到一个特殊的Normal Transform
+  * $M_{normal} = ((M_{model})^{-1})^{T}$ 
+  * 证明见我笔记
+  * 正确效果
+    * ![image-20240422235054359](./config_notes/image-20240422235054359.png)
+* Cause3
+  * 画面偏灰（对比度低）
+  * 错误效果
+    * ![image-20240423000942111](./config_notes/image-20240423000942111.png)
+  * 原因是ambient没有考虑kd，所以相当于整个画面变亮，对比度就降低了，画面不好看
+  * 正确效果
+    * ![image-20240423002521650](./config_notes/image-20240423002521650.png)
+* Cause4
+  * 高光怎么写都不对
+  * 后面法线高光好像反了，你要和光源站在一起，才会出现高光
+  * 后面发现GLSL的 **reflect** 函数的第一个参数是 表面点指向光源向量的 **负值**！
+    * 竟然是负值！
+  * 改完就对了，找了好久
+* Cause...
+  * 一大票错误
+* 终于！
+  * 

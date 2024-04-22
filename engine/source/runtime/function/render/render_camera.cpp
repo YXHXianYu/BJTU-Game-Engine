@@ -67,6 +67,7 @@ void RenderCamera::updateVector() {
 void RenderCamera::updateViewMatrix() {
     if (m_view_matrix_dirty) {
         m_view_matrix                  = glm::lookAt(m_position, m_position + m_front, m_up);
+        m_inverse_view_matrix          = glm::inverse(m_view_matrix);
         m_view_matrix_dirty            = false;
         m_view_projection_matrix_dirty = true;
     }
@@ -83,6 +84,7 @@ void RenderCamera::updateProjectionMatrix(bool use_ortho) {
         } else {
             m_projection_matrix = glm::perspective(glm::radians(m_fovy), m_aspect, m_near, m_far);
         }
+        m_inverse_projection_matrix = glm::inverse(m_projection_matrix);
         m_projection_matrix_dirty      = false;
         m_view_projection_matrix_dirty = true;
     }
@@ -93,8 +95,9 @@ void RenderCamera::updateViewProjectionMatrix(bool use_ortho) {
 
     updateProjectionMatrix(use_ortho);
     if (m_view_projection_matrix_dirty) {
-        m_view_projection_matrix       = m_projection_matrix * m_view_matrix;
-        m_view_projection_matrix_dirty = false;
+        m_view_projection_matrix         = m_projection_matrix * m_view_matrix;
+        m_inverse_view_projection_matrix = glm::inverse(m_view_projection_matrix);
+        m_view_projection_matrix_dirty   = false;
     }
 }
 
