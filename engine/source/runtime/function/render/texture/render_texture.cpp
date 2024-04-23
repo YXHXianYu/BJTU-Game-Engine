@@ -1,4 +1,4 @@
-﻿#include "runtime/function/render/render_texture.h"
+﻿#include "runtime/function/render/texture/render_texture.h"
 
 #include "runtime/function/render/render_shader.h"
 
@@ -10,25 +10,17 @@
 namespace BJTUGE {
 
 const std::unordered_map<TextureType, std::string> RenderTexture::TEXTURE_TYPE_TO_STRING = {
-    {TextureType::DEFAULT, "default"},
-    {TextureType::DIFFUSE, "diffuse"},
-    {TextureType::SPECULAR, "specular"},
-    {TextureType::NORMAL, "normal"},
-    {TextureType::HEIGHT, "height"},
+    {TextureType::DEFAULT, "default"}, {TextureType::DIFFUSE, "diffuse"}, {TextureType::SPECULAR, "specular"},
+    {TextureType::NORMAL, "normal"},   {TextureType::HEIGHT, "height"},
 };
 
 const std::unordered_map<std::string, TextureType> RenderTexture::STRING_TO_TEXTURE_TYPE = {
-    {"default", TextureType::DEFAULT},
-    {"diffuse", TextureType::DIFFUSE},
-    {"specular", TextureType::SPECULAR},
-    {"normal", TextureType::NORMAL},
-    {"height", TextureType::HEIGHT},
+    {"default", TextureType::DEFAULT}, {"diffuse", TextureType::DIFFUSE}, {"specular", TextureType::SPECULAR},
+    {"normal", TextureType::NORMAL},   {"height", TextureType::HEIGHT},
 };
 
-RenderTexture::RenderTexture(const std::string& picture_path, const std::string& type, const std::string& sample_method):
-    m_type(STRING_TO_TEXTURE_TYPE.at(type)),
-    m_sample_method(sample_method)
-{
+RenderTexture::RenderTexture(const std::string& picture_path, const std::string& type, const std::string& sample_method)
+    : m_type(STRING_TO_TEXTURE_TYPE.at(type)), m_sample_method(sample_method) {
 
     unsigned char* data = stbi_load(picture_path.c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0);
     if (data == nullptr) { data = stbi_load(("./bin/" + picture_path).c_str(), (int*)&m_width, (int*)&m_height, (int*)&m_channels, 0); }

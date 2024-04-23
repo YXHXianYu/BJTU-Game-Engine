@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+#include <cstdint>
+
 namespace BJTUGE {
 
 struct FaceInfo;
@@ -13,6 +15,7 @@ class RemoveBlockSwapEvent : public SwapEvent {
 
 public:
     RemoveBlockSwapEvent(const glm::vec3& pos, float face) : m_pos(pos), m_face(face) {}
+    RemoveBlockSwapEvent(const glm::vec3& pos, uint32_t face) : m_pos(pos), m_face(face) {}
     ~RemoveBlockSwapEvent() override {}
 
     void update(RenderResource* render_resource) override;

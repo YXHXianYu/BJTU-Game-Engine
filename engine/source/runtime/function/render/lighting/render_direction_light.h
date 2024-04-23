@@ -19,7 +19,8 @@ class RenderDirectionLight {
 
 public:
     RenderDirectionLight() = default;
-    RenderDirectionLight(const std::unordered_map<std::string, std::shared_ptr<RenderMeshBase>>& render_meshes) : m_render_meshes(render_meshes){};
+    RenderDirectionLight(const std::unordered_map<std::string, std::shared_ptr<RenderMeshBase>>& render_meshes)
+        : m_render_meshes(render_meshes){};
 
     // mesh
     void addMesh(const std::string& key, const std::shared_ptr<RenderMeshBase>& render_mesh) { m_render_meshes[key] = render_mesh; }

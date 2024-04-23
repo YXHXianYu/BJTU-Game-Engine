@@ -1,18 +1,18 @@
 #include "runtime/function/render/render_framebuffer.h"
 
 #include "runtime/function/global/global_context.h"
-#include "runtime/function/window/window_system.h"
 #include "runtime/function/render/render_shader.h"
+#include "runtime/function/window/window_system.h"
 
 #include <glad/glad.h>
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 namespace BJTUGE {
 
 RenderFramebuffer::RenderFramebuffer(uint32_t width, uint32_t height) {
-    m_width = width;
+    m_width  = width;
     m_height = height;
 
     // frame buffer
@@ -95,4 +95,4 @@ void RenderFramebuffer::updateFramebufferSize(uint32_t width, uint32_t height) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-}
+} // namespace BJTUGE

@@ -3,8 +3,6 @@
 #include "runtime/core/hash_func.h"
 #include "runtime/function/render/minecraft_blocks/gmemory_buffer.h"
 
-#include <glm/fwd.hpp>
-
 #include <cstdint>
 #include <memory>
 #include <unordered_map>

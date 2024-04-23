@@ -1,9 +1,9 @@
 #include "runtime/function/render/minecraft_blocks/render_minecraft_blocks_manager.h"
 
-#include "runtime/function/render/face_info.h"
+#include "runtime/function/render/mesh/face_info.h"
+#include "runtime/function/render/mesh/render_mesh_blocks.h"
 #include "runtime/function/render/minecraft_blocks/gmemory_buffer.h"
 #include "runtime/function/render/render_entity.h"
-#include "runtime/function/render/render_mesh_blocks.h"
 
 #include <glm/glm.hpp>
 

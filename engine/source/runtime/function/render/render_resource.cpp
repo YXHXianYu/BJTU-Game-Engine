@@ -1,20 +1,19 @@
 ﻿#include "runtime/function/render/render_resource.h"
 
-#include "runtime/function/render/face_info.h"
 #include "runtime/function/render/lighting/render_direction_light.h"
 #include "runtime/function/render/lighting/render_spot_light.h"
+#include "runtime/function/render/mesh/face_info.h"
+#include "runtime/function/render/mesh/render_mesh.h"
+#include "runtime/function/render/mesh/render_mesh_blocks.h"
 #include "runtime/function/render/minecraft_blocks/gmemory_buffer.h"
 #include "runtime/function/render/minecraft_blocks/render_minecraft_blocks_manager.h"
 #include "runtime/function/render/render_entity.h"
-#include "runtime/function/render/render_mesh.h"
-#include "runtime/function/render/render_mesh_blocks.h"
-#include "runtime/function/render/render_texture.h"
-#include "runtime/function/render/render_texture_3d.h"
-#include "runtime/function/render/render_texture_base.h"
+#include "runtime/function/render/texture/render_texture.h"
+#include "runtime/function/render/texture/render_texture_3d.h"
+#include "runtime/function/render/texture/render_texture_base.h"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
-#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -236,7 +235,8 @@ void RenderResource::loadLightingCubeToResource() {
     auto create_direction_light_cube = [&](glm::vec3 direction, glm::vec3 color) -> std::shared_ptr<RenderDirectionLight> {
         auto direction_light_cube = std::make_shared<RenderDirectionLight>();
         direction_light_cube->addMesh("cube", loadCubeMesh());
-        std::dynamic_pointer_cast<RenderMesh>(direction_light_cube->getMesh("cube"))->setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)));
+        std::dynamic_pointer_cast<RenderMesh>(direction_light_cube->getMesh("cube"))
+            ->setModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(0.1f)));
         std::dynamic_pointer_cast<RenderMesh>(direction_light_cube->getMesh("cube"))->setDiffuseColor(color);
         direction_light_cube->setDirection(direction);
         direction_light_cube->setColor(color);
@@ -256,37 +256,37 @@ std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
         Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f},   Vertex{0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f},
         Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f},  Vertex{-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f},
 
-        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},  Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
-        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
-        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},   Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+        Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},   Vertex{0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
+        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},     Vertex{0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
+        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},    Vertex{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
 
         Vertex{-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f},
         Vertex{-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f},
         Vertex{-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f},  Vertex{-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f},
 
-        Vertex{0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f},  Vertex{0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-        Vertex{0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f},   Vertex{0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f},     Vertex{0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+        Vertex{0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f},   Vertex{0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+        Vertex{0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f},    Vertex{0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f},
 
         Vertex{-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f}, Vertex{0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f},
         Vertex{0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f},   Vertex{0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f},
         Vertex{-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f},  Vertex{-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f},
 
-        Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f},  Vertex{0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f},
-        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f},    Vertex{0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f},   Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0},
+        Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f},   Vertex{0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f},
+        Vertex{0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f},     Vertex{0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f},    Vertex{-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0},
     };
 
     return std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(cube, std::vector<uint32_t>{}, std::vector<std::string>{}));
 }
 
 std::shared_ptr<RenderEntity> RenderResource::loadCharacters() {
-    auto entity = std::make_shared<RenderEntity>();
+    auto entity       = std::make_shared<RenderEntity>();
     auto delta_height = -0.25f;
 
     entity->addEntity("aris", RenderResource::loadEntityFromFile("./asset/models/characters/aris/CH0200.fbx"));
-    entity->get("aris")->setModelMatrix(
-        glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(-1.0f, 0.0f, delta_height)));
+    entity->get("aris")->setModelMatrix(glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+                                                       glm::vec3(-1.0f, 0.0f, delta_height)));
     entity->get("aris")->get("CH0200")->removeEntity("bone_root");
     entity->get("aris")->get("CH0200")->removeEntity("Aris_Original_Weapon");
     entity->get("aris")->get("CH0200")->removeEntity("CH0200_SkillProp_Outline");
@@ -344,16 +344,13 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     return f_entity;
 }
 
-
 std::shared_ptr<RenderEntity> RenderResource::loadPostprocessRectangle() {
     // mesh
     std::vector<Vertex> rect = {
-        Vertex{-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-        Vertex{-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+        Vertex{-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
         Vertex{1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
 
-        Vertex{-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-        Vertex{1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+        Vertex{-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f}, Vertex{1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
         Vertex{1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f},
     };
 
@@ -364,7 +361,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadPostprocessRectangle() {
     entity->addMesh("rect", mesh);
     return entity;
 }
-  
+
 /* ===== Assignments ===== */
 
 std::shared_ptr<RenderEntity> RenderResource::loadAssignments() {
@@ -380,20 +377,27 @@ std::shared_ptr<RenderEntity> RenderResource::load2DShape() {
     auto entity = std::make_shared<RenderEntity>();
 
     std::vector<Vertex> square = {
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, 1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},   // 第一个三角形
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, -1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第二个三角形
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{1.5f, -1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第三个三角形，稍微向外凸起
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-1.5f, 1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第四个三角形，稍微向外凹陷
-        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, -2.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第五个三角形，形成一个尖角
-        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, 2.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}  // 第六个三角形，形成一个尖角
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{0.0f, 1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第一个三角形
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},  Vertex{0.0f, -1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第二个三角形
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},  Vertex{1.5f, -1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+        Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第三个三角形，稍微向外凸起
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-1.5f, 1.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+        Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第四个三角形，稍微向外凹陷
+        Vertex{-1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, Vertex{-2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+        Vertex{0.0f, -2.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, // 第五个三角形，形成一个尖角
+        Vertex{1.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},  Vertex{2.0f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+        Vertex{0.0f, 2.0f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f} // 第六个三角形，形成一个尖角
     };
 
     const float coef = 0.5f;
-    for (auto& vertex: square) {
+    for (auto& vertex : square) {
         vertex.position *= coef;
     }
 
-    entity->addMesh("square", std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(square, std::vector<uint32_t>{}, std::vector<std::string>{})));
+    entity->addMesh(
+        "square", std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(square, std::vector<uint32_t>{}, std::vector<std::string>{})));
     return entity;
 }
 
@@ -407,30 +411,29 @@ std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
     entity->addEntity("rotate", load2DShape());
     entity->addEntity("translate", load2DShape());
     entity->addEntity("combine", load2DShape());
-    entity->setModelMatrix(
-        glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 11.0f, -10.0f)));
+    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 11.0f, -10.0f)));
 
-    entity->get("translate")->setModelMatrix(
-        glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f,0.0f,0.0f)), glm::vec3(0.0f, 3.0f, 0.0f)));
+    entity->get("translate")
+        ->setModelMatrix(glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f)), glm::vec3(0.0f, 3.0f, 0.0f)));
     entity->get("rotate")->setModelMatrix(
-        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(6.0f,0.0f,0.0f)), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+        glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(6.0f, 0.0f, 0.0f)), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
     entity->get("scale")->setModelMatrix(
-        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(9.0f,0.0f,0.0f)), glm::vec3(0.5f, 0.5f, 0.5f)));
+        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(9.0f, 0.0f, 0.0f)), glm::vec3(0.5f, 0.5f, 0.5f)));
     entity->get("reflect")->setModelMatrix(
-        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(12.0f,0.0f,0.0f)), glm::vec3(-1.0f, 1.0f, 1.0f)));
-    
-    float shearX = 1.0f;  // X轴切变量
-    float shearY = 0.5f;  // Y轴切变量
+        glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(12.0f, 0.0f, 0.0f)), glm::vec3(-1.0f, 1.0f, 1.0f)));
+
+    float     shearX      = 1.0f; // X轴切变量
+    float     shearY      = 0.5f; // Y轴切变量
     glm::mat4 shearMatrix = glm::mat4(1.0f);
-    shearMatrix[1][0] = shearX;  
-    shearMatrix[0][1] = shearY; 
-    entity->get("shear")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(15.0f,0.0f,0.0f)) * shearMatrix);
-    
-    glm::mat4 rotateMat = glm::rotate(glm::mat4(1.0f), glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    shearMatrix[1][0]     = shearX;
+    shearMatrix[0][1]     = shearY;
+    entity->get("shear")->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(15.0f, 0.0f, 0.0f)) * shearMatrix);
+
+    glm::mat4 rotateMat    = glm::rotate(glm::mat4(1.0f), glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     glm::mat4 translateMat = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 scaleMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+    glm::mat4 scaleMat     = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
     entity->get("combine")->setModelMatrix(translateMat * glm::translate(rotateMat, glm::vec3(15.6f, -9.0f, 0.0f)) * scaleMat);
-    
+
     return entity;
 }
 
@@ -440,11 +443,11 @@ std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
     float initialX = -10.0f;
     float initialY = 3.0f;
     float initialZ = -10.0f;
-    float deltaX = 3.0f;
+    float deltaX   = 3.0f;
 
     auto path = "./asset/models/cube/cube.obj";
 
-    auto model = RenderResource::loadEntityFromFile(path);
+    auto model         = RenderResource::loadEntityFromFile(path);
     auto model_wrapper = [&]() {
         auto model_entity = std::make_shared<RenderEntity>();
         model_entity->addEntity("cube", model);
@@ -456,66 +459,66 @@ std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
 
     entity->addEntity("ScaledCube", model_wrapper());
     glm::mat4 scaledMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + deltaX, initialY, initialZ));
-    scaledMatrix = glm::scale(scaledMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+    scaledMatrix           = glm::scale(scaledMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
     entity->getEntity("ScaledCube")->setModelMatrix(scaledMatrix);
 
     entity->addEntity("TranslatedCube", model_wrapper());
     glm::mat4 translatedMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 2 * deltaX, initialY, initialZ));
-    translatedMatrix = glm::translate(translatedMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
+    translatedMatrix           = glm::translate(translatedMatrix, glm::vec3(0.0f, 1.0f, 0.0f));
     entity->getEntity("TranslatedCube")->setModelMatrix(translatedMatrix);
 
     entity->addEntity("RotatedXCube", model_wrapper());
     glm::mat4 rotatedXMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 3 * deltaX, initialY, initialZ));
-    rotatedXMatrix = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    rotatedXMatrix           = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     entity->getEntity("RotatedXCube")->setModelMatrix(rotatedXMatrix);
 
     entity->addEntity("RotatedYCube", model_wrapper());
     glm::mat4 rotatedYMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 4 * deltaX, initialY, initialZ));
-    rotatedYMatrix = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    rotatedYMatrix           = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     entity->getEntity("RotatedYCube")->setModelMatrix(rotatedYMatrix);
 
     entity->addEntity("RotatedZCube", model_wrapper());
     glm::mat4 rotatedZMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 5 * deltaX, initialY, initialZ));
-    rotatedZMatrix = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    rotatedZMatrix           = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     entity->getEntity("RotatedZCube")->setModelMatrix(rotatedZMatrix);
 
     entity->addEntity("CompositeTransformCube", model_wrapper());
     glm::mat4 compositeMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(initialX + 6 * deltaX, initialY, initialZ));
-    compositeMatrix = glm::scale(compositeMatrix, glm::vec3(0.75f, 0.75f, 0.75f));
-    compositeMatrix = glm::rotate(compositeMatrix, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    compositeMatrix           = glm::scale(compositeMatrix, glm::vec3(0.75f, 0.75f, 0.75f));
+    compositeMatrix           = glm::rotate(compositeMatrix, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     entity->getEntity("CompositeTransformCube")->setModelMatrix(compositeMatrix);
 
     return entity;
 }
 
-std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX(){
+std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = -10.0f;
     float initialY = 6.0f;
     float initialZ = -10.0f;
-    float deltaX = 3.0f;
+    float deltaX   = 3.0f;
 
     auto path = "./asset/models/cat/cat.obj";
 
-    auto model = RenderResource::loadEntityFromFile(path);
+    auto model         = RenderResource::loadEntityFromFile(path);
     auto model_wrapper = [&]() {
         auto model_entity = std::make_shared<RenderEntity>();
         model_entity->addEntity("cube", model);
         return model_entity;
     };
 
-    //定义了一个常量 scale_coef，用于指定缩放系数，这个系数用于缩放物体的大小。
-    // const auto scale_coef = 0.00005f;
+    // 定义了一个常量 scale_coef，用于指定缩放系数，这个系数用于缩放物体的大小。
+    //  const auto scale_coef = 0.00005f;
     const auto scale_coef = 0.05f;
     // 使用缩放系数创建了一个缩放矩阵 normalize_scale，该矩阵将会用于标准化物体的大小。
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
-    
-    //定义了一个 lambda 函数 wrapper，该函数接受两个参数：一个变换矩阵 transform 和一个浮点数 delta
+
+    // 定义了一个 lambda 函数 wrapper，该函数接受两个参数：一个变换矩阵 transform 和一个浮点数 delta
     auto wrapper = [&](glm::mat4 transform, float delta) {
-        //使用了 glm::translate 函数创建了一个平移矩阵，将物体沿着 X 轴方向移动。
-        //然后将该平移矩阵与输入的变换矩阵 transform 相乘，以将之前的变换应用到这个平移后的位置上。
-        //最后，将标准化缩放矩阵 normalize_scale 与之前的结果相乘，以确保物体的大小被缩放到合适的范围内。
+        // 使用了 glm::translate 函数创建了一个平移矩阵，将物体沿着 X 轴方向移动。
+        // 然后将该平移矩阵与输入的变换矩阵 transform 相乘，以将之前的变换应用到这个平移后的位置上。
+        // 最后，将标准化缩放矩阵 normalize_scale 与之前的结果相乘，以确保物体的大小被缩放到合适的范围内。
         return glm::translate(glm::mat4(1.0f), glm::vec3(initialX + delta * deltaX, initialY, initialZ)) * transform * normalize_scale;
     };
 
@@ -527,34 +530,34 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX(){
     entity->addEntity("RotatedZCat", model_wrapper());
     entity->addEntity("CompositeTransformCat", model_wrapper());
 
-    //平移移到初始位置，并旋转至猫猫站立
+    // 平移移到初始位置，并旋转至猫猫站立
     glm::mat4 toOriginalMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    entity->getEntity("OriginalCat")->setModelMatrix(wrapper(toOriginalMatrix,0));
+    entity->getEntity("OriginalCat")->setModelMatrix(wrapper(toOriginalMatrix, 0));
 
-    glm::mat4 scaledMatrix = glm::scale(toOriginalMatrix,glm::vec3(0.5f, 0.5f, 0.5f));
+    glm::mat4 scaledMatrix = glm::scale(toOriginalMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
     entity->getEntity("ScaledCat")->setModelMatrix(wrapper(scaledMatrix, 1));
 
     glm::mat4 translatedMatrix = glm::translate(toOriginalMatrix, glm::vec3(0.0f, 0.0f, 1.0f));
     entity->getEntity("TranslatedCat")->setModelMatrix(wrapper(translatedMatrix, 2));
 
-    //分别围绕 X、Y、Z 轴旋转了45度
+    // 分别围绕 X、Y、Z 轴旋转了45度
     glm::mat4 rotatedXMatrix = glm::translate(toOriginalMatrix, glm::vec3(1.0f, 0.0f, 0.0f));
-    rotatedXMatrix = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    entity->getEntity("RotatedXCat")->setModelMatrix(wrapper(rotatedXMatrix,3));
+    rotatedXMatrix           = glm::rotate(rotatedXMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    entity->getEntity("RotatedXCat")->setModelMatrix(wrapper(rotatedXMatrix, 3));
 
     glm::mat4 rotatedYMatrix = glm::translate(toOriginalMatrix, glm::vec3(1.0f, 0.0f, 0.0f));
-    rotatedYMatrix = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    entity->getEntity("RotatedYCat")->setModelMatrix(wrapper(rotatedYMatrix,4));
+    rotatedYMatrix           = glm::rotate(rotatedYMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("RotatedYCat")->setModelMatrix(wrapper(rotatedYMatrix, 4));
 
     glm::mat4 rotatedZMatrix = glm::translate(toOriginalMatrix, glm::vec3(1.0f, 0.0f, 0.0f));
-    rotatedZMatrix = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    entity->getEntity("RotatedZCat")->setModelMatrix(wrapper(rotatedZMatrix,5));
+    rotatedZMatrix           = glm::rotate(rotatedZMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    entity->getEntity("RotatedZCat")->setModelMatrix(wrapper(rotatedZMatrix, 5));
 
-    //先向Z轴平移1，再缩放了0.5倍然后绕Z轴旋转了30度
+    // 先向Z轴平移1，再缩放了0.5倍然后绕Z轴旋转了30度
     glm::mat4 compositeMatrix = glm::translate(toOriginalMatrix, glm::vec3(0.0f, 0.0f, 1.0f));
-    compositeMatrix = glm::scale(compositeMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
-    compositeMatrix = glm::rotate(compositeMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    entity->getEntity("CompositeTransformCat")->setModelMatrix(wrapper(compositeMatrix,6));
+    compositeMatrix           = glm::scale(compositeMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+    compositeMatrix           = glm::rotate(compositeMatrix, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    entity->getEntity("CompositeTransformCat")->setModelMatrix(wrapper(compositeMatrix, 6));
 
     return entity;
 }

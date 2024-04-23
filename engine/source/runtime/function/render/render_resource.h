@@ -1,6 +1,5 @@
 #pragma once
 
-#include "runtime/function/render/lighting/render_direction_light.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -10,9 +9,10 @@ namespace BJTUGE {
 
 class RenderMesh;
 class RenderEntity;
-class RenderSpotLight;
 class RenderTextureBase;
 class RenderMeshBase;
+class RenderSpotLight;
+class RenderDirectionLight;
 class RenderMinecraftBlocksManager;
 
 class RenderResource {
@@ -85,7 +85,6 @@ public:
      *        `startTransfer` and `endTransfer` must be called before and after adding or removing blocks.
      */
     std::shared_ptr<RenderMinecraftBlocksManager> getRenderMinecraftBlocksManager() { return m_render_minecraft_blocks_manager; }
-    
 
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderSpotLight>>      m_spot_lights;
@@ -94,8 +93,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>>    m_render_textures;
 
     std::shared_ptr<RenderMinecraftBlocksManager> m_render_minecraft_blocks_manager{nullptr};
-
-    
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
@@ -110,7 +107,7 @@ private:
     std::shared_ptr<RenderEntity> loadCharacters();
     std::shared_ptr<RenderEntity> loadPlainBlocks();
     std::shared_ptr<RenderEntity> loadPostprocessRectangle();
-    
+
     // assignments
     std::shared_ptr<RenderEntity> loadAssignments();
     std::shared_ptr<RenderEntity> load2DShape();
