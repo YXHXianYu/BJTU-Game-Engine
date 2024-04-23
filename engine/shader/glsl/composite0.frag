@@ -21,6 +21,18 @@ uniform mat4 u_inverse_projection;
 
 uniform vec3 u_sunlight_direction;
 
+// === Utils ===
+
+vec3 getRayDirection() { // fking difficult but charming
+    vec3 ndc;
+    ndc.xy = texcoord * 2.0 - 1.0;
+    ndc.z = 2.0 * gl_FragCoord.z - 1.0;
+    vec4 camera_space_position = u_inverse_projection * vec4(ndc, 1.0);
+    camera_space_position /= camera_space_position.w;
+    vec4 world_space_position = u_inverse_view * camera_space_position;
+    return normalize(world_space_position.xyz - u_camera_position);
+}
+
 // === 3D Noise ===
 
 // refer to: http://blog.hakugyokurou.net/?p=1630
@@ -55,112 +67,102 @@ float noise_hash(in vec3 x) {
                    mix( hash(n+170.0), hash(n+171.0),f.x),f.y),f.z);
 }
 
-// === Cloud ===
+// === Cloud & Fog ===
 
-#define CLOUD_MIN (100.0)
-#define CLOUD_MAX (120.0)
+#define CLOUD_MIN   (40.0)
 #define SKY_COLOR (vec3(0.47, 0.66, 1.00))
+// #define FOG_COLOR (vec3(0.38, 0.47, 0.59))
+#define FOG_COLOR (SKY_COLOR)
+
 
 #define CLOUD_NOISE_SPEED (vec2(5.0, 0.0))
-#define CLOUD_NOISE_SCALE (0.01) // 值越小，单朵云越大，但视野内云越少
-#define CLOUD_NOISE_THRESHOLD (0.4)
-#define CLOUD_STEP_LENGTH (1.0)
-#define CLOUD_SAMPLE_TIMES (32)
+#define CLOUD_NOISE_SCALE (0.02) // 值越小，单朵云越大，但视野内云越少
+#define CLOUD_NOISE_THRESHOLD (0.5)
+#define CLOUD_STEP_LENGTH (0.5)
+#define CLOUD_SAMPLE_TIMES (128)
 
-// TODO: fix z of cloud
-float get_cloud_noise(vec3 cloud_pos, float cloud_min, float cloud_max) {
-    float v = 1.0;
-    if (cloud_pos.y < cloud_min - 1.0) {
-        return 0.0;
-    } else if (cloud_pos.y < cloud_min) {
-        v = 1.0 - smoothstep(0.0, 1.0, cloud_min - cloud_pos.y);
-    } else if (cloud_pos.y <= cloud_max) {
-        v = 1.0;
-    } else if (cloud_pos.y <= cloud_max + 1.0) {
-        v = 1.0 - smoothstep(0.0, 1.0, min(cloud_pos.y - cloud_max, 1.0));
-    } else { // cloud_pos.y > cloud_max + 1.0
-        return 0.0;
-    }
-
-    cloud_pos.xy += u_time * CLOUD_NOISE_SPEED;
-    cloud_pos *= CLOUD_NOISE_SCALE;
-
-    float n = noise_hash(cloud_pos) * 0.5;
-    cloud_pos *= 3.0; n += noise_hash(cloud_pos) * 0.25;
-    cloud_pos *= 3.01; n += noise_hash(cloud_pos) * 0.125;
-    cloud_pos *= 3.02; n += noise_hash(cloud_pos) * 0.0625;
-
-    n *= v;
-
-    return max(n - CLOUD_NOISE_THRESHOLD, 0.0) * (1.0 / (1.0 - CLOUD_NOISE_THRESHOLD));
+float get_cloud_noise(vec3 p) {
+    vec3 q = p - vec3(0.0, 0.0, 1.0) * u_time;
+    q *= CLOUD_NOISE_SCALE;
+    float f;
+    f  = 0.50000 * noise_hash(q); q = q*2.02;    
+    f += 0.25000 * noise_hash(q); q = q*2.03;    
+    f += 0.12500 * noise_hash(q); q = q*2.01;    
+    f += 0.06250 * noise_hash(q); q = q*2.02;    
+    f += 0.03125 * noise_hash(q);
+    f = clamp(1.0 * f + min(p.y / 40.0, 0.5) - 0.5, 0.0, 1.0);
+    f = max(f - CLOUD_NOISE_THRESHOLD, 0.0) * (1.0 / (1.0 - CLOUD_NOISE_THRESHOLD));
+    return f;
 }
 
-vec4 cloud_lighting(vec4 sum, float density, float diff) {  
-    vec4 color = vec4(mix(vec3(1.0,0.95,0.9), vec3(0.3,0.315,0.325), density), density);
-    vec3 lighting = mix(vec3(0.7,0.75,0.8), vec3(1.8, 1.6, 1.35), diff);
-    color.xyz *= lighting;
-    color.a *= 0.4;
-    color.rgb *= color.a;
-    return sum + color * (1.0 - sum.a);
-}
-
-vec3 cloud(vec3 start_point, vec3 direction, float max_dis_2) {
+// refer to iq's Clouds: https://www.shadertoy.com/view/XslGRr
+vec3 cloud(vec3 start_point, vec3 direction) {
     if (direction.y <= 0.1) return SKY_COLOR;
-    vec3 test_point = start_point;
 
+    vec4 sum = vec4(0.0);
     float cloud_min = start_point.y + CLOUD_MIN * (exp(-start_point.y / CLOUD_MIN) + 0.001);
-    float cloud_max = cloud_min + (CLOUD_MAX - CLOUD_MIN);
-    float pre_step = max(0.0, (cloud_min - start_point.y) / direction.y - 0.5);
-    test_point += direction * pre_step;
+    float t = 0.05 + ((cloud_min - start_point.y) / direction.y);
 
-    float frag_distance_2 = abs2(test_point, start_point);
-    if (frag_distance_2 > max_dis_2) return SKY_COLOR;
+    for (int i = 0; i < 64; i++) {
+        vec3 pos = start_point + direction * t;
 
-    direction *= CLOUD_STEP_LENGTH / direction.y;
-    vec4 final = vec4(0.0);
+        if (sum.a > 0.99) break;
 
-    float fadeout = (1.0 - clamp(length(test_point) / 100000.0, 0.0, 1.0));
+        float density = get_cloud_noise(vec3(pos.x, pos.y - cloud_min + CLOUD_MIN, pos.z));
 
-    for (int i = 0; i < CLOUD_SAMPLE_TIMES; i++) {
-        // TODO: whether to add the last logical expression
-        if (final.a > 0.99 || test_point.y > cloud_max) {
-            break;
+        if (density > 0.01) {
+            pos = pos + u_sunlight_direction * 0.3;
+            float density2 = get_cloud_noise(vec3(pos.x, pos.y - cloud_min + CLOUD_MIN, pos.z));
+
+            float diff = clamp((density - density2) / 0.6, 0.0, 1.0);
+            vec3 lighting = vec3(1.0, 0.6, 0.3) * diff + vec3(0.91, 0.98, 1.05);
+            vec4 color = vec4(mix(vec3(1.0, 0.95, 0.8), vec3(0.25, 0.3, 0.35), density), density);
+            color.rgb *= lighting;
+            color.w *= 0.4;
+            color.rgb *= color.w;
+            sum += color * (1.0 - sum.w);
         }
 
-        test_point += direction;
-        float density = get_cloud_noise(test_point, cloud_min, cloud_max) * fadeout;
-
-        if (density > 0.0) {
-            float density2 = get_cloud_noise(test_point + u_sunlight_direction * 4.0, cloud_min, cloud_max);
-            float diff = clamp((density - density2) * 8.0, 0.0, 1.0);
-            final = cloud_lighting(final, density, diff);
-        }
+        t += 0.5;
     }
-    final = clamp(final, 0.0, 1.0);
-    return SKY_COLOR * (1.0 - final.a) + final.rgb;
+
+    sum = clamp(sum, 0.0, 1.0);
+    return SKY_COLOR * (1.0 - sum.a) + sum.rgb;
 }
 
-vec3 getRayDirection() { // fking difficult but charming
-    vec3 ndc;
-    ndc.xy = texcoord * 2.0 - 1.0;
-    ndc.z = 2.0 * gl_FragCoord.z - 1.0;
-    vec4 camera_space_position = u_inverse_projection * vec4(ndc, 1.0);
-    camera_space_position /= camera_space_position.w;
-    vec4 world_space_position = u_inverse_view * camera_space_position;
-    return normalize(world_space_position.xyz - u_camera_position);
+// designed & created by me, YXHXianYu
+vec4 fog_sky(vec3 start_point, vec3 direction) {
+    if (direction.y <= -0.2 || direction.y >= 0.4) return vec4(0.0);
+
+    if (direction.y >= 0.1) {
+        return vec4(FOG_COLOR, smoothstep(0.0, 1.0, (0.4 - direction.y) / 0.3));
+    } else {
+        return vec4(FOG_COLOR, 1.0);
+    }
 }
 
-vec3 sky() {
-    float max_dis = 1000.0;
-    return cloud(u_camera_position, getRayDirection(), max_dis * max_dis);
+vec4 fog(vec3 start_point, vec3 direction, float dis) {
+    if (direction.y <= -0.2 || direction.y >= 0.4) return vec4(0.0);
+
+    return vec4(FOG_COLOR, smoothstep(0.0, 1.0, (dis - 30.0) / 10.0));
 }
 
 void main() {
-    float depth = texture(u_depth_texture, texcoord).r;
-    vec3 color = texture(u_color_texture, texcoord).rgb;
+    float depth   = texture(u_depth_texture, texcoord).r;
+    vec3 color    = texture(u_color_texture, texcoord).rgb;
+    vec3 frag_pos = texture(u_gbuffer_position, texcoord).xyz;
+    vec3 ray_direction = getRayDirection();
 
     if (depth == 1.0f) {
-        color = sky();
+        color = cloud(u_camera_position, ray_direction);
+        vec4 f = fog_sky(u_camera_position, ray_direction);
+        color = mix(color, f.rgb, f.a);
+    }
+
+    float dis = abs(frag_pos - u_camera_position);
+    if (dis >= 30.0) {
+        vec4 f = fog(u_camera_position, ray_direction, dis);
+        color = mix(color, f.rgb, f.a);
     }
     fragcolor = vec4(color, 1.0);
 }
