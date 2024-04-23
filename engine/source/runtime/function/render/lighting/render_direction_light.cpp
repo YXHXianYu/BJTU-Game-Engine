@@ -1,6 +1,6 @@
 #include "runtime/function/render/lighting/render_direction_light.h"
 
-#include "runtime/function/render/render_mesh_base.h"
+#include "runtime/function/render/mesh/render_mesh_base.h"
 
 namespace BJTUGE {
 void RenderDirectionLight::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<RenderResource> resource, glm::mat4 model) {

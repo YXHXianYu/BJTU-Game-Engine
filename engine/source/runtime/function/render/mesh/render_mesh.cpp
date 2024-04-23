@@ -1,8 +1,8 @@
-﻿#include "runtime/function/render/render_mesh.h"
+﻿#include "runtime/function/render/mesh/render_mesh.h"
 
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_shader.h"
-#include "runtime/function/render/render_texture.h"
+#include "runtime/function/render/texture/render_texture.h"
 
 #include <iostream>
 

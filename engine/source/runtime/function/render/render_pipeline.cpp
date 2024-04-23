@@ -1,21 +1,22 @@
 ﻿#include "runtime/function/render/render_pipeline.h"
 
 #include "runtime/function/global/global_context.h"
+#include "runtime/function/input/input_system.h"
+#include "runtime/function/render/framebuffer/render_framebuffer.h"
+#include "runtime/function/render/framebuffer/render_gbuffer_framebuffer.h"
+#include "runtime/function/render/framebuffer/render_shadow_framebuffer.h"
+#include "runtime/function/render/lighting/render_direction_light.h"
 #include "runtime/function/render/lighting/render_spot_light.h"
+#include "runtime/function/render/mesh/render_mesh.h"
 #include "runtime/function/render/render_camera.h"
 #include "runtime/function/render/render_entity.h"
-#include "runtime/function/render/render_mesh.h"
 #include "runtime/function/render/render_resource.h"
 #include "runtime/function/render/render_shader.h"
-#include "runtime/function/render/render_framebuffer.h"
-#include "runtime/function/render/render_shadow_framebuffer.h"
-#include "runtime/function/render/render_gbuffer_framebuffer.h"
-#include "runtime/function/render/render_texture_base.h"
+#include "runtime/function/render/texture/render_texture_base.h"
 #include "runtime/function/window/window_system.h"
 
 #include <glad/glad.h>
 
-#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -25,18 +26,18 @@
 #include <gbuffer_textured_frag.h>
 #include <gbuffer_textured_vert.h>
 // shading
-#include <shading_vert.h>
 #include <shading_frag.h>
+#include <shading_vert.h>
 // postprocess
-#include <postprocess_vert.h>
 #include <composite0_frag.h>
 #include <composite1_frag.h>
 #include <composite2_frag.h>
 #include <final_frag.h>
+#include <postprocess_vert.h>
 // shadow map
-#include <shadow_map_vert.h>
-#include <shadow_map_frag.h>
 #include <shadow_map_block_vert.h>
+#include <shadow_map_frag.h>
+#include <shadow_map_vert.h>
 
 #include <iostream>
 #include <string>
@@ -48,7 +49,7 @@ unsigned int texture1, texture2;
 void RenderPipeline::initialize() {
     // === Shaders ===
     // gbuffer
-    m_render_shaders["gbuffer_block"] = std::make_shared<RenderShader>(GBUFFER_BLOCK_VERT, GBUFFER_BLOCK_FRAG, "gbuffer_block");
+    m_render_shaders["gbuffer_block"]    = std::make_shared<RenderShader>(GBUFFER_BLOCK_VERT, GBUFFER_BLOCK_FRAG, "gbuffer_block");
     m_render_shaders["gbuffer_textured"] = std::make_shared<RenderShader>(GBUFFER_TEXTURED_VERT, GBUFFER_TEXTURED_FRAG, "gbuffer_textured");
 
     // shading
@@ -58,14 +59,14 @@ void RenderPipeline::initialize() {
     m_render_shaders["composite0"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE0_FRAG, "composite0");
     m_render_shaders["composite1"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE1_FRAG, "composite1");
     m_render_shaders["composite2"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE2_FRAG, "composite2");
-    m_render_shaders["final"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, FINAL_FRAG, "final");
+    m_render_shaders["final"]      = std::make_shared<RenderShader>(POSTPROCESS_VERT, FINAL_FRAG, "final");
 
     // shadow map
-    m_render_shaders["shadow_map"] = std::make_shared<RenderShader>(SHADOW_MAP_VERT, SHADOW_MAP_FRAG, "shadow_map");
+    m_render_shaders["shadow_map"]       = std::make_shared<RenderShader>(SHADOW_MAP_VERT, SHADOW_MAP_FRAG, "shadow_map");
     m_render_shaders["shadow_map_block"] = std::make_shared<RenderShader>(SHADOW_MAP_BLOCK_VERT, SHADOW_MAP_FRAG, "shadow_map_block");
 
     // === framebuffer ===
-    int width = g_runtime_global_context.m_window_system->getWidth();
+    int width  = g_runtime_global_context.m_window_system->getWidth();
     int height = g_runtime_global_context.m_window_system->getHeight();
 
     m_render_framebuffers["shading"] = std::make_shared<RenderFramebuffer>(width, height);
@@ -97,9 +98,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     }
 
     /* Shadow Map */
-    if (m_is_enable_shadow_map) {
-        draw_shadow_map(resource, camera);
-    }
+    if (m_is_enable_shadow_map) { draw_shadow_map(resource, camera); }
 
     /* G Buffer */
     draw_gbuffer(resource, camera);
@@ -120,19 +119,15 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
         shader->use();
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
 
-        if (m_render_character) {
-            resource->getEntity("characters")->draw(shader, resource);
-        }
-        if (m_render_assignments) {
-            resource->getEntity("assignments")->draw(shader, resource);
-        }
+        if (m_render_character) { resource->getEntity("characters")->draw(shader, resource); }
+        if (m_render_assignments) { resource->getEntity("assignments")->draw(shader, resource); }
         if (m_render_light) {
             for (const auto& [key, spot_light] : resource->getSpotLights()) {
                 spot_light->draw(shader, resource);
             }
         }
     }
-    
+
     // draw minecraft blocks
     if (m_render_block) {
         auto shader = getShader("gbuffer_block");
@@ -197,7 +192,6 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
     getFramebuffer("shading")->unbind();
 }
 
-
 void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     glViewport(0, 0, m_shadow_map_width, m_shadow_map_height);
     m_shadow_framebuffer->bind();
@@ -209,12 +203,8 @@ void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, s
 
         shader->setUniform("u_light_space_matrix", m_light_space_matrix);
 
-        if (m_render_character) {
-            resource->getEntity("characters")->draw(shader, resource);
-        }
-        if (m_render_assignments) {
-            resource->getEntity("assignments")->draw(shader, resource);
-        }
+        if (m_render_character) { resource->getEntity("characters")->draw(shader, resource); }
+        if (m_render_assignments) { resource->getEntity("assignments")->draw(shader, resource); }
     }
 
     {
@@ -223,9 +213,7 @@ void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, s
 
         shader->setUniform("u_light_space_matrix", m_light_space_matrix);
 
-        if (m_render_block) {
-            resource->getEntity("minecraft_blocks")->draw(shader, resource);
-        }
+        if (m_render_block) { resource->getEntity("minecraft_blocks")->draw(shader, resource); }
     }
 
     glCullFace(GL_BACK); // to fix peter panning
@@ -248,15 +236,12 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_inverse_view", camera->getInverseViewMatrix());
         shader->setUniform("u_inverse_projection", camera->getInverseProjectionMatrix(m_use_ortho));
 
-        shader->setUniform("u_sunlight_direction",
-            resource->getDirectionLights().begin()->second->getDirection()
-        );
+        shader->setUniform("u_sunlight_direction", resource->getDirectionLights().begin()->second->getDirection());
 
         getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", 0);
         m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 1);
         m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", 2);
         resource->getTexture("noise_texture")->use(shader, "u_noise_texture", 3);
-
 
         resource->getEntity("postprocess")->draw(shader, resource);
     }
@@ -277,7 +262,7 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         resource->getEntity("postprocess")->draw(shader, resource);
     }
     getFramebuffer("composite1")->unbind();
-    
+
     getFramebuffer("composite2")->bind();
     {
         auto shader = getShader("composite2");
@@ -355,8 +340,8 @@ void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> 
 }
 
 glm::mat4 RenderPipeline::getLightSpaceMatrix() {
-    glm::mat4 light_projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
-    glm::mat4 light_view = glm::lookAt(glm::vec3(5.0f, 10.0f, 5.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 light_projection   = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
+    glm::mat4 light_view         = glm::lookAt(glm::vec3(5.0f, 10.0f, 5.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 light_space_matrix = light_projection * light_view;
     return light_space_matrix;
 }

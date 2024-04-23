@@ -2,6 +2,14 @@
 
 > BJTU Game Engine, for short
 
+## Preview
+
+![image-20240423225209826](./notes/README/image-20240423225209826.png)
+
+![image-20240423225038748](./notes/README/image-20240423225038748.png)
+
+![image-20240423225310094](./notes/README/image-20240423225310094.png)
+
 ## Prerequisites
 
 * C++ Compiler

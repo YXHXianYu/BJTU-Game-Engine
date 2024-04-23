@@ -1,10 +1,10 @@
 #pragma once
 
-#include "runtime/function/render/render_texture_base.h"
+#include "runtime/function/render/texture/render_texture_base.h"
 
 #include <cstdint>
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <glad/glad.h>

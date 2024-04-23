@@ -1,7 +1,7 @@
 #include "runtime/function/render/render_entity.h"
 
+#include "runtime/function/render/mesh/render_mesh_base.h"
 #include "runtime/function/render/render_shader.h"
-#include "runtime/function/render/render_mesh_base.h"
 
 #include <iostream>
 
@@ -19,15 +19,16 @@ void RenderEntity::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Re
 
 void RenderEntity::output(uint32_t level) const {
     for (auto& [key, render_mesh] : m_render_meshes) {
-        for(int j = 0; j < level; j++) std::cout << "  ";
+        for (int j = 0; j < level; j++)
+            std::cout << "  ";
         std::cout << "mesh: " << key << std::endl;
     }
     for (auto& [key, render_entity] : m_render_entities) {
-        for(int j = 0; j < level; j++) std::cout << "  ";
+        for (int j = 0; j < level; j++)
+            std::cout << "  ";
         std::cout << "entity: " << key << std::endl;
 
         render_entity->output(level + 1);
-
     }
 }
 

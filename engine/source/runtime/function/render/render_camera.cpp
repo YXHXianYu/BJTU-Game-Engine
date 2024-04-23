@@ -3,6 +3,7 @@
 #include "runtime/function/global/global_context.h"
 #include "runtime/function/input/input_system.h"
 #include "runtime/function/window/window_system.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
@@ -84,7 +85,7 @@ void RenderCamera::updateProjectionMatrix(bool use_ortho) {
         } else {
             m_projection_matrix = glm::perspective(glm::radians(m_fovy), m_aspect, m_near, m_far);
         }
-        m_inverse_projection_matrix = glm::inverse(m_projection_matrix);
+        m_inverse_projection_matrix    = glm::inverse(m_projection_matrix);
         m_projection_matrix_dirty      = false;
         m_view_projection_matrix_dirty = true;
     }

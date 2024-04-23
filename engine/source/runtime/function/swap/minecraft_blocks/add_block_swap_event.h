@@ -1,6 +1,6 @@
 #pragma once
 
-#include "runtime/function/render/face_info.h"
+#include "runtime/function/render/mesh/face_info.h"
 #include "runtime/function/swap/swap_event.h"
 
 namespace BJTUGE {

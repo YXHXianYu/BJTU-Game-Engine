@@ -1,7 +1,5 @@
 #pragma once
 
-#include "runtime/function/input/input_system.h"
-
 #include <glm/glm.hpp>
 
 #include <memory>
@@ -34,17 +32,17 @@ private:
 
     glm::mat4 getLightSpaceMatrix();
 
-    std::shared_ptr<RenderShader>& getShader(const char* name);
+    std::shared_ptr<RenderShader>&      getShader(const char* name);
     std::shared_ptr<RenderFramebuffer>& getFramebuffer(const char* name);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<RenderShader>> m_render_shaders;
+    std::unordered_map<std::string, std::shared_ptr<RenderShader>>      m_render_shaders;
     std::unordered_map<std::string, std::shared_ptr<RenderFramebuffer>> m_render_framebuffers;
-    std::shared_ptr<RenderShadowFramebuffer> m_shadow_framebuffer;
-    std::shared_ptr<RenderGBufferFramebuffer> m_gbuffer_framebuffer;
+    std::shared_ptr<RenderShadowFramebuffer>                            m_shadow_framebuffer;
+    std::shared_ptr<RenderGBufferFramebuffer>                           m_gbuffer_framebuffer;
 
-    uint32_t m_shadow_map_width{2048 * 4};
-    uint32_t m_shadow_map_height{2048 * 4};
+    uint32_t  m_shadow_map_width{2048 * 4};
+    uint32_t  m_shadow_map_height{2048 * 4};
     glm::mat4 m_light_space_matrix;
 
     bool m_render_block{true};

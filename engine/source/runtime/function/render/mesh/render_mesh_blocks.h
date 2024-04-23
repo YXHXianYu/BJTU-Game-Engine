@@ -1,7 +1,7 @@
 #pragma once
 
-#include "runtime/function/render/face_info.h"
-#include "runtime/function/render/render_mesh_base.h"
+#include "runtime/function/render/mesh/face_info.h"
+#include "runtime/function/render/mesh/render_mesh_base.h"
 
 #include <glm/glm.hpp>
 

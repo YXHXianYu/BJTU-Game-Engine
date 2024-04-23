@@ -1,19 +1,19 @@
-#include "runtime/function/render/render_gbuffer_framebuffer.h"
+#include "runtime/function/render/framebuffer/render_gbuffer_framebuffer.h"
 
+#include "runtime/function/global/global_context.h"
 #include "runtime/function/render/render_shader.h"
 #include "runtime/function/window/window_system.h"
-#include "runtime/function/global/global_context.h"
 
 #include <glad/glad.h>
 
+#include <cassert>
 #include <functional>
 #include <iostream>
-#include <cassert>
 
 namespace BJTUGE {
 
 RenderGBufferFramebuffer::RenderGBufferFramebuffer(uint32_t width, uint32_t height) {
-    m_width = width;
+    m_width  = width;
     m_height = height;
 
     // frame buffer
@@ -68,7 +68,8 @@ RenderGBufferFramebuffer::RenderGBufferFramebuffer(uint32_t width, uint32_t heig
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // resize update
-    g_runtime_global_context.m_window_system->registerOnResizeFunc(std::bind(&RenderGBufferFramebuffer::updateFramebufferSize, this, std::placeholders::_1, std::placeholders::_2));
+    g_runtime_global_context.m_window_system->registerOnResizeFunc(
+        std::bind(&RenderGBufferFramebuffer::updateFramebufferSize, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 RenderGBufferFramebuffer::~RenderGBufferFramebuffer() {
@@ -84,7 +85,6 @@ void RenderGBufferFramebuffer::bind() const {
 void RenderGBufferFramebuffer::unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
 
 void RenderGBufferFramebuffer::useGBufferPosition(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const {
     glActiveTexture(GL_TEXTURE0 + texture_id);
@@ -111,7 +111,7 @@ void RenderGBufferFramebuffer::useDepthTexture(std::shared_ptr<RenderShader> sha
 }
 
 void RenderGBufferFramebuffer::updateFramebufferSize(uint32_t width, uint32_t height) {
-    m_width = width;
+    m_width  = width;
     m_height = height;
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
@@ -135,4 +135,4 @@ void RenderGBufferFramebuffer::updateFramebufferSize(uint32_t width, uint32_t he
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-}
+} // namespace BJTUGE
