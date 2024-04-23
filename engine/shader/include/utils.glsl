@@ -14,3 +14,7 @@ float abs2(vec3 a) {
 float abs(vec3 a) {
     return sqrt(abs2(a));
 }
+
+float sqrt1(float x) {
+    return x * (2.0 - x);
+}

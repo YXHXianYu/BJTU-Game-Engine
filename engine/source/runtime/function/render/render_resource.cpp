@@ -35,8 +35,9 @@ void RenderResource::initialize() {
 
     m_render_entities["assignments"] = loadAssignments();
 
-    m_render_textures["minecraft_texture"] = loadMinecraftTexture();
-    m_render_textures["noise_texture"] = loadNoiseTexture();
+    m_render_textures["minecraft_texture"]     = loadMinecraftTexture();
+    m_render_textures["noise_texture"]         = loadNoiseTexture();
+    m_render_textures["fractal_noise_texture"] = loadFractalNoiseTexture();
 
     m_render_minecraft_blocks_manager = std::make_shared<RenderMinecraftBlocksManager>();
     m_render_minecraft_blocks_manager->initialize();
@@ -200,6 +201,11 @@ std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
 
 std::shared_ptr<RenderTextureBase> RenderResource::loadNoiseTexture() {
     auto texture_path = "./asset/textures/noise.png";
+    return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture>(texture_path, "default", "linear"));
+}
+
+std::shared_ptr<RenderTextureBase> RenderResource::loadFractalNoiseTexture() {
+    auto texture_path = "./asset/textures/fractal_noise.png";
     return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture>(texture_path, "default", "linear"));
 }
 

@@ -42,12 +42,10 @@ float noise_texture(vec3 x) {
     vec3 p = floor(x);
     vec3 f = fract(x);
     f = smoothstep(0.0, 1.0, f);
-    
-    vec2 delta = vec2(37.0, 17.0) * 0.1;
 
-    vec2 uv = (p.xy + delta * p.z) + f.xy;
-    float v1 = texture(u_noise_texture, (uv) / 256.0).x;
-    float v2 = texture(u_noise_texture, (uv + delta) / 256.0).x;
+    vec2 uv = (p.xy + vec2(37.0, 17.0) * p.z) + f.xy;
+    float v1 = texture(u_noise_texture, (uv) * 0.004).x; // *0.004 = /256.0
+    float v2 = texture(u_noise_texture, (uv + vec2(37.0, 17.0)) * 0.004).x;
     return mix(v1, v2, f.z);
 }
 
@@ -71,27 +69,22 @@ float noise_hash(in vec3 x) {
 
 #define CLOUD_MIN   (40.0)
 #define SKY_COLOR (vec3(0.47, 0.66, 1.00))
-// #define FOG_COLOR (vec3(0.38, 0.47, 0.59))
 #define FOG_COLOR (SKY_COLOR + vec3(0.1))
 
-
-#define CLOUD_NOISE_SPEED (vec2(5.0, 0.0))
+#define CLOUD_NOISE_SPEED (vec3(5.0, 0.0, 0.0))
 #define CLOUD_NOISE_SCALE (0.02) // 值越小，单朵云越大，但视野内云越少
-#define CLOUD_NOISE_THRESHOLD (0.5)
-#define CLOUD_STEP_LENGTH (0.5)
-#define CLOUD_SAMPLE_TIMES (128)
+#define CLOUD_SAMPLE_TIMES (64)
 
+#define NOISE noise_texture
 float get_cloud_noise(vec3 p) {
-    vec3 q = p - vec3(0.0, 0.0, 1.0) * u_time;
+    vec3 q = p - CLOUD_NOISE_SPEED * u_time;
     q *= CLOUD_NOISE_SCALE;
     float f;
-    f  = 0.50000 * noise_hash(q); q = q*2.02;    
-    f += 0.25000 * noise_hash(q); q = q*2.03;    
-    f += 0.12500 * noise_hash(q); q = q*2.01;    
-    f += 0.06250 * noise_hash(q); q = q*2.02;    
-    f += 0.03125 * noise_hash(q);
-    f = clamp(1.0 * f + min(p.y / 40.0, 0.5) - 0.5, 0.0, 1.0);
-    f = max(f - CLOUD_NOISE_THRESHOLD, 0.0) * (1.0 / (1.0 - CLOUD_NOISE_THRESHOLD));
+    f  = 0.50000 * NOISE(q); q = q*2.02;
+    f += 0.25000 * NOISE(q); q = q*2.03;
+    f += 0.12500 * NOISE(q);
+    f = clamp(1.0 * f + min(p.y * 0.025, 0.5) - 0.5, 0.0, 1.0); // 让云的下部更薄 (*0.025 = /40.0)
+    f = max(f - 0.5, 0.0) * 2.0; // threshold
     // TODO: add a smoothstep
     return f;
 }
@@ -104,18 +97,16 @@ vec3 cloud(vec3 start_point, vec3 direction) {
     float cloud_min = start_point.y + CLOUD_MIN * (exp(-start_point.y / CLOUD_MIN) + 0.001);
     float t = 0.05 + ((cloud_min - start_point.y) / direction.y);
 
-    for (int i = 0; i < 64; i++) {
-        vec3 pos = start_point + direction * t;
-
+    for (int i = 0; i < CLOUD_SAMPLE_TIMES; i++) {
         if (sum.a > 0.99) break;
 
+        vec3 pos = start_point + direction * t;
         float density = get_cloud_noise(vec3(pos.x, pos.y - cloud_min + CLOUD_MIN, pos.z));
-
         if (density > 0.01) {
             pos = pos + u_sunlight_direction * 0.3;
             float density2 = get_cloud_noise(vec3(pos.x, pos.y - cloud_min + CLOUD_MIN, pos.z));
 
-            float diff = clamp((density - density2) / 0.6, 0.0, 1.0);
+            float diff = clamp((density - density2) * 1.67, 0.0, 1.0); // *1.67 = /0.6
             vec3 lighting = vec3(1.0, 0.6, 0.3) * diff + vec3(0.91, 0.98, 1.05);
             vec4 color = vec4(mix(vec3(1.0, 0.95, 0.8), vec3(0.25, 0.3, 0.35), density), density);
             color.rgb *= lighting;
@@ -123,8 +114,7 @@ vec3 cloud(vec3 start_point, vec3 direction) {
             color.rgb *= color.w;
             sum += color * (1.0 - sum.w);
         }
-
-        t += 0.5;
+        t += 1.0;
     }
 
     sum = clamp(sum, 0.0, 1.0);
@@ -132,20 +122,20 @@ vec3 cloud(vec3 start_point, vec3 direction) {
 }
 
 // designed & created by me, YXHXianYu
-vec4 fog_sky(vec3 start_point, vec3 direction) {
+vec4 fog_sky(vec3 direction) {
     if (direction.y <= -0.2 || direction.y >= 0.4) return vec4(0.0);
 
     if (direction.y >= 0.1) {
-        return vec4(FOG_COLOR, smoothstep(0.0, 1.0, (0.4 - direction.y) / 0.3));
+        return vec4(FOG_COLOR, smoothstep(0.0, 1.0, (0.4 - direction.y) * 3.33)); // *3.33 = /0.3
     } else {
         return vec4(FOG_COLOR, 1.0);
     }
 }
 
-vec4 fog(vec3 start_point, vec3 direction, float dis) {
-    if (direction.y <= -0.2 || direction.y >= 0.4) return vec4(0.0);
+vec4 fog_frag(vec3 direction, float dis2) {
+    if (dis2 <= 900.0 || direction.y <= -0.2 || direction.y >= 0.4) return vec4(0.0);
 
-    return vec4(FOG_COLOR, smoothstep(0.0, 1.0, (dis - 30.0) / 10.0));
+    return vec4(FOG_COLOR, min(sqrt1((dis2 - 900.0) * 0.00143), 1.0)); // *0.00143 = /700
 }
 
 void main() {
@@ -154,15 +144,13 @@ void main() {
     vec3 frag_pos = texture(u_gbuffer_position, texcoord).xyz;
     vec3 ray_direction = getRayDirection();
 
-    if (depth == 1.0f) {
+    if (depth == 1.0f) { // sky
         color = cloud(u_camera_position, ray_direction);
-        vec4 f = fog_sky(u_camera_position, ray_direction);
+        vec4 f = fog_sky(ray_direction);
         color = mix(color, f.rgb, f.a);
-    }
-
-    float dis = abs(frag_pos - u_camera_position);
-    if (dis >= 30.0) {
-        vec4 f = fog(u_camera_position, ray_direction, dis);
+    } else { // frag
+        float dis2 = abs2(frag_pos - u_camera_position);
+        vec4 f = fog_frag(ray_direction, dis2);
         color = mix(color, f.rgb, f.a);
     }
     fragcolor = vec4(color, 1.0);

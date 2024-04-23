@@ -24,7 +24,7 @@ void BJTUEngine::shutdownEngine() {
 void BJTUEngine::run() {
     uint64_t fps_count = 0;
     uint64_t fps_delta = 0;
-    uint64_t fps_patch = 10;
+    uint64_t fps_patch = 20;
     
     while (!g_runtime_global_context.m_window_system->windowShouldClose()) {
 
@@ -37,7 +37,7 @@ void BJTUEngine::run() {
         if (delta > 0) {
             fps_delta += delta;
             if (++fps_count >= fps_patch) {
-                std::cout << "FPS: " << uint64_t(10 * 1000.0 / fps_delta) << std::endl;
+                std::cout << "FPS: " << uint64_t(fps_patch * 1000.0 / fps_delta) << std::endl;
                 fps_count = 0;
                 fps_delta = 0;
             }
