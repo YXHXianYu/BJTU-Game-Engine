@@ -72,7 +72,7 @@ float noise_hash(in vec3 x) {
 #define CLOUD_MIN   (40.0)
 #define SKY_COLOR (vec3(0.47, 0.66, 1.00))
 // #define FOG_COLOR (vec3(0.38, 0.47, 0.59))
-#define FOG_COLOR (SKY_COLOR)
+#define FOG_COLOR (SKY_COLOR + vec3(0.1))
 
 
 #define CLOUD_NOISE_SPEED (vec2(5.0, 0.0))
@@ -92,6 +92,7 @@ float get_cloud_noise(vec3 p) {
     f += 0.03125 * noise_hash(q);
     f = clamp(1.0 * f + min(p.y / 40.0, 0.5) - 0.5, 0.0, 1.0);
     f = max(f - CLOUD_NOISE_THRESHOLD, 0.0) * (1.0 / (1.0 - CLOUD_NOISE_THRESHOLD));
+    // TODO: add a smoothstep
     return f;
 }
 
