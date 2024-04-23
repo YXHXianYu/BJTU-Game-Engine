@@ -26,6 +26,9 @@ void WindowSystem::initialize(WindowCreateInfo create_info) {
         glfwTerminate();
         assert(false);
     }
+#ifdef __APPLE__
+    glfwGetFramebufferSize(m_window, &m_width, &m_height);
+#endif
     glfwMakeContextCurrent(m_window);
 
     // glad initialize
