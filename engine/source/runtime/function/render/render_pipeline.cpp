@@ -10,6 +10,7 @@
 #include "runtime/function/render/render_framebuffer.h"
 #include "runtime/function/render/render_shadow_framebuffer.h"
 #include "runtime/function/render/render_gbuffer_framebuffer.h"
+#include "runtime/function/render/render_texture_base.h"
 #include "runtime/function/window/window_system.h"
 
 #include <glad/glad.h>
@@ -249,6 +250,8 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", 0);
         m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 1);
         m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", 2);
+
+        resource->getTexture("noise_texture")->use(shader, "u_noise_texture", 3);
 
         resource->getEntity("postprocess")->draw(shader, resource);
     }

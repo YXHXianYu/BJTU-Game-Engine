@@ -16,6 +16,7 @@ namespace BJTUGE {
 class RenderShader;
 
 enum class TextureType {
+    DEFAULT,
     DIFFUSE,
     SPECULAR,
     NORMAL,
@@ -25,8 +26,8 @@ enum class TextureType {
 class RenderTexture : public RenderTextureBase {
 
 public:
-    RenderTexture(const std::string& picture_path, const std::string& type);
-    RenderTexture(const aiTexture* texture, const std::string& type);
+    RenderTexture(const std::string& picture_path, const std::string& type = "default", const std::string& sample_method = "nearest");
+    RenderTexture(const aiTexture* texture, const std::string& type = "default", const std::string& sample_method = "nearest");
     virtual ~RenderTexture();
     RenderTexture(const RenderTexture&)            = delete;
     RenderTexture& operator=(const RenderTexture&) = delete;
@@ -36,7 +37,7 @@ public:
     std::string getType() const { return TEXTURE_TYPE_TO_STRING.at(m_type); }
 
 private:
-    void generateTexture(unsigned char* data);
+    void generateTexture(unsigned char* data, const std::string& sample_method);
 
 public:
     static const std::unordered_map<TextureType, std::string> TEXTURE_TYPE_TO_STRING;
@@ -48,6 +49,8 @@ private:
     uint32_t    m_width;
     uint32_t    m_height;
     uint32_t    m_channels;
+
+    const std::string m_sample_method;
 };
 
 } // namespace BJTUGE

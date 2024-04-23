@@ -36,6 +36,7 @@ void RenderResource::initialize() {
     m_render_entities["assignments"] = loadAssignments();
 
     m_render_textures["minecraft_texture"] = loadMinecraftTexture();
+    m_render_textures["noise_texture"] = loadNoiseTexture();
 
     m_render_minecraft_blocks_manager = std::make_shared<RenderMinecraftBlocksManager>();
     m_render_minecraft_blocks_manager->initialize();
@@ -195,6 +196,11 @@ std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
         "",
     };
     return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture3D>(textures_path));
+}
+
+std::shared_ptr<RenderTextureBase> RenderResource::loadNoiseTexture() {
+    auto texture_path = "./asset/textures/noise.png";
+    return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture>(texture_path, "default", "linear"));
 }
 
 /* ===== For Test ===== */
