@@ -1,19 +1,19 @@
-#include "runtime/function/render/render_shadow_framebuffer.h"
+#include "runtime/function/render/framebuffer/render_shadow_framebuffer.h"
 
+#include "runtime/function/global/global_context.h"
 #include "runtime/function/render/render_shader.h"
 #include "runtime/function/window/window_system.h"
-#include "runtime/function/global/global_context.h"
 
 #include <glad/glad.h>
 
+#include <cassert>
 #include <functional>
 #include <iostream>
-#include <cassert>
 
 namespace BJTUGE {
 
 RenderShadowFramebuffer::RenderShadowFramebuffer(uint32_t width, uint32_t height) {
-    m_width = width;
+    m_width  = width;
     m_height = height;
 
     // frame buffer
@@ -28,7 +28,7 @@ RenderShadowFramebuffer::RenderShadowFramebuffer(uint32_t width, uint32_t height
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float border_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float border_color[] = {1.0f, 1.0f, 1.0f, 1.0f};
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depth_texture, 0);
     glDrawBuffer(GL_NONE);
@@ -42,7 +42,8 @@ RenderShadowFramebuffer::RenderShadowFramebuffer(uint32_t width, uint32_t height
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // resize update
-    // g_runtime_global_context.m_window_system->registerOnResizeFunc(std::bind(&RenderShadowFramebuffer::updateFramebufferSize, this, std::placeholders::_1, std::placeholders::_2));
+    // g_runtime_global_context.m_window_system->registerOnResizeFunc(std::bind(&RenderShadowFramebuffer::updateFramebufferSize, this,
+    // std::placeholders::_1, std::placeholders::_2));
 }
 
 RenderShadowFramebuffer::~RenderShadowFramebuffer() {
@@ -58,7 +59,6 @@ void RenderShadowFramebuffer::unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-
 void RenderShadowFramebuffer::useDepthTexture(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const {
     glActiveTexture(GL_TEXTURE0 + texture_id);
     glBindTexture(GL_TEXTURE_2D, m_depth_texture);
@@ -66,7 +66,7 @@ void RenderShadowFramebuffer::useDepthTexture(std::shared_ptr<RenderShader> shad
 }
 
 void RenderShadowFramebuffer::updateFramebufferSize(uint32_t width, uint32_t height) {
-    m_width = width;
+    m_width  = width;
     m_height = height;
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
@@ -81,4 +81,4 @@ void RenderShadowFramebuffer::updateFramebufferSize(uint32_t width, uint32_t hei
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-}
+} // namespace BJTUGE
