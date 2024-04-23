@@ -243,9 +243,14 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         shader->setUniform("u_near", camera->getNear());
+        shader->setUniform("u_far", camera->getFar());
         shader->setUniform("u_camera_position", camera->getPosition());
         shader->setUniform("u_inverse_view", camera->getInverseViewMatrix());
         shader->setUniform("u_inverse_projection", camera->getInverseProjectionMatrix(m_use_ortho));
+
+        shader->setUniform("u_sunlight_direction",
+            resource->getDirectionLights().begin()->second->getDirection()
+        );
 
         getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", 0);
         m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 1);
