@@ -22,7 +22,7 @@ def process(path, parents=[]):
 
     # dir = os.path.dirname(path) # for include relative to cur file
 
-    lines = open(path).readlines()
+    lines = open(path, 'r', encoding='utf-8').readlines()
     for (i, line) in enumerate(lines):
         res = INCLUDE_RE.match(line)
         if res is not None:

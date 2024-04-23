@@ -99,6 +99,8 @@ private:
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
+    std::shared_ptr<RenderTextureBase> loadNoiseTexture();
+    std::shared_ptr<RenderTextureBase> loadFractalNoiseTexture();
     std::shared_ptr<RenderMeshBase>    loadCubeMesh();
     std::shared_ptr<RenderMeshBase>    loadSquareMesh();
 
