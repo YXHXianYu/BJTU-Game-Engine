@@ -26,6 +26,7 @@ fn main() {
         .compile("glfw");
     println!("cargo:rustc-link-lib=glfw");
 
+    // ! GG
     // cc::Build::new()
     //     .cpp(true)
     //     .include("engine/3rdparty/assimp-5.3.1/include")
@@ -55,21 +56,14 @@ fn main() {
         .include("engine/3rdparty/glad/include")
         .files(list_files("engine/3rdparty/glad/src"))
         .include("engine/3rdparty/glfw-3.4/include")
-        // .files(list_files("engine/3rdparty/glfw-3.4/src"))
         // ? assimp
         .include("engine/3rdparty/assimp-5.3.1/include")
-        // .include("engine/3rdparty/assimp-5.3.1/code")
-        // .files(list_files("engine/3rdparty/assimp-5.3.1/code"))
-        // .include("engine/3rdparty/assimp-5.3.1/contrib/unzip")
-        // .include("engine/3rdparty/assimp-5.3.1/contrib/pugixml/src")
-        // .include("engine/3rdparty/assimp-5.3.1/contrib/rapidjson/include")
-        // .include("engine/3rdparty/assimp-5.3.1")
 
         .include("engine/3rdparty")
         .include("engine/3rdparty/stb")
         .compile("cxx-demo");
 
     println!("cargo:rerun-if-changed=engine");
-    // println!("cargo:rerun-if-changed=engine/source/runtime/main.cpp");
-    // println!("cargo:rerun-if-changed=engine/source/runtime/header.h");
+    println!("cargo:rerun-if-changed=main.rs");
+    println!("cargo:rerun-if-changed=header.h");
 }
