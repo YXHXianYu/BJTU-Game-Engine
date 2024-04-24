@@ -40,6 +40,7 @@
           buildInputs = with pkgs; [
             clang-tools
             clang
+            libcxx
             llvmPackages_17.bintools
             pkg-config
             cmake
@@ -47,6 +48,8 @@
           ] ++ [
             rust-tools
           ] ++ (with pkgs.darwin.apple_sdk.frameworks; pkgs.lib.optionals pkgs.stdenv.isDarwin [
+            SystemConfiguration
+            Security
           ]);
         };
       }

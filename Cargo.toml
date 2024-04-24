@@ -7,3 +7,7 @@ edition = "2021"
 
 [dependencies]
 cxx = "1.0.121"
+
+[build-dependencies]
+cxx-build = "1.0"
+cc = "1.0"
