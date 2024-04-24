@@ -33,7 +33,9 @@ void main() {
 
 #ifdef MODEL_SHADER
     if (u_texture_cnt == 0) {
-        gbuffer_color.rgb = u_diffuse_color;
+        // gbuffer_color.rgb = u_diffuse_color;
+        gbuffer_color.rgb = clamp(gbuffer_color.rgb, 0.0, 1.0);
+        gbuffer_color.rgb = gbuffer_color.rgb * 0.5 + u_diffuse_color * 0.5;
     } else {
         gbuffer_color.rgb = texture(u_texture_diffuse, texcoord).rgb;
     }
