@@ -11,3 +11,8 @@ build/
 .idea/
 CMakeFiles/
 cmake-build-debug/
+
+
+# Added by cargo
+
+/target

@@ -14,13 +14,18 @@
   inputs = {
     nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url  = "github:numtide/flake-utils";
+    rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
+  outputs = { self, nixpkgs, flake-utils, rust-overlay, nur, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        overlays = [ (import rust-overlay) (nur.overlay) ];
         pkgs = import nixpkgs {
-          inherit system;
+          inherit system overlays;
+        };
+        rust-tools = pkgs.rust-bin.nightly.latest.default.override {
+          extensions = [ "rust-src" ];
         };
       in
       {
@@ -40,6 +45,7 @@
             cmake
             python3
           ] ++ [
+            rust-tools
           ] ++ (with pkgs.darwin.apple_sdk.frameworks; pkgs.lib.optionals pkgs.stdenv.isDarwin [
           ]);
         };
