@@ -111,4 +111,5 @@ vec3 shading() {
 
 void main() {
     fragcolor = vec4(shading(), 1.0);
+    fragcolor = vec4(texture(u_gbuffer_color, texcoord).rgb, 1.0);
 }

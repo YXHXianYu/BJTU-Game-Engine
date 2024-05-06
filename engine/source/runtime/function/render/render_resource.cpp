@@ -42,6 +42,8 @@ void RenderResource::initialize() {
     m_render_minecraft_blocks_manager->initialize();
     m_render_entities["minecraft_blocks"] = m_render_minecraft_blocks_manager->getEntity();
 
+    m_render_entities["water"] = loadWater();
+
     m_render_entities["postprocess"] = loadPostprocessRectangle();
 
     loadLightingCubeToResource();
@@ -342,6 +344,32 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     }
 
     return f_entity;
+}
+
+std::shared_ptr<RenderEntity> RenderResource::loadWater() {
+    // mesh
+    const std::vector<Vertex> face = {
+        Vertex{0.5, 0.5, -0.5, 0, 1, 0, 0.625, 0.5},     Vertex{-0.5, 0.5, -0.5, 0, 1, 0, 0.875, 0.5},
+        Vertex{-0.5, 0.5, 0.5, 0, 1, 0, 0.875, 0.75},    Vertex{0.5, 0.5, 0.5, 0, 1, 0, 0.625, 0.75},
+        Vertex{0.5, 0.5, -0.5, 0, 1, 0, 0.625, 0.5},     Vertex{-0.5, 0.5, 0.5, 0, 1, 0, 0.875, 0.5},
+    };
+    auto mesh = std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(face, std::vector<uint32_t>{}, std::vector<std::string>{}));
+
+    // entity
+    auto entity = std::make_shared<RenderEntity>();
+
+    auto face1 = std::make_shared<RenderEntity>();
+    face1->addMesh("mesh", mesh);
+    entity->addEntity("face1", face1);
+
+    auto face2 = std::make_shared<RenderEntity>();
+    face2->addMesh("mesh", mesh);
+    face2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    entity->addEntity("face2", face2);
+
+    entity->setModelMatrix(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)), glm::vec3(0.0f, -0.85f, 0.0f)));
+
+    return entity;
 }
 
 std::shared_ptr<RenderEntity> RenderResource::loadPostprocessRectangle() {

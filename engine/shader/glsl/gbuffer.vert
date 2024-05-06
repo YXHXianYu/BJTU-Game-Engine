@@ -13,6 +13,12 @@ layout (location = 1) in vec3 v_normal;
 layout (location = 2) in vec2 v_texcoord;
 #endif
 
+#ifdef WATER_SHADER
+layout (location = 0) in vec3 v_position;
+layout (location = 1) in vec3 v_normal;
+layout (location = 2) in vec2 v_texcoord;
+#endif
+
 // Ouput
 
 layout (location = 0) out vec3 normal;
@@ -49,6 +55,13 @@ void main() {
 #endif
 
 #ifdef MODEL_SHADER
+    vec3 pos = v_position;
+
+    normal = v_normal;
+    texcoord = v_texcoord;
+#endif
+
+#ifdef WATER_SHADER
     vec3 pos = v_position;
 
     normal = v_normal;

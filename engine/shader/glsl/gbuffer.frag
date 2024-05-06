@@ -22,6 +22,10 @@ uniform sampler2D u_texture_diffuse;
 uniform vec3 u_diffuse_color;
 #endif
 
+#ifdef WATER_SHADER
+uniform vec4 u_water_color; // rgba: color + alpha
+#endif
+
 void main() {
 
     gbuffer_position = frag_pos;
@@ -29,17 +33,23 @@ void main() {
 
 #ifdef BLOCK_SHADER
     gbuffer_color.rgb = texture(u_block_texture, vec3(texcoord, float(material_id) / float(MATERIAL_ID_SUM - 1))).rgb;
+    gbuffer_color.a = 0.4; // TODO: customized specular
 #endif
 
 #ifdef MODEL_SHADER
     if (u_texture_cnt == 0) {
-        // gbuffer_color.rgb = u_diffuse_color;
+        gbuffer_color.rgb = u_diffuse_color;
         gbuffer_color.rgb = clamp(gbuffer_color.rgb, 0.0, 1.0);
-        gbuffer_color.rgb = gbuffer_color.rgb * 0.5 + u_diffuse_color * 0.5;
     } else {
         gbuffer_color.rgb = texture(u_texture_diffuse, texcoord).rgb;
     }
+    gbuffer_color.a = 0.4; // TODO: customized specular
 #endif
 
-    gbuffer_color.a = 0.4; // TODO: customized specular
+#ifdef WATER_SHADER
+    // gbuffer_color.rgb = mix(gbuffer_color.rgb, u_water_color.rgb, u_water_color.a);
+    gbuffer_color.rgb = gbuffer_color.rgb; // it's wrong!!!! need a new buffer.
+    // gbuffer_color.rgb = u_water_color.rgb;
+    gbuffer_color.a = 0.4; // stands for reflection
+#endif
 }

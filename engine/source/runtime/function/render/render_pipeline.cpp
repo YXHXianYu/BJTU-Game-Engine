@@ -25,6 +25,8 @@
 #include <gbuffer_block_vert.h>
 #include <gbuffer_textured_frag.h>
 #include <gbuffer_textured_vert.h>
+#include <gbuffer_water_frag.h>
+#include <gbuffer_water_vert.h>
 // shading
 #include <shading_frag.h>
 #include <shading_vert.h>
@@ -51,6 +53,7 @@ void RenderPipeline::initialize() {
     // gbuffer
     m_render_shaders["gbuffer_block"]    = std::make_shared<RenderShader>(GBUFFER_BLOCK_VERT, GBUFFER_BLOCK_FRAG, "gbuffer_block");
     m_render_shaders["gbuffer_textured"] = std::make_shared<RenderShader>(GBUFFER_TEXTURED_VERT, GBUFFER_TEXTURED_FRAG, "gbuffer_textured");
+    m_render_shaders["gbuffer_water"]    = std::make_shared<RenderShader>(GBUFFER_WATER_VERT, GBUFFER_WATER_FRAG, "gbuffer_water");
 
     // shading
     m_render_shaders["shading"] = std::make_shared<RenderShader>(SHADING_VERT, SHADING_FRAG, "shading");
@@ -134,6 +137,16 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
         shader->use();
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
+    }
+
+    if (m_render_water) {
+        glDepthMask(GL_FALSE);  // 关闭深度缓冲的写入
+        auto shader = getShader("gbuffer_water");
+        shader->use();
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
+        shader->setUniform("u_water_color", glm::vec4(0.0, 0.4, 0.8, 0.5));
+        resource->getEntity("water")->draw(shader, resource);
+        glDepthMask(GL_TRUE);  // 开启深度缓冲的写入
     }
 
     m_gbuffer_framebuffer->unbind();
