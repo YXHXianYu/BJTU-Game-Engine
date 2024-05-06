@@ -348,26 +348,27 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
 
 std::shared_ptr<RenderEntity> RenderResource::loadWater() {
     // mesh
-    const std::vector<Vertex> face = {
-        Vertex{0.5, 0.5, -0.5, 0, 1, 0, 0.625, 0.5},     Vertex{-0.5, 0.5, -0.5, 0, 1, 0, 0.875, 0.5},
-        Vertex{-0.5, 0.5, 0.5, 0, 1, 0, 0.875, 0.75},    Vertex{0.5, 0.5, 0.5, 0, 1, 0, 0.625, 0.75},
-        Vertex{0.5, 0.5, -0.5, 0, 1, 0, 0.625, 0.5},     Vertex{-0.5, 0.5, 0.5, 0, 1, 0, 0.875, 0.5},
+    const std::vector<Vertex> face_vertex = {
+        Vertex{0.5, 0.5, -0.5, 0, 1, 0, 0.625, 0.5},  Vertex{-0.5, 0.5, -0.5, 0, 1, 0, 0.875, 0.5},
+        Vertex{-0.5, 0.5, 0.5, 0, 1, 0, 0.875, 0.75}, Vertex{0.5, 0.5, 0.5, 0, 1, 0, 0.625, 0.75},
+        Vertex{0.5, 0.5, -0.5, 0, 1, 0, 0.625, 0.5},  Vertex{-0.5, 0.5, 0.5, 0, 1, 0, 0.875, 0.5},
     };
-    auto mesh = std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(face, std::vector<uint32_t>{}, std::vector<std::string>{}));
+    auto face_mesh =
+        std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(face_vertex, std::vector<uint32_t>{}, std::vector<std::string>{}));
 
     // entity
     auto entity = std::make_shared<RenderEntity>();
 
-    auto face1 = std::make_shared<RenderEntity>();
-    face1->addMesh("mesh", mesh);
-    entity->addEntity("face1", face1);
+    for (int i = 2; i <= 15; i++) {
+        for (int j = 2; j <= 15; j++) {
+            auto face = std::make_shared<RenderEntity>();
+            face->addMesh("face", face_mesh);
+            face->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(i, 0.0f, j)));
+            entity->addEntity("face" + std::to_string(i) + ";" + std::to_string(j), face);
+        }
+    }
 
-    auto face2 = std::make_shared<RenderEntity>();
-    face2->addMesh("mesh", mesh);
-    face2->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-    entity->addEntity("face2", face2);
-
-    entity->setModelMatrix(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)), glm::vec3(0.0f, -0.85f, 0.0f)));
+    entity->setModelMatrix(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)), glm::vec3(0.0f, -1.0f, 0.0f)));
 
     return entity;
 }

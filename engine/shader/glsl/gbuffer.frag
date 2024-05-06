@@ -8,6 +8,7 @@ layout (location = 2) in vec3 frag_pos;
 layout (location = 0) out vec3 gbuffer_position;
 layout (location = 1) out vec3 gbuffer_normal;
 layout (location = 2) out vec4 gbuffer_color;
+layout (location = 3) out vec4 gbuffer_transparent;
 
 #ifdef BLOCK_SHADER
 layout (location = 3) flat in int material_id;
@@ -22,8 +23,8 @@ uniform sampler2D u_texture_diffuse;
 uniform vec3 u_diffuse_color;
 #endif
 
-#ifdef WATER_SHADER
-uniform vec4 u_water_color; // rgba: color + alpha
+#ifdef TRANSPARENT_SHADER
+uniform vec4 u_transparent_info; // rgba: color + alpha
 #endif
 
 void main() {
@@ -46,10 +47,7 @@ void main() {
     gbuffer_color.a = 0.4; // TODO: customized specular
 #endif
 
-#ifdef WATER_SHADER
-    // gbuffer_color.rgb = mix(gbuffer_color.rgb, u_water_color.rgb, u_water_color.a);
-    gbuffer_color.rgb = gbuffer_color.rgb; // it's wrong!!!! need a new buffer.
-    // gbuffer_color.rgb = u_water_color.rgb;
-    gbuffer_color.a = 0.4; // stands for reflection
+#ifdef TRANSPARENT_SHADER
+    gbuffer_transparent = u_transparent_info;
 #endif
 }

@@ -25,8 +25,8 @@
 #include <gbuffer_block_vert.h>
 #include <gbuffer_textured_frag.h>
 #include <gbuffer_textured_vert.h>
-#include <gbuffer_water_frag.h>
-#include <gbuffer_water_vert.h>
+#include <gbuffer_transparent_frag.h>
+#include <gbuffer_transparent_vert.h>
 // shading
 #include <shading_frag.h>
 #include <shading_vert.h>
@@ -53,7 +53,8 @@ void RenderPipeline::initialize() {
     // gbuffer
     m_render_shaders["gbuffer_block"]    = std::make_shared<RenderShader>(GBUFFER_BLOCK_VERT, GBUFFER_BLOCK_FRAG, "gbuffer_block");
     m_render_shaders["gbuffer_textured"] = std::make_shared<RenderShader>(GBUFFER_TEXTURED_VERT, GBUFFER_TEXTURED_FRAG, "gbuffer_textured");
-    m_render_shaders["gbuffer_water"]    = std::make_shared<RenderShader>(GBUFFER_WATER_VERT, GBUFFER_WATER_FRAG, "gbuffer_water");
+    m_render_shaders["gbuffer_transparent"] =
+        std::make_shared<RenderShader>(GBUFFER_TRANSPARENT_VERT, GBUFFER_TRANSPARENT_FRAG, "gbuffer_transparent");
 
     // shading
     m_render_shaders["shading"] = std::make_shared<RenderShader>(SHADING_VERT, SHADING_FRAG, "shading");
@@ -139,14 +140,13 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
-    if (m_render_water) {
-        glDepthMask(GL_FALSE);  // 关闭深度缓冲的写入
-        auto shader = getShader("gbuffer_water");
+    if (m_render_transparent) {
+        auto shader = getShader("gbuffer_transparent");
         shader->use();
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
-        shader->setUniform("u_water_color", glm::vec4(0.0, 0.4, 0.8, 0.5));
+
+        shader->setUniform("u_transparent_info", glm::vec4(0.0, 0.4, 0.8, 0.5));
         resource->getEntity("water")->draw(shader, resource);
-        glDepthMask(GL_TRUE);  // 开启深度缓冲的写入
     }
 
     m_gbuffer_framebuffer->unbind();
@@ -163,7 +163,8 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", 0);
         m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", 1);
         m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", 2);
-        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 3);
+        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", 3);
+        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 4);
 
         // uniform
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
@@ -251,10 +252,13 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
 
         shader->setUniform("u_sunlight_direction", resource->getDirectionLights().begin()->second->getDirection());
 
-        getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", 0);
-        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 1);
-        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", 2);
-        resource->getTexture("noise_texture")->use(shader, "u_noise_texture", 3);
+        uint32_t id = 0;
+        getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", id++);
+        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", id++);
+        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", id++);
+        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", id++);
+        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", id++);
+        resource->getTexture("noise_texture")->use(shader, "u_noise_texture", id++);
 
         resource->getEntity("postprocess")->draw(shader, resource);
     }

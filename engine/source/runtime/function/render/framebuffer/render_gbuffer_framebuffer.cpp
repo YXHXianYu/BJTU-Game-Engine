@@ -44,13 +44,22 @@ RenderGBufferFramebuffer::RenderGBufferFramebuffer(uint32_t width, uint32_t heig
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_gbuffer_color, 0);
 
+    // transparent (color + reflection) texture
+    glGenTextures(1, &m_gbuffer_transparent);
+    glBindTexture(GL_TEXTURE_2D, m_gbuffer_transparent);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_gbuffer_transparent, 0);
+
     // set which color attachment we'll use
-    uint32_t attachments[3] = {
+    uint32_t attachments[4] = {
         GL_COLOR_ATTACHMENT0,
         GL_COLOR_ATTACHMENT1,
         GL_COLOR_ATTACHMENT2,
+        GL_COLOR_ATTACHMENT3,
     };
-    glDrawBuffers(3, attachments);
+    glDrawBuffers(4, attachments);
 
     // depth texture
     glGenTextures(1, &m_depth_texture);
@@ -78,7 +87,7 @@ RenderGBufferFramebuffer::~RenderGBufferFramebuffer() {
 
 void RenderGBufferFramebuffer::bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // alpha must be 0.0f
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -104,6 +113,13 @@ void RenderGBufferFramebuffer::useGBufferColor(std::shared_ptr<RenderShader> sha
     shader->setUniform(name.c_str(), texture_id);
 }
 
+void RenderGBufferFramebuffer::useGBufferTransparent(std::shared_ptr<RenderShader> shader, const std::string& name,
+                                                     uint32_t texture_id) const {
+    glActiveTexture(GL_TEXTURE0 + texture_id);
+    glBindTexture(GL_TEXTURE_2D, m_gbuffer_transparent);
+    shader->setUniform(name.c_str(), texture_id);
+}
+
 void RenderGBufferFramebuffer::useDepthTexture(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const {
     glActiveTexture(GL_TEXTURE0 + texture_id);
     glBindTexture(GL_TEXTURE_2D, m_depth_texture);
@@ -123,6 +139,9 @@ void RenderGBufferFramebuffer::updateFramebufferSize(uint32_t width, uint32_t he
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
 
     glBindTexture(GL_TEXTURE_2D, m_gbuffer_color);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+    glBindTexture(GL_TEXTURE_2D, m_gbuffer_transparent);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glBindTexture(GL_TEXTURE_2D, m_depth_texture);
