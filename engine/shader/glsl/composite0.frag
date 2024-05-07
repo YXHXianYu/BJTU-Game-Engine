@@ -140,29 +140,6 @@ vec4 fog_frag(vec3 direction, float dis2) {
     return vec4(FOG_COLOR, min(sqrt1((dis2 - 900.0) * 0.00143), 1.0)); // *0.00143 = /700
 }
 
-// === Water Reflection ===
-
-#define STEP_BASE 0.05
-
-vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction) {
-    vec3 test_point = start_point;
-    direction *= STEP_BASE;
-
-    bool hit = false;
-    vec4 hit_color = vec4(0.0);
-
-    // TODO: ===============
-}
-
-vec3 water_reflection(vec3 color, vec3 frag_pos, vec3 normal) {
-    vec3 camera_to_frag = normalize(frag_pos - u_camera_position);
-    vec3 reflect_dir = normalize(reflect(ray_direction, normal));
-
-    color = water_ray_tracing(color, frag_pos, reflect_dir);
-
-    return color;
-}
-
 // === Main ===
 
 void main() {
@@ -180,10 +157,6 @@ void main() {
         float dis2 = abs2(frag_pos - u_camera_position);
         vec4 f = fog_frag(ray_direction, dis2);
         color = mix(color, f.rgb, f.a);
-    }
-
-    if (texture(u_gbuffer_transparent, texcoord).a > EPS) {
-        color = water_reflection(color, frag_pos, normal);
     }
 
     fragcolor = vec4(color, 1.0);
