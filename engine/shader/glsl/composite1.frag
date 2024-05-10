@@ -47,7 +47,7 @@ vec4 water_sample_color(vec2 uv) {
     return hit_color;
 }
 
-vec3 water_ray_tracing(vec3 color, vec3 base_color, vec3 start_point, vec3 direction) {
+vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction, float fresnel) {
     vec3 test_point = start_point;
     direction *= WATER_STEP_BASE;
 
@@ -86,14 +86,16 @@ vec3 water_ray_tracing(vec3 color, vec3 base_color, vec3 start_point, vec3 direc
         hit_color = water_sample_color(uv);
     }
 
-    return mix(base_color, hit_color.rgb, hit_color.a);
+    return mix(color, hit_color.rgb, hit_color.a * fresnel);
 }
 
-vec3 water_reflection(vec3 color, vec3 base_color, vec3 frag_pos, vec3 normal) {
+vec3 water_reflection(vec3 color, vec3 frag_pos, vec3 normal) {
     vec3 camera_to_frag = normalize(frag_pos - u_camera_position);
     vec3 reflect_dir = normalize(reflect(camera_to_frag, normal));
 
-    color = water_ray_tracing(color, base_color, frag_pos + normal * 0.1, reflect_dir);
+    float fresnel = 0.02 + 0.98 * pow(1.0 - dot(reflect_dir, normal), 2.0);
+
+    color = water_ray_tracing(color, frag_pos + normal * 0.1, reflect_dir, fresnel);
 
     return color;
 }
@@ -105,12 +107,11 @@ void main() {
     vec3 frag_pos = texture(u_gbuffer_position, texcoord).xyz;
     vec3 normal   = texture(u_gbuffer_normal, texcoord).rgb;
 
-    vec3 base_color = texture(u_gbuffer_transparent, texcoord).rgb;
     float transparent_strength = texture(u_gbuffer_transparent, texcoord).a;
     if (transparent_strength > 1.0 + EPS) {
-        color = mix(color, base_color, transparent_strength - 1.0);
+        color = color;
     } else if (transparent_strength > EPS) {
-        color = mix(color, water_reflection(color, base_color, frag_pos, normal), transparent_strength);
+        color = water_reflection(color, frag_pos, normal);
     }
 
     fragcolor = vec4(color, 1.0);
