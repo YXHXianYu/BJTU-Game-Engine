@@ -525,7 +525,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
 
     float initialX = -10.0f;
     float initialY = 3.0f;
-    float initialZ = 10.0f;
+    float initialZ = 20.0f;
     float deltaX   = 3.0f;
 
     auto path = "./asset/models/cat/cat.obj";

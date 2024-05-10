@@ -24,7 +24,7 @@ uniform mat4 u_view_projection;
 
 #define WATER_STEP_BASE 0.025
 #define WATER_SAMPLE_TIMES 32
-#define WATER_ENABLE_JITTER true
+#define WATER_ENABLE_JITTER false
 
 vec3 applyViewProjectionTransform(vec3 position) {
     vec4 p = vec4(position, 1.0);
@@ -64,6 +64,7 @@ vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction, float fresn
     }
 
     for (int i = 0; i < WATER_SAMPLE_TIMES; i++) {
+        vec3 last_point = test_point;
         test_point += direction * pow(float(i + 1) + jitter, 1.46); // 使得每次采样步长增加
         test_point_in_frustum = applyViewProjectionTransform(test_point);
         uv = test_point_in_frustum.xy;
@@ -74,9 +75,22 @@ vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction, float fresn
         sample_depth = linearizeDepth(texture(u_depth_texture, uv).r);
         test_depth = linearizeDepth(test_point_in_frustum.z);
         
-        bool magic_formula = test_depth - sample_depth < (1.0 / 2048.0) * (1.0 + test_depth * 200.0 + float(i)); // 去除锯齿/波纹
+        bool magic_formula = (test_depth - sample_depth) < (1.0 / 2048.0) * (1.0 + test_depth * 200.0 + float(i)); // 去除锯齿/波纹
         if (sample_depth < test_depth && magic_formula) {
-            // TODO: bisearch fix
+            direction = test_point - last_point;
+            test_point = last_point;
+            float s = 1.0;
+            for(int i = 0; i < 4; i++) {
+                direction *= 0.5;
+                test_point += direction * s;
+                test_point_in_frustum = applyViewProjectionTransform(test_point);
+                uv = test_point_in_frustum.xy;
+                sample_depth = linearizeDepth(texture(u_depth_texture, uv).r);
+                test_depth = linearizeDepth(test_point_in_frustum.z);
+                if (sample_depth < test_depth) { s = -1.0; }
+                else { s = 1.0; }
+            }
+
             hit = true;
             hit_color = water_sample_color(uv);
             break;
