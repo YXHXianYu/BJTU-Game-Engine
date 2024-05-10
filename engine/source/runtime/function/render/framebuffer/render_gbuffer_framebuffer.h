@@ -19,6 +19,7 @@ public:
     void useGBufferPosition(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const;
     void useGBufferNormal(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const;
     void useGBufferColor(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const;
+    void useGBufferTransparent(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const;
     void useDepthTexture(std::shared_ptr<RenderShader> shader, const std::string& name, uint32_t texture_id) const;
 
     void updateFramebufferSize(uint32_t width, uint32_t height);
@@ -30,7 +31,8 @@ private:
     uint32_t m_framebuffer;
     uint32_t m_gbuffer_position;
     uint32_t m_gbuffer_normal;
-    uint32_t m_gbuffer_color; // diffuse + specular
+    uint32_t m_gbuffer_color;       // diffuse + specular
+    uint32_t m_gbuffer_transparent; // rgb: color; a: reflection
     uint32_t m_depth_texture;
 };
 

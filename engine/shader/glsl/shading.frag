@@ -9,6 +9,7 @@ layout (location = 0) out vec4 fragcolor;
 uniform sampler2D u_gbuffer_position;
 uniform sampler2D u_gbuffer_normal;
 uniform sampler2D u_gbuffer_color;
+uniform sampler2D u_gbuffer_transparent;
 uniform sampler2D u_depth_texture;
 
 uniform float u_time;
@@ -78,6 +79,15 @@ vec3 shading() {
     float depth    = texture(u_depth_texture, texcoord).r;
     if (depth == 1.0) {
         return vec3(0.0);
+    }
+
+    vec3  transparent_color = texture(u_gbuffer_transparent, texcoord).rgb;
+    float transparent_alpha = texture(u_gbuffer_transparent, texcoord).a;
+    if (transparent_alpha > 1.0 + EPS) {
+        transparent_alpha -= 1.0;
+        kd = mix(kd, transparent_color, transparent_alpha);
+    } else if (transparent_alpha > EPS) {
+        kd = mix(kd, transparent_color, transparent_alpha);
     }
 
     vec3 ambient  = AMBIENT_STRENGTH * kd * u_dirlights[0].color; // u_dirlights[0] is the sun

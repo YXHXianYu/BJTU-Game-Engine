@@ -10,6 +10,7 @@ layout (location = 0) out vec4 fragcolor;
 uniform sampler2D u_color_texture;
 uniform sampler2D u_depth_texture;
 uniform sampler2D u_gbuffer_position;
+uniform sampler2D u_gbuffer_normal;
 
 uniform float u_time;
 uniform float u_near;
@@ -84,7 +85,7 @@ float get_cloud_noise(vec3 p) {
     f += 0.25000 * NOISE(q); q = q*2.03;
     f += 0.12500 * NOISE(q);
     f = clamp(1.0 * f + min(p.y * 0.025, 0.5) - 0.5, 0.0, 1.0); // 让云的下部更薄 (*0.025 = /40.0)
-    f = max(f - 0.5, 0.0) * 2.0; // threshold
+    f = max(f - 0.4, 0.0) * 1.67; // threshold
     // TODO: add a smoothstep
     return f;
 }
@@ -138,10 +139,13 @@ vec4 fog_frag(vec3 direction, float dis2) {
     return vec4(FOG_COLOR, min(sqrt1((dis2 - 900.0) * 0.00143), 1.0)); // *0.00143 = /700
 }
 
+// === Main ===
+
 void main() {
     float depth   = texture(u_depth_texture, texcoord).r;
     vec3 color    = texture(u_color_texture, texcoord).rgb;
     vec3 frag_pos = texture(u_gbuffer_position, texcoord).xyz;
+    vec3 normal   = texture(u_gbuffer_normal, texcoord).rgb;
     vec3 ray_direction = getRayDirection();
 
     if (depth == 1.0f) { // sky
@@ -153,5 +157,6 @@ void main() {
         vec4 f = fog_frag(ray_direction, dis2);
         color = mix(color, f.rgb, f.a);
     }
+
     fragcolor = vec4(color, 1.0);
 }

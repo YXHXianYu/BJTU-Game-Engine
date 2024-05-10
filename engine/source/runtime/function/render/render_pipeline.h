@@ -48,6 +48,7 @@ private:
     bool m_render_block{true};
     bool m_render_character{true};
     bool m_render_light{true};
+    bool m_render_transparent{true};
     bool m_use_ortho{true};
 
     bool m_render_assignments{true};

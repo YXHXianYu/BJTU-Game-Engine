@@ -42,6 +42,8 @@ void RenderResource::initialize() {
     m_render_minecraft_blocks_manager->initialize();
     m_render_entities["minecraft_blocks"] = m_render_minecraft_blocks_manager->getEntity();
 
+    m_render_entities["water"] = loadWater();
+
     m_render_entities["postprocess"] = loadPostprocessRectangle();
 
     loadLightingCubeToResource();
@@ -344,6 +346,33 @@ std::shared_ptr<RenderEntity> RenderResource::loadPlainBlocks() {
     return f_entity;
 }
 
+std::shared_ptr<RenderEntity> RenderResource::loadWater() {
+    // mesh
+    const std::vector<Vertex> face_vertex = {
+        Vertex{0.5, 0.5, -0.5, 0, 1, 0, 0.625, 0.5},  Vertex{-0.5, 0.5, -0.5, 0, 1, 0, 0.875, 0.5},
+        Vertex{-0.5, 0.5, 0.5, 0, 1, 0, 0.875, 0.75}, Vertex{0.5, 0.5, 0.5, 0, 1, 0, 0.625, 0.75},
+        Vertex{0.5, 0.5, -0.5, 0, 1, 0, 0.625, 0.5},  Vertex{-0.5, 0.5, 0.5, 0, 1, 0, 0.875, 0.5},
+    };
+    auto face_mesh =
+        std::shared_ptr<RenderMeshBase>(std::make_shared<RenderMesh>(face_vertex, std::vector<uint32_t>{}, std::vector<std::string>{}));
+
+    // entity
+    auto entity = std::make_shared<RenderEntity>();
+
+    for (int i = 2; i <= 15; i++) {
+        for (int j = 2; j <= 15; j++) {
+            auto face = std::make_shared<RenderEntity>();
+            face->addMesh("face", face_mesh);
+            face->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(i, 0.0f, j)));
+            entity->addEntity("face" + std::to_string(i) + ";" + std::to_string(j), face);
+        }
+    }
+
+    entity->setModelMatrix(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)), glm::vec3(0.0f, -1.0f, 0.0f)));
+
+    return entity;
+}
+
 std::shared_ptr<RenderEntity> RenderResource::loadPostprocessRectangle() {
     // mesh
     std::vector<Vertex> rect = {
@@ -411,7 +440,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
     entity->addEntity("rotate", load2DShape());
     entity->addEntity("translate", load2DShape());
     entity->addEntity("combine", load2DShape());
-    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 11.0f, -10.0f)));
+    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 6.0f, -10.0f)));
 
     entity->get("translate")
         ->setModelMatrix(glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f)), glm::vec3(0.0f, 3.0f, 0.0f)));
@@ -495,8 +524,8 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = -10.0f;
-    float initialY = 6.0f;
-    float initialZ = -10.0f;
+    float initialY = 3.0f;
+    float initialZ = 10.0f;
     float deltaX   = 3.0f;
 
     auto path = "./asset/models/cat/cat.obj";
