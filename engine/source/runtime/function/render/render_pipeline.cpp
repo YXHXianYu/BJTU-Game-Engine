@@ -146,8 +146,16 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
     if (m_render_transparent) {
         auto shader = getShader("gbuffer_transparent");
         shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_camera_position", camera->getPosition());
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
+
+        // TODO: is or isn't water
+        shader->setUniform("u_is_water", true);
+
+        uint32_t id = 0;
+        resource->getTexture("noise_texture")->use(shader, "u_noise_texture", id++);
+
 
         shader->setUniform("u_transparent_info", glm::vec4(0.4, 0.6, 1.0, 0.6));
         resource->getEntity("water")->draw(shader, resource);
