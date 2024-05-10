@@ -85,13 +85,13 @@ float get_cloud_noise(vec3 p) {
     f += 0.25000 * NOISE(q); q = q*2.03;
     f += 0.12500 * NOISE(q);
     f = clamp(1.0 * f + min(p.y * 0.025, 0.5) - 0.5, 0.0, 1.0); // 让云的下部更薄 (*0.025 = /40.0)
-    f = max(f - 0.4, 0.0) * 1.67; // threshold
+    f = max(f - 0.5, 0.0) * 2.0; // threshold
     // TODO: add a smoothstep
     return f;
 }
 
 // refer to iq's Clouds: https://www.shadertoy.com/view/XslGRr
-vec3 cloud(vec3 start_point, vec3 direction) {
+vec3 cloud(vec3 base_color, vec3 start_point, vec3 direction) {
     if (direction.y <= 0.1) return SKY_COLOR;
 
     vec4 sum = vec4(0.0);
@@ -119,7 +119,7 @@ vec3 cloud(vec3 start_point, vec3 direction) {
     }
 
     sum = clamp(sum, 0.0, 1.0);
-    return SKY_COLOR * (1.0 - sum.a) + sum.rgb;
+    return base_color * (1.0 - sum.a) + sum.rgb;
 }
 
 // designed & created by me, YXHXianYu
@@ -139,6 +139,24 @@ vec4 fog_frag(vec3 direction, float dis2) {
     return vec4(FOG_COLOR, min(sqrt1((dis2 - 900.0) * 0.00143), 1.0)); // *0.00143 = /700
 }
 
+// === Sun ===
+
+#define SUN_COLOR (vec3(1.0, 0.95, 0.8))
+#define SUN_COEF_SIZE 32
+#define SUN_COEF_MIN  0.1
+#define SUN_COEF_MAX  0.7
+
+vec3 sun(vec3 direction) {
+    float v = pow(max(-dot(direction, u_sunlight_direction), 0.0), SUN_COEF_SIZE);
+    if (v <= SUN_COEF_MIN) {
+        return SKY_COLOR;
+    } else if (v <= SUN_COEF_MAX) {
+        return mix(SKY_COLOR, SUN_COLOR, (v - SUN_COEF_MIN) / (SUN_COEF_MAX - SUN_COEF_MIN));
+    } else {
+        return SUN_COLOR;
+    }
+}
+
 // === Main ===
 
 void main() {
@@ -149,7 +167,8 @@ void main() {
     vec3 ray_direction = getRayDirection();
 
     if (depth == 1.0f) { // sky
-        color = cloud(u_camera_position, ray_direction);
+        color = sun(ray_direction);
+        color = cloud(color, u_camera_position, ray_direction);
         vec4 f = fog_sky(ray_direction);
         color = mix(color, f.rgb, f.a);
     } else { // frag
