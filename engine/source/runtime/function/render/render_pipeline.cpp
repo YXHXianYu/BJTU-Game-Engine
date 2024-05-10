@@ -148,7 +148,7 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
         shader->use();
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
 
-        shader->setUniform("u_transparent_info", glm::vec4(0.0, 0.4, 0.8, 0.5));
+        shader->setUniform("u_transparent_info", glm::vec4(0.4, 0.6, 1.0, 0.75));
         resource->getEntity("water")->draw(shader, resource);
     }
 
@@ -272,6 +272,9 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         auto shader = getShader("composite1");
 
         shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         shader->setUniform("u_near", camera->getNear());
         shader->setUniform("u_far", camera->getFar());
         shader->setUniform("u_camera_position", camera->getPosition());

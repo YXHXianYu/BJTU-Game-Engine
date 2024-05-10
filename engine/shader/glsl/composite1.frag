@@ -13,6 +13,8 @@ uniform sampler2D u_gbuffer_position;
 uniform sampler2D u_gbuffer_normal;
 uniform sampler2D u_gbuffer_transparent;
 
+uniform float u_time;
+uniform vec2 u_resolution;
 uniform float u_near;
 uniform float u_far;
 uniform vec3 u_camera_position;
@@ -20,8 +22,9 @@ uniform mat4 u_view_projection;
 
 // === Water Reflection ===
 
-#define WATER_STEP_BASE 0.05
-#define WATER_SAMPLE_TIMES 256
+#define WATER_STEP_BASE 0.025
+#define WATER_SAMPLE_TIMES 32
+#define WATER_ENABLE_JITTER true
 
 vec3 applyViewProjectionTransform(vec3 position) {
     vec4 p = vec4(position, 1.0);
@@ -43,12 +46,19 @@ vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction) {
     bool hit = false;
     vec4 hit_color = vec4(0.0);
     vec3 test_point_in_frustum;
+    vec2 uv;
     float sample_depth, test_depth;
 
+    float jitter = 0.0f;
+    if (WATER_ENABLE_JITTER) {
+        vec2 uv_scaled = texcoord * u_resolution;
+        jitter = mod((uv_scaled.x + uv_scaled.y) * 0.05, 0.25);
+    }
+
     for (int i = 0; i < WATER_SAMPLE_TIMES; i++) {
-        test_point += direction * pow(float(i + 1), 1.46); // 使得每次采样步长增加
+        test_point += direction * pow(float(i + 1) + jitter, 1.46); // 使得每次采样步长增加
         test_point_in_frustum = applyViewProjectionTransform(test_point);
-        vec2 uv = test_point_in_frustum.xy;
+        uv = test_point_in_frustum.xy;
         if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) {
             hit = true;
             break;
@@ -60,16 +70,18 @@ vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction) {
         if (sample_depth < test_depth && magic_formula) {
             // TODO: bisearch fix
             hit = true;
-            hit_color = vec4(texture(u_color_texture, uv).rgb, 1.0);
+            hit_color.rgb = texture(u_color_texture, uv).rgb;
+            hit_color.a = clamp(1.0 - sqrt1(vec2_abs2(uv - vec2(0.5))) * 1.4, 0.0, 1.0);
             break;
         }
     }
-    if (!hit && sample_depth >= 1.0 - EPS) {
-        hit_color = vec4(vec3(1.0), 1.0);
-        // hit_color = vec4(texture(u_color_texture, test_point_in_frustum.xy).rgb, 1.0);
+    if (!hit) { // TODO: code combination (remove this duplicated part)
+        hit_color.rgb = texture(u_color_texture, uv).rgb;
+        hit_color.a = clamp(1.0 - sqrt1(vec2_abs2(uv - vec2(0.5))) * 1.4, 0.0, 1.0);
     }
 
-    return hit_color.rgb;
+    vec3 base_color = texture(u_gbuffer_transparent, texcoord).rgb;
+    return mix(base_color, hit_color.rgb, hit_color.a);
 }
 
 vec3 water_reflection(vec3 color, vec3 frag_pos, vec3 normal) {
@@ -88,8 +100,9 @@ void main() {
     vec3 frag_pos = texture(u_gbuffer_position, texcoord).xyz;
     vec3 normal   = texture(u_gbuffer_normal, texcoord).rgb;
 
-    if (texture(u_gbuffer_transparent, texcoord).a > EPS) {
-        color = water_reflection(color, frag_pos, normal);
+    float transparent_strength = texture(u_gbuffer_transparent, texcoord).a;
+    if (transparent_strength > EPS) {
+        color = mix(color, water_reflection(color, frag_pos, normal), transparent_strength);
     }
 
     fragcolor = vec4(color, 1.0);
