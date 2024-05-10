@@ -88,6 +88,7 @@ vec3 shading() {
         kd = mix(kd, transparent_color, transparent_alpha);
     } else if (transparent_alpha > EPS) {
         kd = mix(kd, transparent_color, transparent_alpha);
+        ks = min(1.0, ks * 1.75); // magic formula, make sun light reflected by water stronger
     }
 
     vec3 ambient  = AMBIENT_STRENGTH * kd * u_dirlights[0].color; // u_dirlights[0] is the sun
