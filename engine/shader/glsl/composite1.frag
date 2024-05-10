@@ -39,7 +39,15 @@ float linearizeDepth(float depth) {
     return (2.0 * u_near) / (u_far + u_near - depth * (u_far - u_near));
 }
 
-vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction) {
+vec4 water_sample_color(vec2 uv) {
+    vec4 hit_color;
+    hit_color.rgb = texture(u_color_texture, uv).rgb;
+    float d = max(abs(uv.x - 0.5), abs(uv.y - 0.5));
+    hit_color.a = sqrt1(1.0 - d * 2.0);
+    return hit_color;
+}
+
+vec3 water_ray_tracing(vec3 color, vec3 base_color, vec3 start_point, vec3 direction) {
     vec3 test_point = start_point;
     direction *= WATER_STEP_BASE;
 
@@ -52,7 +60,7 @@ vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction) {
     float jitter = 0.0f;
     if (WATER_ENABLE_JITTER) {
         vec2 uv_scaled = texcoord * u_resolution;
-        jitter = mod((uv_scaled.x + uv_scaled.y) * 0.05, 0.25);
+        jitter = mod((uv_scaled.x + uv_scaled.y) * 0.25, 1.0);
     }
 
     for (int i = 0; i < WATER_SAMPLE_TIMES; i++) {
@@ -70,25 +78,22 @@ vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction) {
         if (sample_depth < test_depth && magic_formula) {
             // TODO: bisearch fix
             hit = true;
-            hit_color.rgb = texture(u_color_texture, uv).rgb;
-            hit_color.a = clamp(1.0 - sqrt1(vec2_abs2(uv - vec2(0.5))) * 1.4, 0.0, 1.0);
+            hit_color = water_sample_color(uv);
             break;
         }
     }
-    if (!hit) { // TODO: code combination (remove this duplicated part)
-        hit_color.rgb = texture(u_color_texture, uv).rgb;
-        hit_color.a = clamp(1.0 - sqrt1(vec2_abs2(uv - vec2(0.5))) * 1.4, 0.0, 1.0);
+    if (!hit) {
+        hit_color = water_sample_color(uv);
     }
 
-    vec3 base_color = texture(u_gbuffer_transparent, texcoord).rgb;
     return mix(base_color, hit_color.rgb, hit_color.a);
 }
 
-vec3 water_reflection(vec3 color, vec3 frag_pos, vec3 normal) {
+vec3 water_reflection(vec3 color, vec3 base_color, vec3 frag_pos, vec3 normal) {
     vec3 camera_to_frag = normalize(frag_pos - u_camera_position);
     vec3 reflect_dir = normalize(reflect(camera_to_frag, normal));
 
-    color = water_ray_tracing(color, frag_pos + normal * 0.1, reflect_dir);
+    color = water_ray_tracing(color, base_color, frag_pos + normal * 0.1, reflect_dir);
 
     return color;
 }
@@ -100,9 +105,12 @@ void main() {
     vec3 frag_pos = texture(u_gbuffer_position, texcoord).xyz;
     vec3 normal   = texture(u_gbuffer_normal, texcoord).rgb;
 
+    vec3 base_color = texture(u_gbuffer_transparent, texcoord).rgb;
     float transparent_strength = texture(u_gbuffer_transparent, texcoord).a;
-    if (transparent_strength > EPS) {
-        color = mix(color, water_reflection(color, frag_pos, normal), transparent_strength);
+    if (transparent_strength > 1.0 + EPS) {
+        color = mix(color, base_color, transparent_strength - 1.0);
+    } else if (transparent_strength > EPS) {
+        color = mix(color, water_reflection(color, base_color, frag_pos, normal), transparent_strength);
     }
 
     fragcolor = vec4(color, 1.0);

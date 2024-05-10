@@ -11,7 +11,6 @@ uniform sampler2D u_color_texture;
 uniform sampler2D u_depth_texture;
 uniform sampler2D u_gbuffer_position;
 uniform sampler2D u_gbuffer_normal;
-uniform sampler2D u_gbuffer_transparent;
 
 uniform float u_time;
 uniform float u_near;
@@ -86,7 +85,7 @@ float get_cloud_noise(vec3 p) {
     f += 0.25000 * NOISE(q); q = q*2.03;
     f += 0.12500 * NOISE(q);
     f = clamp(1.0 * f + min(p.y * 0.025, 0.5) - 0.5, 0.0, 1.0); // 让云的下部更薄 (*0.025 = /40.0)
-    f = max(f - 0.5, 0.0) * 2.0; // threshold
+    f = max(f - 0.4, 0.0) * 1.67; // threshold
     // TODO: add a smoothstep
     return f;
 }

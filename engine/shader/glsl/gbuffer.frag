@@ -24,6 +24,7 @@ uniform vec3 u_diffuse_color;
 #endif
 
 #ifdef TRANSPARENT_SHADER
+uniform vec3 u_camera_position;
 uniform vec4 u_transparent_info; // rgba: color + alpha
 #endif
 
@@ -49,5 +50,8 @@ void main() {
 
 #ifdef TRANSPARENT_SHADER
     gbuffer_transparent = u_transparent_info;
+    if (dot(normal, frag_pos - u_camera_position) >= 0) {
+        gbuffer_transparent.a = 1.0 + u_transparent_info.a; // transparent but no reflection
+    }
 #endif
 }

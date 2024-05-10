@@ -83,7 +83,10 @@ vec3 shading() {
 
     vec3  transparent_color = texture(u_gbuffer_transparent, texcoord).rgb;
     float transparent_alpha = texture(u_gbuffer_transparent, texcoord).a;
-    if (transparent_alpha > EPS) {
+    if (transparent_alpha > 1.0 + EPS) {
+        transparent_alpha -= 1.0;
+        kd = mix(kd, transparent_color, transparent_alpha);
+    } else if (transparent_alpha > EPS) {
         kd = mix(kd, transparent_color, transparent_alpha);
     }
 
