@@ -80,7 +80,7 @@ vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction, float fresn
             direction = test_point - last_point;
             test_point = last_point;
             float s = 1.0;
-            for(int i = 0; i < 5; i++) {
+            for(int i = 0; i < 4; i++) {
                 direction *= 0.5;
                 test_point += direction * s;
                 test_point_in_frustum = applyViewProjectionTransform(test_point);
