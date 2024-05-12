@@ -11,7 +11,7 @@ class RenderShader;
 class RenderFramebuffer {
 
 public:
-    RenderFramebuffer(uint32_t width, uint32_t height);
+    RenderFramebuffer(uint32_t width, uint32_t height, bool enable_linear_filter = false);
     ~RenderFramebuffer();
 
     void bind() const;

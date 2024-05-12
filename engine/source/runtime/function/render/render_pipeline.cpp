@@ -83,7 +83,7 @@ void RenderPipeline::initialize() {
     m_render_framebuffers["composite1"] = std::make_shared<RenderFramebuffer>(width, height);
     m_render_framebuffers["composite2"] = std::make_shared<RenderFramebuffer>(width, height);
     m_render_framebuffers["composite3"] = std::make_shared<RenderFramebuffer>(width, height);
-    m_render_framebuffers["final"] = std::make_shared<RenderFramebuffer>(width, height);
+    m_render_framebuffers["final"] = std::make_shared<RenderFramebuffer>(width, height, true); // enable linear filter
 
     // g-buffer
     m_gbuffer_framebuffer = std::make_shared<RenderGBufferFramebuffer>(width, height);
@@ -93,6 +93,9 @@ void RenderPipeline::initialize() {
 
     // === Matrix ===
     m_light_space_matrix = getLightSpaceMatrix();
+
+    // === Key bind ===
+    bindKeyboardEvent();
 }
 
 // TODO: 这里可以将很多framebuffer的depth texture优化成render buffer来加速渲染
@@ -153,8 +156,8 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
         shader->setUniform("u_camera_position", camera->getPosition());
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
 
-        // TODO: is or isn't water
-        shader->setUniform("u_is_water", true);
+        // 0:not water; 1:static; 2:normal with noise; 3:dynamic water
+        shader->setUniform("u_water_mode", m_water_mode);
 
         uint32_t id = 0;
         resource->getTexture("noise_texture")->use(shader, "u_noise_texture", id++);
@@ -344,8 +347,9 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
-        getFramebuffer("composite1")->useColorTexture(shader, "u_origin_texture", 10);
-        getFramebuffer("composite3")->useColorTexture(shader, "u_blur_texture", 11);
+        uint32_t id = 0;
+        getFramebuffer("composite1")->useColorTexture(shader, "u_origin_texture", id++);
+        getFramebuffer("composite3")->useColorTexture(shader, "u_blur_texture", id++);
 
         resource->getEntity("postprocess")->draw(shader, resource);
     }
@@ -430,6 +434,34 @@ std::shared_ptr<RenderFramebuffer>& RenderPipeline::getFramebuffer(const char* n
         assert(false);
     }
     return m_render_framebuffers[name];
+}
+
+void RenderPipeline::bindKeyboardEvent() {
+    g_runtime_global_context.m_window_system->registerOnKeyFunc(
+        std::bind(&RenderPipeline::onKey, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+}
+
+void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        switch (key) {
+            default: {
+                break;
+            }
+        }
+    } else if (action == GLFW_RELEASE) {
+        switch (key) {
+            case GLFW_KEY_N: {
+                m_water_mode = m_water_mode % 3 + 1;
+                break;
+            }
+            case GLFW_KEY_M: {
+                m_is_enabled_fxaa ^= 1;
+            }
+            default: {
+                break;
+            }
+        }
+    }
 }
 
 } // namespace BJTUGE

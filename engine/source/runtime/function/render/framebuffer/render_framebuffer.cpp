@@ -11,7 +11,7 @@
 
 namespace BJTUGE {
 
-RenderFramebuffer::RenderFramebuffer(uint32_t width, uint32_t height) {
+RenderFramebuffer::RenderFramebuffer(uint32_t width, uint32_t height, bool enable_linear_filter) {
     m_width  = width;
     m_height = height;
 
@@ -23,8 +23,13 @@ RenderFramebuffer::RenderFramebuffer(uint32_t width, uint32_t height) {
     glGenTextures(1, &m_color_texture);
     glBindTexture(GL_TEXTURE_2D, m_color_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    if (enable_linear_filter) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_color_texture, 0);
 
     // depth texture

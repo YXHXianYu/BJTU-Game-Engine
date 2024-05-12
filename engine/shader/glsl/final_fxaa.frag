@@ -69,7 +69,7 @@ vec3 FXAA(vec3 color, float M) {
     }
 
     // 4. blend
-    return texture(u_color_texture, texcoord + step / 2.0).rgb;
+    return texture(u_color_texture, texcoord + step / 4.0).rgb;
     // TODO: https://zhuanlan.zhihu.com/p/431384101
 
 }
