@@ -60,8 +60,10 @@ just
 * Window
   * Press `Escape` and `Enter` to exit the BJTU-Game-Engine
 * Render
-   *  Press `Shift + K` to control whether to render the character
-   *  Press `Shift + J` to control whether to render the block
-   *  Press `Shift + L` to control whether to render the light mesh
-   *  Press `Shift + O` to control whether to use the orthogonal projection
-   *  Press `Shift + P` to control whether to render scene by depth (z-buffer)
+   * Press `Shift + K` to control whether to render the character
+   * Press `Shift + J` to control whether to render the block
+   * Press `Shift + L` to control whether to render the light mesh
+   * Press `Shift + O` to control whether to use the orthogonal projection
+   * Press `Shift + P` to control whether to render scene by depth (z-buffer)
+   * Press `N` to switch water mode
+   * Press `M` to enable/disable FXAA
