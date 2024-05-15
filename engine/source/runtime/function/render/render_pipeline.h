@@ -59,7 +59,7 @@ private:
     bool m_render_by_depth{false};
     bool m_is_enable_shadow_map{true};
 
-    uint32_t m_water_mode{4};
+    uint32_t m_water_mode{3};
     uint32_t m_fxaa_mode{2};
 };
 
