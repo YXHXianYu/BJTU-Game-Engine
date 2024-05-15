@@ -457,6 +457,7 @@ void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
             }
             case GLFW_KEY_M: {
                 m_fxaa_mode = (m_fxaa_mode + 1) % 5; // 0: off; 1: blend; 2: edge blend; 3: 十字滤波; 4: 彩色十字滤波
+                break;
             }
             default: {
                 break;

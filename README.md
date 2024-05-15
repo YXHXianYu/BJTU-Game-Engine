@@ -66,4 +66,4 @@ just
    * Press `Shift + O` to control whether to use the orthogonal projection
    * Press `Shift + P` to control whether to render scene by depth (z-buffer)
    * Press `N` to switch water mode
-   * Press `M` to enable/disable FXAA
+   * Press `M` to switch FXAA mode
