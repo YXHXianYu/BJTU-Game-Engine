@@ -21,6 +21,8 @@ uniform mat4 u_inverse_view;
 uniform mat4 u_inverse_projection;
 
 uniform vec3 u_sunlight_direction;
+uniform float u_cloud_size;
+uniform vec3 u_sky_color;
 
 // === Utils ===
 
@@ -69,8 +71,7 @@ float noise_hash(in vec3 x) {
 // === Cloud & Fog ===
 
 #define CLOUD_MIN   (40.0)
-#define SKY_COLOR (vec3(0.47, 0.66, 1.00))
-#define FOG_COLOR (SKY_COLOR + vec3(0.1))
+#define FOG_COLOR (u_sky_color + vec3(0.1))
 
 #define CLOUD_NOISE_SPEED (vec3(5.0, 0.0, 0.0))
 #define CLOUD_NOISE_SCALE (0.02) // 值越小，单朵云越大，但视野内云越少
@@ -85,14 +86,15 @@ float get_cloud_noise(vec3 p) {
     f += 0.25000 * NOISE(q); q = q*2.03;
     f += 0.12500 * NOISE(q);
     f = clamp(1.0 * f + min(p.y * 0.025, 0.5) - 0.5, 0.0, 1.0); // 让云的下部更薄 (*0.025 = /40.0)
-    f = max(f - 0.5, 0.0) * 2.0; // threshold
+    float cloud_size = max(0.0, min(0.9, u_cloud_size));
+    f = max(f - cloud_size, 0.0) / (1 - cloud_size); // threshold
     // TODO: add a smoothstep
     return f;
 }
 
 // refer to iq's Clouds: https://www.shadertoy.com/view/XslGRr
 vec3 cloud(vec3 base_color, vec3 start_point, vec3 direction) {
-    if (direction.y <= 0.1) return SKY_COLOR;
+    if (direction.y <= 0.1) return u_sky_color;
 
     vec4 sum = vec4(0.0);
     float cloud_min = start_point.y + CLOUD_MIN * (exp(-start_point.y / CLOUD_MIN) + 0.001);
@@ -149,9 +151,9 @@ vec4 fog_frag(vec3 direction, float dis2) {
 vec3 sun(vec3 direction) {
     float v = pow(max(-dot(direction, u_sunlight_direction), 0.0), SUN_COEF_SIZE);
     if (v <= SUN_COEF_MIN) {
-        return SKY_COLOR;
+        return u_sky_color;
     } else if (v <= SUN_COEF_MAX) {
-        return mix(SKY_COLOR, SUN_COLOR, (v - SUN_COEF_MIN) / (SUN_COEF_MAX - SUN_COEF_MIN));
+        return mix(u_sky_color, SUN_COLOR, (v - SUN_COEF_MIN) / (SUN_COEF_MAX - SUN_COEF_MIN));
     } else {
         return SUN_COLOR;
     }

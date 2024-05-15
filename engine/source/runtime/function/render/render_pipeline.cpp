@@ -83,7 +83,7 @@ void RenderPipeline::initialize() {
     m_render_framebuffers["composite1"] = std::make_shared<RenderFramebuffer>(width, height);
     m_render_framebuffers["composite2"] = std::make_shared<RenderFramebuffer>(width, height);
     m_render_framebuffers["composite3"] = std::make_shared<RenderFramebuffer>(width, height);
-    m_render_framebuffers["final"] = std::make_shared<RenderFramebuffer>(width, height, true); // enable linear filter
+    m_render_framebuffers["final"]      = std::make_shared<RenderFramebuffer>(width, height, true); // enable linear filter
 
     // g-buffer
     m_gbuffer_framebuffer = std::make_shared<RenderGBufferFramebuffer>(width, height);
@@ -161,7 +161,6 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
 
         uint32_t id = 0;
         resource->getTexture("noise_texture")->use(shader, "u_noise_texture", id++);
-
 
         shader->setUniform("u_transparent_info", glm::vec4(0.4, 0.6, 1.0, 0.6));
         resource->getEntity("water")->draw(shader, resource);
@@ -269,6 +268,8 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_inverse_projection", camera->getInverseProjectionMatrix(m_use_ortho));
 
         shader->setUniform("u_sunlight_direction", resource->getDirectionLights().begin()->second->getDirection());
+        shader->setUniform("u_cloud_size", 0.5f);
+        shader->setUniform("u_sky_color", glm::vec3(0.47, 0.66, 1.00));
 
         uint32_t id = 0;
         getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", id++);
