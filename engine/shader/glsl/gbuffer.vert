@@ -38,8 +38,9 @@ uniform mat4 u_view_projection;
 
 #ifdef TRANSPARENT_SHADER
 uniform float u_time;
-uniform int u_is_water;
 uniform sampler2D u_noise_texture;
+
+uniform int u_water_mode; // 0:not water; 1:static; 2:normal with noise; 3:dynamic water
 #endif
 
 void main() {
@@ -75,21 +76,23 @@ void main() {
     normal = v_normal;
     texcoord = v_texcoord;
 
-    if (u_is_water == 1 && normal.y >= 1.0 - EPS) { // what a mess...
-        float t = u_time * 0.1;
-        vec2 uv = (u_model * vec4(pos, 1.0)).xz + vec2(sin(t), cos(t));
-        pos.y += -0.4 + 0.4 * texture(u_noise_texture, uv * 0.05).x;
+    if (u_water_mode == 3 || u_water_mode == 4) {
+        if (normal.y >= 1.0 - EPS) {
+            float t = u_time * 0.1;
+            vec2 uv = (u_model * vec4(pos, 1.0)).xz + vec2(sin(t), cos(t));
+            pos.y += -0.4 + 0.4 * texture(u_noise_texture, uv * 0.05).x;
 
-        float x0y = 0.4 * texture(u_noise_texture, (uv + vec2(-0.1, 0.0)) * 0.05).x;
-        float x1y = 0.4 * texture(u_noise_texture, (uv + vec2(0.1, 0.0)) * 0.05).x;
-        float z0y = 0.4 * texture(u_noise_texture, (uv + vec2(0.0, -0.1)) * 0.05).x;
-        float z1y = 0.4 * texture(u_noise_texture, (uv + vec2(0.0, 0.1)) * 0.05).x;
+            float x0y = 0.4 * texture(u_noise_texture, (uv + vec2(-0.1, 0.0)) * 0.05).x;
+            float x1y = 0.4 * texture(u_noise_texture, (uv + vec2(0.1, 0.0)) * 0.05).x;
+            float z0y = 0.4 * texture(u_noise_texture, (uv + vec2(0.0, -0.1)) * 0.05).x;
+            float z1y = 0.4 * texture(u_noise_texture, (uv + vec2(0.0, 0.1)) * 0.05).x;
 
-        float dx = x1y - x0y;
-        float dz = z1y - z0y;
+            float dx = x1y - x0y;
+            float dz = z1y - z0y;
 
-        float coef = -0.125;
-        normal = normalize(vec3(dx * coef, 1.0, dz * coef)); // 这里的系数应该是5.0(1.0/0.2)，但效果不好，故改为经验值
+            float coef = -0.125;
+            normal = normalize(vec3(dx * coef, 1.0, dz * coef)); // 这里的系数应该是5.0(1.0/0.2)，但效果不好，故改为经验值
+        }
     }
 #endif
 

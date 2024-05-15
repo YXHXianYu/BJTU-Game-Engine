@@ -36,6 +36,7 @@
 #include <composite2_frag.h>
 #include <composite3_frag.h>
 #include <final_frag.h>
+#include <final_fxaa_frag.h>
 #include <postprocess_vert.h>
 // shadow map
 #include <shadow_map_block_vert.h>
@@ -66,6 +67,7 @@ void RenderPipeline::initialize() {
     m_render_shaders["composite2"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE2_FRAG, "composite2");
     m_render_shaders["composite3"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, COMPOSITE3_FRAG, "composite3");
     m_render_shaders["final"]      = std::make_shared<RenderShader>(POSTPROCESS_VERT, FINAL_FRAG, "final");
+    m_render_shaders["final_fxaa"] = std::make_shared<RenderShader>(POSTPROCESS_VERT, FINAL_FXAA_FRAG, "final_fxaa");
 
     // shadow map
     m_render_shaders["shadow_map"]       = std::make_shared<RenderShader>(SHADOW_MAP_VERT, SHADOW_MAP_FRAG, "shadow_map");
@@ -81,6 +83,7 @@ void RenderPipeline::initialize() {
     m_render_framebuffers["composite1"] = std::make_shared<RenderFramebuffer>(width, height);
     m_render_framebuffers["composite2"] = std::make_shared<RenderFramebuffer>(width, height);
     m_render_framebuffers["composite3"] = std::make_shared<RenderFramebuffer>(width, height);
+    m_render_framebuffers["final"]      = std::make_shared<RenderFramebuffer>(width, height, true); // enable linear filter
 
     // g-buffer
     m_gbuffer_framebuffer = std::make_shared<RenderGBufferFramebuffer>(width, height);
@@ -90,6 +93,9 @@ void RenderPipeline::initialize() {
 
     // === Matrix ===
     m_light_space_matrix = getLightSpaceMatrix();
+
+    // === Key bind ===
+    bindKeyboardEvent();
 }
 
 // TODO: 这里可以将很多framebuffer的depth texture优化成render buffer来加速渲染
@@ -150,12 +156,11 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
         shader->setUniform("u_camera_position", camera->getPosition());
         shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
 
-        // TODO: is or isn't water
-        shader->setUniform("u_is_water", true);
+        // 0:not water; 1:static; 2:normal with noise; 3:dynamic water
+        shader->setUniform("u_water_mode", m_water_mode);
 
         uint32_t id = 0;
         resource->getTexture("noise_texture")->use(shader, "u_noise_texture", id++);
-
 
         shader->setUniform("u_transparent_info", glm::vec4(0.4, 0.6, 1.0, 0.6));
         resource->getEntity("water")->draw(shader, resource);
@@ -263,6 +268,8 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_inverse_projection", camera->getInverseProjectionMatrix(m_use_ortho));
 
         shader->setUniform("u_sunlight_direction", resource->getDirectionLights().begin()->second->getDirection());
+        shader->setUniform("u_cloud_size", 0.5f);
+        shader->setUniform("u_sky_color", glm::vec3(0.47, 0.66, 1.00));
 
         uint32_t id = 0;
         getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", id++);
@@ -332,9 +339,7 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
     }
     getFramebuffer("composite3")->unbind();
 
-    // draw to final framebuffer (default framebuffer)
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    getFramebuffer("final")->bind();
     {
         auto shader = getShader("final");
 
@@ -343,10 +348,28 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
 
-        getFramebuffer("composite1")->useColorTexture(shader, "u_origin_texture", 10);
-        getFramebuffer("composite3")->useColorTexture(shader, "u_blur_texture", 11);
-        // getFramebuffer("composite1")->useDepthTexture(shader, "u_depth_texture", ..);
-        // getFramebuffer("composite3")->useDepthTexture(shader, "u_depth_texture", ..);
+        uint32_t id = 0;
+        getFramebuffer("composite1")->useColorTexture(shader, "u_origin_texture", id++);
+        getFramebuffer("composite3")->useColorTexture(shader, "u_blur_texture", id++);
+
+        resource->getEntity("postprocess")->draw(shader, resource);
+    }
+    getFramebuffer("final")->unbind();
+
+    // draw to final framebuffer (default framebuffer)
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    {
+        auto shader = getShader("final_fxaa");
+
+        shader->use();
+        shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
+        shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
+                           static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
+        shader->setUniform("u_fxaa_mode", m_fxaa_mode);
+
+        uint32_t id = 0;
+        getFramebuffer("final")->useColorTexture(shader, "u_color_texture", id++);
 
         resource->getEntity("postprocess")->draw(shader, resource);
     }
@@ -412,6 +435,35 @@ std::shared_ptr<RenderFramebuffer>& RenderPipeline::getFramebuffer(const char* n
         assert(false);
     }
     return m_render_framebuffers[name];
+}
+
+void RenderPipeline::bindKeyboardEvent() {
+    g_runtime_global_context.m_window_system->registerOnKeyFunc(
+        std::bind(&RenderPipeline::onKey, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+}
+
+void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        switch (key) {
+            default: {
+                break;
+            }
+        }
+    } else if (action == GLFW_RELEASE) {
+        switch (key) {
+            case GLFW_KEY_N: {
+                m_water_mode = m_water_mode % 4 + 1;
+                break;
+            }
+            case GLFW_KEY_M: {
+                m_fxaa_mode = (m_fxaa_mode + 1) % 5; // 0: off; 1: blend; 2: edge blend; 3: 十字滤波; 4: 彩色十字滤波
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
 }
 
 } // namespace BJTUGE

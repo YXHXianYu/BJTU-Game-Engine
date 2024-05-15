@@ -525,7 +525,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
 
     float initialX = -10.0f;
     float initialY = 3.0f;
-    float initialZ = 10.0f;
+    float initialZ = -10.0f;
     float deltaX   = 3.0f;
 
     auto path = "./asset/models/cat/cat.obj";
@@ -548,7 +548,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
         // 使用了 glm::translate 函数创建了一个平移矩阵，将物体沿着 X 轴方向移动。
         // 然后将该平移矩阵与输入的变换矩阵 transform 相乘，以将之前的变换应用到这个平移后的位置上。
         // 最后，将标准化缩放矩阵 normalize_scale 与之前的结果相乘，以确保物体的大小被缩放到合适的范围内。
-        return glm::translate(glm::mat4(1.0f), glm::vec3(initialX + delta * deltaX, initialY, initialZ)) * transform * normalize_scale;
+        return glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ + delta * deltaX)) * transform * normalize_scale;
     };
 
     entity->addEntity("OriginalCat", model_wrapper());

@@ -5,7 +5,7 @@
 namespace BJTUGE {
 
 struct CameraCreateInfo {
-    glm::vec3 position{0.0f, 1.0f, 3.0f};
+    glm::vec3 position{3.0f, 1.0f, 7.0f};
     float     yaw{-90.0f};
     float     pitch{0.0f};
 

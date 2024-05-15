@@ -35,6 +35,9 @@ private:
     std::shared_ptr<RenderShader>&      getShader(const char* name);
     std::shared_ptr<RenderFramebuffer>& getFramebuffer(const char* name);
 
+    void bindKeyboardEvent();
+    void onKey(int key, int scancode, int action, int mods);
+
 private:
     std::unordered_map<std::string, std::shared_ptr<RenderShader>>      m_render_shaders;
     std::unordered_map<std::string, std::shared_ptr<RenderFramebuffer>> m_render_framebuffers;
@@ -55,6 +58,9 @@ private:
 
     bool m_render_by_depth{false};
     bool m_is_enable_shadow_map{true};
+
+    uint32_t m_water_mode{3};
+    uint32_t m_fxaa_mode{2};
 };
 
 } // namespace BJTUGE

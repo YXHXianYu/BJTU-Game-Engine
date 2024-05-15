@@ -24,8 +24,27 @@ uniform vec3 u_diffuse_color;
 #endif
 
 #ifdef TRANSPARENT_SHADER
+uniform float u_time;
 uniform vec3 u_camera_position;
 uniform vec4 u_transparent_info; // rgba: color + alpha
+
+uniform int u_water_mode; // 0:not water; 1:static; 2:normal with noise; 3:dynamic water
+
+// refer to: https://www.shadertoy.com/view/ldlXzM
+// hash based 3d value noise
+float hash(float n) {
+    return fract(sin(n)*43758.5453);
+}
+float noise_hash(in vec3 x) {
+    vec3 p = floor(x);
+    vec3 f = fract(x);
+    f = f*f*(3.0-2.0*f);
+    float n = p.x + p.y*57.0 + 113.0*p.z;
+    return mix(mix(mix( hash(n+  0.0), hash(n+  1.0),f.x),
+                   mix( hash(n+ 57.0), hash(n+ 58.0),f.x),f.y),
+               mix(mix( hash(n+113.0), hash(n+114.0),f.x),
+                   mix( hash(n+170.0), hash(n+171.0),f.x),f.y),f.z);
+}
 #endif
 
 void main() {
@@ -52,6 +71,15 @@ void main() {
     gbuffer_transparent = u_transparent_info;
     if (dot(normal, frag_pos - u_camera_position) >= 0) {
         gbuffer_transparent.a = 1.0 + u_transparent_info.a; // transparent but no reflection
+    }
+
+    if (u_water_mode == 2 || u_water_mode == 4) {
+        float freq = 40.0f;
+        float coef = 0.025f;
+        float t = u_time * 0.0;
+        float dx = noise_hash(vec3(frag_pos.xz * freq, sin(t)));
+        float dz = noise_hash(vec3(frag_pos.xz * freq, cos(t)));
+        gbuffer_normal = normalize(vec3((dx - 0.5) * coef + gbuffer_normal.x, gbuffer_normal.y, (dz - 0.5) * coef + gbuffer_normal.z));
     }
 #endif
 }
