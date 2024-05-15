@@ -366,7 +366,7 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
         shader->setUniform("u_resolution", static_cast<float>(g_runtime_global_context.m_window_system->getWidth()),
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
-        shader->setUniform("u_is_enabled_fxaa", m_is_enabled_fxaa);
+        shader->setUniform("u_fxaa_mode", m_fxaa_mode);
 
         uint32_t id = 0;
         getFramebuffer("final")->useColorTexture(shader, "u_color_texture", id++);
@@ -456,7 +456,7 @@ void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
                 break;
             }
             case GLFW_KEY_M: {
-                m_is_enabled_fxaa ^= 1;
+                m_fxaa_mode = (m_fxaa_mode + 1) % 5; // 0: off; 1: blend; 2: edge blend; 3: 十字滤波; 4: 彩色十字滤波
             }
             default: {
                 break;

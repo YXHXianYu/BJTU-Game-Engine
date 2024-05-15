@@ -8,12 +8,15 @@ uniform sampler2D u_color_texture;
 
 uniform float u_time;
 uniform vec2 u_resolution;
-uniform int u_is_enabled_fxaa;
+uniform int u_fxaa_mode;
 
 // === FXAA ===
 
-#define FXAA_CONTRAST_THRESHOLD 0.1
+#define FXAA_CONTRAST_THRESHOLD 0.025
+#define FXAA_SEARCH_TIMES 10
+#define FXAA_SEARCH_LIMIT 8
 
+// reference: https://zhuanlan.zhihu.com/p/431384101
 vec3 FXAA(vec3 color, float M) {
     // 1. check contrast
     vec2 delta = 1.0 / u_resolution;
@@ -26,8 +29,16 @@ vec3 FXAA(vec3 color, float M) {
     float min_luminance = min(M, min(S, min(N, min(W, E))));
     float contrast = max_luminance - min_luminance;
 
-    // 去除下面的注释，然后你就可以看到一个十字滤波器/边缘提取的效果 
-    // return vec3(contrast * 3.0);
+    // 十字滤波器/边缘提取 
+    if (u_fxaa_mode == 3) {
+        return vec3(contrast * 3.0);
+    } else if (u_fxaa_mode == 4) {
+        if (contrast <= FXAA_CONTRAST_THRESHOLD * 2.0) {
+            return vec3(0.0);
+        } else {
+            return color;
+        }
+    }
 
     if (contrast <= FXAA_CONTRAST_THRESHOLD) {
         // return vec3(0.0);
@@ -45,33 +56,91 @@ vec3 FXAA(vec3 color, float M) {
     blend = blend * blend;
 
     // 3. edge direction
-    float vertical = 2*abs(N+S-2*M) + abs(NE+SE-2*E) + abs(NW+SW-2*W);
-    float horizontal = 2*abs(E+W-2*M) + abs(NE+NW-2*N) + abs(SE+SW-2*S);
+    float vertical = 2.0*abs(N+S-2.0*M) + abs(NE+SE-2.0*E) + abs(NW+SW-2.0*W);
+    float horizontal = 2.0*abs(E+W-2.0*M) + abs(NE+NW-2.0*N) + abs(SE+SW-2.0*S);
 
     bool is_edge_horizontal = vertical > horizontal;
 
-    vec2 step;
-    // float gradient;
-    // float opposite_luminance;
-
+    vec2 pixel_step;
     if (is_edge_horizontal) {
         if (abs(N - M) > abs(S - M)) {
-            step = vec2(0.0, delta.y);
+            pixel_step = vec2(0.0, delta.y);
         } else {
-            step = vec2(0.0, -delta.y);
+            pixel_step = vec2(0.0, -delta.y);
         }
     } else {
         if (abs(E - M) > abs(W - M)) {
-            step = vec2(delta.x, 0.0);
+            pixel_step = vec2(delta.x, 0.0);
         } else {
-            step = vec2(-delta.x, 0.0);
+            pixel_step = vec2(-delta.x, 0.0);
         }
     }
 
-    // 4. blend
-    return texture(u_color_texture, texcoord + step / 4.0).rgb;
-    // TODO: https://zhuanlan.zhihu.com/p/431384101
+    // 4 blend
+    if (u_fxaa_mode == 1) {
+        return texture(u_color_texture, texcoord + pixel_step * blend).rgb;
+    } else if (u_fxaa_mode == 2) {
+        float positive = abs((is_edge_horizontal ? N : E) - M);
+        float negative = abs((is_edge_horizontal ? S : W) - M);
+        float gradient, opposite_luminance;
+        if (positive > negative) {
+            gradient = positive;
+            opposite_luminance = is_edge_horizontal ? N : E;
+        } else {
+            gradient = negative;
+            opposite_luminance = is_edge_horizontal ? S : W;
+        }
 
+        // 4.1 edge blend
+        vec2 texcoord_in_edge = texcoord + pixel_step * 0.5f;
+        vec2 edge_step = is_edge_horizontal ? vec2(delta.x, 0.0) : vec2(0.0, delta.y);
+
+        float edge_luminance = (M + opposite_luminance) * 0.5f;
+        float gradient_threshold = edge_luminance * 0.25f;
+        float p_luminance_delta, n_luminance_delta, p_distance, n_distance;
+        float i;
+        // positive
+        for (i = 1.0; i <= FXAA_SEARCH_TIMES; i += 1.0) {
+            p_luminance_delta = texture(u_color_texture, texcoord_in_edge + i * edge_step).a - edge_luminance;
+            if (abs(p_luminance_delta) > gradient_threshold) {
+                p_distance = i;
+                break;
+            }
+        }
+        if (i > FXAA_SEARCH_TIMES) {
+            p_distance = FXAA_SEARCH_LIMIT;
+        }
+        // negative
+        for(i = 1.0; i <= FXAA_SEARCH_TIMES; i += 1.0) {
+            n_luminance_delta = texture(u_color_texture, texcoord_in_edge - i * edge_step).a - edge_luminance;
+            if (abs(n_luminance_delta) > gradient_threshold) {
+                n_distance = i;
+                break;
+            }
+        }
+        if (i > FXAA_SEARCH_TIMES) {
+            n_distance = FXAA_SEARCH_LIMIT;
+        }
+        // edge blend
+        float edge_blend;
+        if (p_distance < n_distance) {
+            if (sign(p_luminance_delta) == sign(M - edge_luminance)) {
+                edge_blend = 0.0f;
+            } else {
+                edge_blend = 0.5f - p_distance / (p_distance + n_distance);
+            }
+        } else {
+            if (sign(n_luminance_delta) == sign(M - edge_luminance)) {
+                edge_blend = 0.0f;
+            } else {
+                edge_blend = 0.5f - n_distance / (p_distance + n_distance);
+            }
+        }
+
+        float final_blend = max(blend, edge_blend);
+
+        return texture(u_color_texture, texcoord + pixel_step * final_blend).rgb;
+    }
 }
 
 // === Main ===
@@ -81,7 +150,7 @@ void main() {
     vec3 color = last_frame_rgba.rgb;
     float luminance = last_frame_rgba.a;
 
-    if (u_is_enabled_fxaa == 1) {
+    if (u_fxaa_mode >= 1) {
         color = FXAA(color, luminance);
     }
 

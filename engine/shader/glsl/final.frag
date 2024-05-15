@@ -16,7 +16,7 @@ void main() {
     vec3 color = origin;
     // vec3 color = origin + blur;
 
-    float brightness = color.r * 0.213 + color.g * 0.715 * color.b * 0.072;
+    float luminance = color.r * 0.213 + color.g * 0.715 * color.b * 0.072; // luminance is needed in next pass (fxaa)
 
-    fragcolor = vec4(color, brightness);
+    fragcolor = vec4(color, luminance);
 }
