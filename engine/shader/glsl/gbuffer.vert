@@ -76,11 +76,7 @@ void main() {
     normal = v_normal;
     texcoord = v_texcoord;
 
-    if (u_water_mode == 1) {
-
-    } else if (u_water_mode == 2) {
-
-    } else if (u_water_mode == 3) {
+    if (u_water_mode == 3 || u_water_mode == 4) {
         if (normal.y >= 1.0 - EPS) {
             float t = u_time * 0.1;
             vec2 uv = (u_model * vec4(pos, 1.0)).xz + vec2(sin(t), cos(t));
@@ -97,8 +93,6 @@ void main() {
             float coef = -0.125;
             normal = normalize(vec3(dx * coef, 1.0, dz * coef)); // 这里的系数应该是5.0(1.0/0.2)，但效果不好，故改为经验值
         }
-    } else { // u_water_mode == 0, which means not water
-        // do nothing
     }
 #endif
 

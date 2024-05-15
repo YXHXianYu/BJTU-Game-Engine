@@ -452,7 +452,7 @@ void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
     } else if (action == GLFW_RELEASE) {
         switch (key) {
             case GLFW_KEY_N: {
-                m_water_mode = m_water_mode % 3 + 1;
+                m_water_mode = m_water_mode % 4 + 1;
                 break;
             }
             case GLFW_KEY_M: {

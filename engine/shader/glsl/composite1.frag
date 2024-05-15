@@ -24,7 +24,7 @@ uniform mat4 u_view_projection;
 
 #define WATER_STEP_BASE 0.025
 #define WATER_SAMPLE_TIMES 32
-#define WATER_ENABLE_JITTER false
+#define WATER_ENABLE_JITTER true
 
 vec3 applyViewProjectionTransform(vec3 position) {
     vec4 p = vec4(position, 1.0);
