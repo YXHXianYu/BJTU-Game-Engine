@@ -268,7 +268,7 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_inverse_projection", camera->getInverseProjectionMatrix(m_use_ortho));
 
         shader->setUniform("u_sunlight_direction", resource->getDirectionLights().begin()->second->getDirection());
-        shader->setUniform("u_cloud_size", 0.5f);
+        shader->setUniform("u_cloud_size", m_cloud_thickness); // 云层厚度,范围从0~0.6f
         shader->setUniform("u_sky_color", glm::vec3(0.47, 0.66, 1.00));
 
         uint32_t id = 0;
@@ -442,6 +442,7 @@ void RenderPipeline::bindKeyboardEvent() {
         std::bind(&RenderPipeline::onKey, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 }
 
+// TODO:添加新的事件
 void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS) {
         switch (key) {
@@ -459,6 +460,15 @@ void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
                 m_fxaa_mode = (m_fxaa_mode + 1) % 5; // 0: off; 1: blend; 2: edge blend; 3: 十字滤波; 4: 彩色十字滤波
                 break;
             }
+            case GLFW_KEY_Z: {
+                if (m_cloud_thickness < 0.6) { m_cloud_thickness += 0.05f; }
+                break;
+            }
+            case GLFW_KEY_X: {
+                if (m_cloud_thickness > 0) { m_cloud_thickness -= 0.05f; }
+                break;
+            }
+
             default: {
                 break;
             }
