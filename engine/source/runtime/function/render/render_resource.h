@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -118,8 +120,9 @@ private:
     std::shared_ptr<RenderEntity> loadSquareLovekdl();
     std::shared_ptr<RenderEntity> loadCubesFJQ();
     std::shared_ptr<RenderEntity> loadCatsCJX();
-    
-    float m_sun_light{1.0f};
+
+    glm::vec3 m_sun_light_direction{-1.0 / sqrt(5), -2.0 / sqrt(5), -1.0 / sqrt(5)};
+    float     m_sun_light_intensity{1.0f};
 };
 
 } // namespace BJTUGE

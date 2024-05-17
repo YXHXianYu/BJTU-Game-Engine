@@ -254,7 +254,7 @@ void RenderResource::loadLightingCubeToResource() {
     m_spot_lights["light_cube_2"] = create_light_cube(glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_spot_lights["light_cube_3"] = create_light_cube(glm::vec3(0.5f, -0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-1.0, -2.0, -1.0), glm::vec3(1.0f));
+    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(m_sun_light_direction, glm::vec3(m_sun_light_intensity));
 }
 
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
@@ -611,13 +611,25 @@ void RenderResource::onKey(int key, int scancode, int action, int mods) {
     } else if (action == GLFW_RELEASE) {
         switch (key) {
             case GLFW_KEY_Z: {
-                if (m_sun_light < 1.0) m_sun_light += 0.05;
-                m_direction_lights["direction_light_cube_1"]->setColor(glm::vec3(m_sun_light));
+                if (m_sun_light_intensity < 1.0) m_sun_light_intensity += 0.05;
+                m_direction_lights["direction_light_cube_1"]->setColor(glm::vec3(m_sun_light_intensity));
                 break;
             }
             case GLFW_KEY_X: {
-                if (m_sun_light > 0.4) m_sun_light -= 0.05;
-                m_direction_lights["direction_light_cube_1"]->setColor(glm::vec3(m_sun_light));
+                if (m_sun_light_intensity > 0.4) m_sun_light_intensity -= 0.05;
+                m_direction_lights["direction_light_cube_1"]->setColor(glm::vec3(m_sun_light_intensity));
+                break;
+            }
+            case GLFW_KEY_R: {
+                m_sun_light_direction.x += 0.1;
+                m_sun_light_direction = glm::normalize(m_sun_light_direction);
+                m_direction_lights["direction_light_cube_1"]->setDirection(m_sun_light_direction);
+                break;
+            }
+            case GLFW_KEY_T: {
+                m_sun_light_direction.x -= 0.1;
+                m_sun_light_direction = glm::normalize(m_sun_light_direction);
+                m_direction_lights["direction_light_cube_1"]->setDirection(m_sun_light_direction);
                 break;
             }
             default: {
