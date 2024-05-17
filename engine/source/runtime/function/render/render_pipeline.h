@@ -61,7 +61,7 @@ private:
 
     uint32_t m_water_mode{3};
     uint32_t m_fxaa_mode{2};
-    float    m_cloud_thickness{0};
+    float    m_cloud_thickness{0.3};
 };
 
 } // namespace BJTUGE

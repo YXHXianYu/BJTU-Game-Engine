@@ -47,6 +47,9 @@ void RenderResource::initialize() {
     m_render_entities["postprocess"] = loadPostprocessRectangle();
 
     loadLightingCubeToResource();
+
+    // === Key bind ===
+    bindKeyboardEvent();
 }
 
 std::shared_ptr<RenderEntity> RenderResource::getEntity(const std::string& key) const {
@@ -249,7 +252,8 @@ void RenderResource::loadLightingCubeToResource() {
     m_spot_lights["light_cube_2"] = create_light_cube(glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_spot_lights["light_cube_3"] = create_light_cube(glm::vec3(0.5f, -0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-1.0, -2.0, -1.0), glm::vec3(1.0f));
+    m_direction_lights["direction_light_cube_1"] =
+        create_direction_light_cube(glm::vec3(-1.0, -2.0, -1.0), glm::vec3(1.0f)); // TODO:修改太阳角度
 }
 
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
@@ -590,5 +594,12 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
 
     return entity;
 }
+
+void RenderResource::bindKeyboardEvent() {
+    // g_runtime_global_context.m_window_system->registerOnKeyFunc(
+    //     std::bind(&RenderResource::onKey, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+}
+
+void RenderResource::onKey(int key, int scancode, int action, int mods) {}
 
 } // namespace BJTUGE

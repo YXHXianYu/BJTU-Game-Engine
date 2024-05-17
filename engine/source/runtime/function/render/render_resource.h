@@ -94,6 +94,9 @@ private:
 
     std::shared_ptr<RenderMinecraftBlocksManager> m_render_minecraft_blocks_manager{nullptr};
 
+    void bindKeyboardEvent();
+    void onKey(int key, int scancode, int action, int mods);
+
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
     std::shared_ptr<RenderTextureBase> loadNoiseTexture();

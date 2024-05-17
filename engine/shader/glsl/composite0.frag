@@ -87,7 +87,7 @@ float get_cloud_noise(vec3 p) {
     f += 0.12500 * NOISE(q);
     f = clamp(1.0 * f + min(p.y * 0.025, 0.5) - 0.5, 0.0, 1.0); // 让云的下部更薄 (*0.025 = /40.0)
     float cloud_size = max(0.0, min(0.9, u_cloud_size));
-    f = max(f - cloud_size, 0.0) / (1 - cloud_size); // threshold 在这里修改云层的厚度
+    f = max(f - cloud_size, 0.0) / (1 - cloud_size); // threshold
     // TODO: add a smoothstep
     return f;
 }
