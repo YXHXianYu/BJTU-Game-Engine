@@ -268,8 +268,8 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_inverse_projection", camera->getInverseProjectionMatrix(m_use_ortho));
 
         shader->setUniform("u_sunlight_direction", resource->getDirectionLights().begin()->second->getDirection());
-        shader->setUniform("u_cloud_size", m_cloud_thickness); // 云层厚度,范围从0~0.6f
-        shader->setUniform("u_sky_color", glm::vec3(0.47, 0.66, 1.00));
+        shader->setUniform("u_cloud_size", m_cloud_thickness);          // 云层厚度,范围从0~0.6f
+        shader->setUniform("u_sky_color", glm::vec3(0.47, 0.66, 1.00)); // TODO:天空的颜色
 
         uint32_t id = 0;
         getFramebuffer("shading")->useColorTexture(shader, "u_color_texture", id++);

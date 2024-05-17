@@ -118,6 +118,8 @@ private:
     std::shared_ptr<RenderEntity> loadSquareLovekdl();
     std::shared_ptr<RenderEntity> loadCubesFJQ();
     std::shared_ptr<RenderEntity> loadCatsCJX();
+    
+    float m_sun_light{1.0f};
 };
 
 } // namespace BJTUGE
