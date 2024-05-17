@@ -11,9 +11,9 @@ uniform sampler2D u_color_texture;
 void main() {
     vec4 color = texture(u_color_texture, texcoord).rgba;
 
-    if (texcoord.y < 1.0 / 2.0 * texcoord.x) {
-        color = vec4(1.0, 0.0, 0.0, 1.0);
-    }
+    // if (texcoord.y < 1.0 / 2.0 * texcoord.x) {
+    //     color = vec4(1.0, 0.0, 0.0, 1.0);
+    // }
 
     fragcolor = color;
 }
