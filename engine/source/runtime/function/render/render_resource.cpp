@@ -49,6 +49,7 @@ void RenderResource::initialize() {
     m_render_entities["postprocess"] = loadPostprocessRectangle();
 
     loadLightingCubeToResource();
+    updateLightSpaceMatrix();
 
     // === Key bind ===
     bindKeyboardEvent();
@@ -601,6 +602,12 @@ void RenderResource::bindKeyboardEvent() {
         std::bind(&RenderResource::onKey, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 }
 
+void RenderResource::updateLightSpaceMatrix() { // Change shadow map matrix in this place
+    glm::mat4 light_projection = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 50.0f);
+    glm::mat4 light_view       = glm::lookAt(glm::vec3((-m_sun_light_direction) * 15.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_light_space_matrix       = light_projection * light_view;
+}
+
 void RenderResource::onKey(int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS) {
         switch (key) {
@@ -623,12 +630,14 @@ void RenderResource::onKey(int key, int scancode, int action, int mods) {
             case GLFW_KEY_R: {
                 m_sun_light_direction.x += 0.1;
                 m_sun_light_direction = glm::normalize(m_sun_light_direction);
+                updateLightSpaceMatrix();
                 m_direction_lights["direction_light_cube_1"]->setDirection(m_sun_light_direction);
                 break;
             }
             case GLFW_KEY_T: {
                 m_sun_light_direction.x -= 0.1;
                 m_sun_light_direction = glm::normalize(m_sun_light_direction);
+                updateLightSpaceMatrix();
                 m_direction_lights["direction_light_cube_1"]->setDirection(m_sun_light_direction);
                 break;
             }

@@ -44,9 +44,8 @@ private:
     std::shared_ptr<RenderShadowFramebuffer>                            m_shadow_framebuffer;
     std::shared_ptr<RenderGBufferFramebuffer>                           m_gbuffer_framebuffer;
 
-    uint32_t  m_shadow_map_width{2048 * 4};
-    uint32_t  m_shadow_map_height{2048 * 4};
-    glm::mat4 m_light_space_matrix;
+    uint32_t m_shadow_map_width{2048 * 4};
+    uint32_t m_shadow_map_height{2048 * 4};
 
     bool m_render_block{true};
     bool m_render_character{true};

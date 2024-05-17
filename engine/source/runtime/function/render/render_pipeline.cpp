@@ -91,9 +91,6 @@ void RenderPipeline::initialize() {
     // shadow map
     m_shadow_framebuffer = std::make_shared<RenderShadowFramebuffer>(m_shadow_map_width, m_shadow_map_height);
 
-    // === Matrix ===
-    m_light_space_matrix = getLightSpaceMatrix();
-
     // === Key bind ===
     bindKeyboardEvent();
 }
@@ -213,7 +210,7 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
 
         // shadow
         shader->setUniform("u_is_enable_shadow_map", m_is_enable_shadow_map);
-        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
+        shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
         m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
 
         // render
@@ -228,11 +225,13 @@ void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, s
     m_shadow_framebuffer->bind();
     glCullFace(GL_FRONT); // to fix peter panning
 
+    // If shadow map has some artifacts, try to change the light space matrix in RenderResource::updateLightSpaceMatrix()
+
     {
         auto shader = getShader("shadow_map");
         shader->use();
 
-        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
+        shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
 
         if (m_render_character) { resource->getEntity("characters")->draw(shader, resource); }
         if (m_render_assignments) { resource->getEntity("assignments")->draw(shader, resource); }
@@ -242,7 +241,7 @@ void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, s
         auto shader = getShader("shadow_map_block");
         shader->use();
 
-        shader->setUniform("u_light_space_matrix", m_light_space_matrix);
+        shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
 
         if (m_render_block) { resource->getEntity("minecraft_blocks")->draw(shader, resource); }
     }
@@ -413,13 +412,6 @@ void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> 
     }
 
     draw(resource, camera);
-}
-
-glm::mat4 RenderPipeline::getLightSpaceMatrix() {
-    glm::mat4 light_projection   = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 50.0f);
-    glm::mat4 light_view         = glm::lookAt(glm::vec3(5.0f, 10.0f, 5.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 light_space_matrix = light_projection * light_view;
-    return light_space_matrix;
 }
 
 std::shared_ptr<RenderShader>& RenderPipeline::getShader(const char* name) {
