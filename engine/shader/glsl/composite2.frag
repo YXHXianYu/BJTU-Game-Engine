@@ -6,6 +6,7 @@ layout (location = 0) out vec4 fragcolor;
 
 uniform float u_time;
 
+uniform vec2 u_resolution;
 uniform sampler2D u_color_texture;
 
 const float offset[9] = float[] (0.0, 1.4896, 3.4757, 5.4619, 7.4482, 9.4345, 11.421, 13.4075, 15.3941);
@@ -19,16 +20,11 @@ vec3 highlight(vec3 color) {
 void main() {
     vec2 uv = texcoord;
     vec3 color = highlight(texture(u_color_texture, uv).rgb) * weight[0];
+
     for(int i = 1; i < 9; i++)
     {
-        color += highlight(texture(u_color_texture, uv + vec2(1.0, 0.0) / vec2(1280, 720) * offset[i]).rgb) * weight[i];
-        color += highlight(texture(u_color_texture, uv - vec2(1.0, 0.0) / vec2(1280, 720) * offset[i]).rgb) * weight[i];
-    }
-    color *= weight[0];
-    for(int i = 1; i < 9; i++)
-    {
-        color += highlight(texture(u_color_texture, uv + vec2(0.0, 1.0) / vec2(1280, 720) * offset[i]).rgb) * weight[i];
-        color += highlight(texture(u_color_texture, uv - vec2(0.0, 1.0) / vec2(1280, 720) * offset[i]).rgb) * weight[i];
+        color += highlight(texture(u_color_texture, uv + vec2(1.0, 0.0) / u_resolution * offset[i]).rgb) * weight[i];
+        color += highlight(texture(u_color_texture, uv - vec2(1.0, 0.0) / u_resolution * offset[i]).rgb) * weight[i];
     }
 
     fragcolor = vec4(color, 1.0);
