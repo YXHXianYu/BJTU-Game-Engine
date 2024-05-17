@@ -9,22 +9,25 @@ uniform float u_time;
 uniform sampler2D u_origin_texture;
 uniform sampler2D u_blur_texture;
 
-float A = 0.22;
-float B = 0.30;
+float A = 0.15;
+float B = 0.45;
 float C = 0.10;
 float D = 0.20;
 float E = 0.01;
 float F = 0.30;
-float W = 11.2;
+float W = 13.134;
  
 vec3 uncharted2TonemapFunction(vec3 x) {
     return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
 }
 
 vec3 uncharted2Tonemap(vec3 color) {
-    color = pow(color, vec3(2.1)); // contrast
-    color = color * 4.0; // exposure
-    return uncharted2TonemapFunction(color) / uncharted2TonemapFunction(vec3(W));
+    color = pow(color, vec3(2.53)); // contrast
+    color = color * 15.0; // exposure
+    color = pow(color, vec3(1.0 / 1.3));
+
+    color = uncharted2TonemapFunction(color) / uncharted2TonemapFunction(vec3(W));
+    return color;
 }
 
 void main() {
