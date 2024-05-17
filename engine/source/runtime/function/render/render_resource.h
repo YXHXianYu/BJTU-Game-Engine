@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -76,6 +78,11 @@ public:
     const std::unordered_map<std::string, std::shared_ptr<RenderDirectionLight>>& getDirectionLights() const { return m_direction_lights; }
 
     /**
+     * @brief Get a modifiable RenderDirectionLights
+     */
+    const glm::mat4 getLightSpaceMatrix() const { return m_light_space_matrix; }
+
+    /**
      * @brief Load a RenderEntity from a file.
      */
     std::shared_ptr<RenderEntity> loadEntityFromFile(const std::string& file_path);
@@ -93,6 +100,11 @@ private:
     std::unordered_map<std::string, std::shared_ptr<RenderTextureBase>>    m_render_textures;
 
     std::shared_ptr<RenderMinecraftBlocksManager> m_render_minecraft_blocks_manager{nullptr};
+
+    void bindKeyboardEvent();
+    void onKey(int key, int scancode, int action, int mods);
+
+    void updateLightSpaceMatrix();
 
 private:
     std::shared_ptr<RenderTextureBase> loadMinecraftTexture();
@@ -115,6 +127,10 @@ private:
     std::shared_ptr<RenderEntity> loadSquareLovekdl();
     std::shared_ptr<RenderEntity> loadCubesFJQ();
     std::shared_ptr<RenderEntity> loadCatsCJX();
+
+    glm::vec3 m_sun_light_direction{-1.0 / sqrt(5), -2.0 / sqrt(5), -1.0 / sqrt(5)};
+    float     m_sun_light_intensity{1.0f};
+    glm::mat4 m_light_space_matrix; // update by constructor in initialization; update by onKey() while gaming
 };
 
 } // namespace BJTUGE

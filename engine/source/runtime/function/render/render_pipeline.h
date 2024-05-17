@@ -44,9 +44,8 @@ private:
     std::shared_ptr<RenderShadowFramebuffer>                            m_shadow_framebuffer;
     std::shared_ptr<RenderGBufferFramebuffer>                           m_gbuffer_framebuffer;
 
-    uint32_t  m_shadow_map_width{2048 * 4};
-    uint32_t  m_shadow_map_height{2048 * 4};
-    glm::mat4 m_light_space_matrix;
+    uint32_t m_shadow_map_width{2048 * 4};
+    uint32_t m_shadow_map_height{2048 * 4};
 
     bool m_render_block{true};
     bool m_render_character{true};
@@ -59,8 +58,10 @@ private:
     bool m_render_by_depth{false};
     bool m_is_enable_shadow_map{true};
 
-    uint32_t m_water_mode{3};
-    uint32_t m_fxaa_mode{2};
+    uint32_t  m_water_mode{3};
+    uint32_t  m_fxaa_mode{2};
+    float     m_cloud_thickness{0.6};
+    glm::vec3 m_sky_color{0.47, 0.66, 1.00};
 };
 
 } // namespace BJTUGE

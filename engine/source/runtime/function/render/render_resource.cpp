@@ -1,5 +1,6 @@
 ﻿#include "runtime/function/render/render_resource.h"
 
+#include "runtime/function/global/global_context.h"
 #include "runtime/function/render/lighting/render_direction_light.h"
 #include "runtime/function/render/lighting/render_spot_light.h"
 #include "runtime/function/render/mesh/face_info.h"
@@ -11,6 +12,7 @@
 #include "runtime/function/render/texture/render_texture.h"
 #include "runtime/function/render/texture/render_texture_3d.h"
 #include "runtime/function/render/texture/render_texture_base.h"
+#include "runtime/function/window/window_system.h"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -47,6 +49,10 @@ void RenderResource::initialize() {
     m_render_entities["postprocess"] = loadPostprocessRectangle();
 
     loadLightingCubeToResource();
+    updateLightSpaceMatrix();
+
+    // === Key bind ===
+    bindKeyboardEvent();
 }
 
 std::shared_ptr<RenderEntity> RenderResource::getEntity(const std::string& key) const {
@@ -249,7 +255,7 @@ void RenderResource::loadLightingCubeToResource() {
     m_spot_lights["light_cube_2"] = create_light_cube(glm::vec3(0.0f, 0.5f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_spot_lights["light_cube_3"] = create_light_cube(glm::vec3(0.5f, -0.5f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(glm::vec3(-1.0, -2.0, -1.0), glm::vec3(1.0f));
+    m_direction_lights["direction_light_cube_1"] = create_direction_light_cube(m_sun_light_direction, glm::vec3(m_sun_light_intensity));
 }
 
 std::shared_ptr<RenderMeshBase> RenderResource::loadCubeMesh() {
@@ -589,6 +595,57 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
     entity->getEntity("CompositeTransformCat")->setModelMatrix(wrapper(compositeMatrix, 6));
 
     return entity;
+}
+
+void RenderResource::bindKeyboardEvent() {
+    g_runtime_global_context.m_window_system->registerOnKeyFunc(
+        std::bind(&RenderResource::onKey, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+}
+
+void RenderResource::updateLightSpaceMatrix() { // Change shadow map matrix in this place
+    glm::mat4 light_projection = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 50.0f);
+    glm::mat4 light_view       = glm::lookAt(glm::vec3((-m_sun_light_direction) * 15.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_light_space_matrix       = light_projection * light_view;
+}
+
+void RenderResource::onKey(int key, int scancode, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        switch (key) {
+            default: {
+                break;
+            }
+        }
+    } else if (action == GLFW_RELEASE) {
+        switch (key) {
+            case GLFW_KEY_Z: {
+                if (m_sun_light_intensity < 1.0) m_sun_light_intensity += 0.05;
+                m_direction_lights["direction_light_cube_1"]->setColor(glm::vec3(m_sun_light_intensity));
+                break;
+            }
+            case GLFW_KEY_X: {
+                if (m_sun_light_intensity > 0.4) m_sun_light_intensity -= 0.05;
+                m_direction_lights["direction_light_cube_1"]->setColor(glm::vec3(m_sun_light_intensity));
+                break;
+            }
+            case GLFW_KEY_R: {
+                m_sun_light_direction.x += 0.1;
+                m_sun_light_direction = glm::normalize(m_sun_light_direction);
+                updateLightSpaceMatrix();
+                m_direction_lights["direction_light_cube_1"]->setDirection(m_sun_light_direction);
+                break;
+            }
+            case GLFW_KEY_T: {
+                m_sun_light_direction.x -= 0.1;
+                m_sun_light_direction = glm::normalize(m_sun_light_direction);
+                updateLightSpaceMatrix();
+                m_direction_lights["direction_light_cube_1"]->setDirection(m_sun_light_direction);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
 }
 
 } // namespace BJTUGE
