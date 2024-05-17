@@ -67,3 +67,5 @@ just
    * Press `Shift + P` to control whether to render scene by depth (z-buffer)
    * Press `N` to switch water mode
    * Press `M` to switch FXAA mode
+   * Press `R/T` to control the position of the sun
+   * Press `Z/X` to control the thickness of the cloud
