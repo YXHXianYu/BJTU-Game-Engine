@@ -1,3 +1,6 @@
+# Set shell for Windows OSs:
+set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
+
 alias gen := generate
 alias g := generate
 alias b := build
@@ -13,7 +16,7 @@ generate:
 
 # build the project
 build: generate
-    cmake --build build -j16
+    cmake --build build -j8
 
 # run the built binary
 run:
