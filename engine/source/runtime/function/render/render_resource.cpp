@@ -23,6 +23,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+#include <chrono>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -71,6 +72,10 @@ std::shared_ptr<RenderTextureBase> RenderResource::getTexture(const std::string&
 }
 
 std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::string& file_path) {
+    const bool VERBOSE = false;
+    std::cerr << "Begin to load model from file: " << file_path << std::endl;
+    auto start = std::chrono::high_resolution_clock::now();
+
     Assimp::Importer importer;
     uint32_t         flags = aiProcess_Triangulate | aiProcess_GenNormals; // do not use `aiProcess_FlipUVs`, because we flip uv in stb_image
 
@@ -139,8 +144,6 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
         // return std::static_pointer_cast<RenderMeshBase>(std::make_shared<RenderMesh>(vertices, indices, textures));
     };
 
-    const bool VERBOSE = false;
-
     std::function<std::shared_ptr<RenderEntity>(aiNode*, const aiScene*, uint32_t)> process_node =
         [&](aiNode* node, const aiScene* scene, uint32_t level) -> std::shared_ptr<RenderEntity> {
         if (VERBOSE && level <= 2) {
@@ -188,7 +191,12 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
         return entity;
     };
 
-    return process_node(scene->mRootNode, scene, 0);
+    auto result   = process_node(scene->mRootNode, scene, 0);
+    auto stop     = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+    std::cerr << "Finished in " << duration.count() << " ms" << std::endl;
+
+    return result;
 }
 
 std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
@@ -406,7 +414,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadAssignments() {
     entity->addEntity("cjx", loadCatsCJX());
     entity->addEntity("creeper", loadCreeper());
     entity->addEntity("house", loadHouse());
-    
+
     return entity;
 }
 
@@ -546,7 +554,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
         return model_entity;
     };
 
-    const auto scale_coef = 0.05f;
+    const auto scale_coef      = 0.05f;
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
     auto wrapper = [&](glm::mat4 transform, float delta) {
@@ -592,24 +600,24 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
 
     return entity;
 }
-std::shared_ptr<RenderEntity> RenderResource::loadHouse(){
+std::shared_ptr<RenderEntity> RenderResource::loadHouse() {
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = 0.0f;
     float initialY = 6.0f;
     float initialZ = -8.0f;
-    float deltaX = 3.0f;
+    float deltaX   = 3.0f;
 
     auto path = "./asset/models/house/house.obj";
 
-    auto model = RenderResource::loadEntityFromFile(path);
+    auto model         = RenderResource::loadEntityFromFile(path);
     auto model_wrapper = [&]() {
         auto model_entity = std::make_shared<RenderEntity>();
         model_entity->addEntity("cube", model);
         return model_entity;
     };
 
-    const auto scale_coef = 1.0f;
+    const auto scale_coef      = 1.0f;
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
     auto wrapper = [&](glm::mat4 transform, float delta) {
@@ -621,24 +629,24 @@ std::shared_ptr<RenderEntity> RenderResource::loadHouse(){
     entity->getEntity("ScaledHouse")->setModelMatrix(wrapper(glm::mat4(1.0f), 1));
     return entity;
 }
-std::shared_ptr<RenderEntity> RenderResource::loadCreeper(){
+std::shared_ptr<RenderEntity> RenderResource::loadCreeper() {
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = 0.0f;
     float initialY = 3.0f;
     float initialZ = -5.0f;
-    float deltaX = 3.0f;
+    float deltaX   = 3.0f;
 
     auto path = "./asset/models/creeper/Creeper.obj";
 
-    auto model = RenderResource::loadEntityFromFile(path);
+    auto model         = RenderResource::loadEntityFromFile(path);
     auto model_wrapper = [&]() {
         auto model_entity = std::make_shared<RenderEntity>();
         model_entity->addEntity("cube", model);
         return model_entity;
     };
 
-    const auto scale_coef = 1.0f;
+    const auto scale_coef      = 1.0f;
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
     auto wrapper = [&](glm::mat4 transform, float delta) {

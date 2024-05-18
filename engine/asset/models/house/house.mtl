@@ -1,7 +1,7 @@
 # Blender 4.1.1 MTL File: 'minecraft-small-house.blend'
 # www.blender.org
 
-newmtl Kámen
+newmtl Kamen
 Ns 360.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
@@ -19,7 +19,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 1
-map_Kd ./trám2.png
+map_Kd ./tram2.png
 
 newmtl Material.001
 Ns 360.000000
@@ -39,7 +39,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 1
-map_Kd ./trám.png
+map_Kd ./tram.png
 
 newmtl Material.006
 Ns 360.000000
@@ -81,7 +81,7 @@ d 1.000000
 illum 2
 map_Kd ./12.jpg
 
-newmtl dveře
+newmtl dvere
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
@@ -89,7 +89,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 1
-map_Kd ./dveře.png
+map_Kd ./dvere.png
 
 newmtl okenice
 Ns 360.000000
@@ -101,7 +101,7 @@ d 1.000000
 illum 1
 map_Kd ./okenice.png
 
-newmtl trám
+newmtl tram
 Ns 360.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
@@ -109,4 +109,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 1
-map_Kd ./trám2.png
+map_Kd ./tram2.png
