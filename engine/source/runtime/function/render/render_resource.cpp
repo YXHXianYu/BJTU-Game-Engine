@@ -404,6 +404,8 @@ std::shared_ptr<RenderEntity> RenderResource::loadAssignments() {
     entity->addEntity("drj", loadSquareLovekdl());
     entity->addEntity("fjq", loadCubesFJQ());
     entity->addEntity("cjx", loadCatsCJX());
+    entity->addEntity("creeper", loadCreeper());
+    
     return entity;
 }
 
@@ -543,17 +545,10 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
         return model_entity;
     };
 
-    // 定义了一个常量 scale_coef，用于指定缩放系数，这个系数用于缩放物体的大小。
-    //  const auto scale_coef = 0.00005f;
     const auto scale_coef = 0.05f;
-    // 使用缩放系数创建了一个缩放矩阵 normalize_scale，该矩阵将会用于标准化物体的大小。
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
-    // 定义了一个 lambda 函数 wrapper，该函数接受两个参数：一个变换矩阵 transform 和一个浮点数 delta
     auto wrapper = [&](glm::mat4 transform, float delta) {
-        // 使用了 glm::translate 函数创建了一个平移矩阵，将物体沿着 X 轴方向移动。
-        // 然后将该平移矩阵与输入的变换矩阵 transform 相乘，以将之前的变换应用到这个平移后的位置上。
-        // 最后，将标准化缩放矩阵 normalize_scale 与之前的结果相乘，以确保物体的大小被缩放到合适的范围内。
         return glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ + delta * deltaX)) * transform * normalize_scale;
     };
 
@@ -597,6 +592,36 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
     return entity;
 }
 
+std::shared_ptr<RenderEntity> RenderResource::loadCreeper(){
+    auto entity = std::make_shared<RenderEntity>();
+
+    float initialX = -15.0f;
+    float initialY = 3.0f;
+    float initialZ = -15.0f;
+    float deltaX = 3.0f;
+
+    auto path = "./asset/models/creeper/creeper.fbx";
+    // auto path = "./asset/models/creeper/creeper.obj";
+
+    auto model = RenderResource::loadEntityFromFile(path);
+    auto model_wrapper = [&]() {
+        auto model_entity = std::make_shared<RenderEntity>();
+        model_entity->addEntity("cube", model);
+        return model_entity;
+    };
+
+    const auto scale_coef = 1.0f;
+    const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
+
+    auto wrapper = [&](glm::mat4 transform, float delta) {
+        return glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ + delta * deltaX)) * transform * normalize_scale;
+    };
+
+    entity->addEntity("ScaledCreeper", model_wrapper());
+
+    entity->getEntity("ScaledCreeper")->setModelMatrix(wrapper(glm::mat4(1.0f), 1));
+    return entity;
+}
 void RenderResource::bindKeyboardEvent() {
     g_runtime_global_context.m_window_system->registerOnKeyFunc(
         std::bind(&RenderResource::onKey, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));

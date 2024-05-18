@@ -127,6 +127,8 @@ private:
     std::shared_ptr<RenderEntity> loadSquareLovekdl();
     std::shared_ptr<RenderEntity> loadCubesFJQ();
     std::shared_ptr<RenderEntity> loadCatsCJX();
+    // cjx
+    std::shared_ptr<RenderEntity> loadCreeper();
 
     glm::vec3 m_sun_light_direction{-1.0 / sqrt(5), -2.0 / sqrt(5), -1.0 / sqrt(5)};
     float     m_sun_light_intensity{1.0f};
