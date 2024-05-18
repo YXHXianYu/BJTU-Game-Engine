@@ -15,7 +15,7 @@ const float weight[9] = float[] (0.066812, 0.129101, 0.112504, 0.08782, 0.061406
 vec3 highlight(vec3 color) {
     float brightness = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
     brightness = pow(brightness, 4.3);
-    return color.rgb * max(brightness - 0.5, 0.0);
+    return color.rgb * max(brightness - 0.6, 0.0);
 }
  
 void main() {
