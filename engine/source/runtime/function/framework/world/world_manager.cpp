@@ -37,7 +37,7 @@ void WorldManager::tick(float delta_time) {
                 std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->remove_block(x, y, z);
             };
 
-            int len = 20;
+            int len = 40;
             for (int i = -len; i <= len; i++) {
                 for (int j = -len; j <= len; j++) {
                     for (int h = -10; h <= -1; h++) {

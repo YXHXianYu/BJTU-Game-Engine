@@ -414,6 +414,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadAssignments() {
     entity->addEntity("cjx", loadCatsCJX());
     entity->addEntity("creeper", loadCreeper());
     entity->addEntity("house", loadHouse());
+    entity->addEntity("tree", loadTree());
 
     return entity;
 }
@@ -457,7 +458,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
     entity->addEntity("rotate", load2DShape());
     entity->addEntity("translate", load2DShape());
     entity->addEntity("combine", load2DShape());
-    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 6.0f, -10.0f)));
+    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-20.0f, 6.0f, -20.0f)));
 
     entity->get("translate")
         ->setModelMatrix(glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f)), glm::vec3(0.0f, 3.0f, 0.0f)));
@@ -486,9 +487,9 @@ std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
 std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = -10.0f;
+    float initialX = -20.0f;
     float initialY = 3.0f;
-    float initialZ = -10.0f;
+    float initialZ = -20.0f;
     float deltaX   = 3.0f;
 
     auto path = "./asset/models/cube/cube.obj";
@@ -540,9 +541,9 @@ std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
 std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = -10.0f;
+    float initialX = -20.0f;
     float initialY = 3.0f;
-    float initialZ = -10.0f;
+    float initialZ = -20.0f;
     float deltaX   = 3.0f;
 
     auto path = "./asset/models/cat/cat.obj";
@@ -600,15 +601,15 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
 
     return entity;
 }
-std::shared_ptr<RenderEntity> RenderResource::loadHouse() {
+std::shared_ptr<RenderEntity> RenderResource::loadTree() {
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = 0.0f;
-    float initialY = 6.0f;
-    float initialZ = -8.0f;
+    float initialX = 10.0f;
+    float initialY = -0.25f;
+    float initialZ = -5.0f;
     float deltaX   = 3.0f;
 
-    auto path = "./asset/models/house/house.obj";
+    auto path = "./asset/models/tree/tree.obj";
 
     auto model         = RenderResource::loadEntityFromFile(path);
     auto model_wrapper = [&]() {
@@ -617,7 +618,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadHouse() {
         return model_entity;
     };
 
-    const auto scale_coef      = 1.0f;
+    const auto scale_coef      = 0.5f;
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
     auto wrapper = [&](glm::mat4 transform, float delta) {
@@ -629,12 +630,43 @@ std::shared_ptr<RenderEntity> RenderResource::loadHouse() {
     entity->getEntity("ScaledHouse")->setModelMatrix(wrapper(glm::mat4(1.0f), 1));
     return entity;
 }
+std::shared_ptr<RenderEntity> RenderResource::loadHouse() {
+    auto entity = std::make_shared<RenderEntity>();
+
+    float initialX = 5.0f;
+    float initialY = -0.25f;
+    float initialZ = -10.0f;
+    float deltaX   = 3.0f;
+
+    auto path = "./asset/models/house/house.obj";
+
+    auto model         = RenderResource::loadEntityFromFile(path);
+    auto model_wrapper = [&]() {
+        auto model_entity = std::make_shared<RenderEntity>();
+        model_entity->addEntity("cube", model);
+        return model_entity;
+    };
+
+    const auto scale_coef      = 0.5f;
+    const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
+
+    auto wrapper = [&](glm::mat4 transform, float delta) {
+        return glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ + delta * deltaX)) * transform * normalize_scale;
+    };
+
+    entity->addEntity("RotatedHouse", model_wrapper());
+
+    glm::mat4 rotatedXMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("RotatedHouse")->setModelMatrix(wrapper(rotatedXMatrix,1));
+
+    return entity;
+}
 std::shared_ptr<RenderEntity> RenderResource::loadCreeper() {
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = 0.0f;
-    float initialY = 3.0f;
-    float initialZ = -5.0f;
+    float initialX = 10.0f;
+    float initialY = 0.75f;
+    float initialZ = -3.0f;
     float deltaX   = 3.0f;
 
     auto path = "./asset/models/creeper/Creeper.obj";
