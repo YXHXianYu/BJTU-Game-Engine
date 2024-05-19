@@ -131,6 +131,8 @@ private:
     std::shared_ptr<RenderEntity> loadCreeper();
     std::shared_ptr<RenderEntity> loadHouse();
     std::shared_ptr<RenderEntity> loadTree();
+    std::shared_ptr<RenderEntity> loadSheep();
+    std::shared_ptr<RenderEntity> loadSword();
 
     glm::vec3 m_sun_light_direction{-1.0 / sqrt(5), -2.0 / sqrt(5), -1.0 / sqrt(5)};
     float     m_sun_light_intensity{1.0f};

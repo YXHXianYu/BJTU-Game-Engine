@@ -415,6 +415,8 @@ std::shared_ptr<RenderEntity> RenderResource::loadAssignments() {
     entity->addEntity("creeper", loadCreeper());
     entity->addEntity("house", loadHouse());
     entity->addEntity("tree", loadTree());
+    entity->addEntity("sheep", loadSheep());
+    entity->addEntity("sword", loadSword());
 
     return entity;
 }
@@ -601,6 +603,65 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
 
     return entity;
 }
+std::shared_ptr<RenderEntity> RenderResource::loadSword() {
+    auto entity = std::make_shared<RenderEntity>();
+
+    float initialX = 5.0f;
+    float initialY = 0.25f;
+    float initialZ = 3.0f;
+    float deltaX   = 3.0f;
+
+    auto path = "./asset/models/sword/DiamondSword.obj";
+
+    auto model         = RenderResource::loadEntityFromFile(path);
+    auto model_wrapper = [&]() {
+        auto model_entity = std::make_shared<RenderEntity>();
+        model_entity->addEntity("cube", model);
+        return model_entity;
+    };
+
+    const auto scale_coef      = 0.05f;
+    const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
+
+    auto wrapper = [&](glm::mat4 transform, float delta) {
+        return glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ + delta * deltaX)) * transform * normalize_scale;
+    };
+
+    entity->addEntity("RotatedSword", model_wrapper());
+
+    glm::mat4 rotatedXMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+    entity->getEntity("RotatedSword")->setModelMatrix(wrapper(rotatedXMatrix,1));
+    return entity;
+}
+std::shared_ptr<RenderEntity> RenderResource::loadSheep() {
+    auto entity = std::make_shared<RenderEntity>();
+
+    float initialX = 5.0f;
+    float initialY = 0.25f;
+    float initialZ = 1.5f;
+    float deltaX   = 3.0f;
+
+    auto path = "./asset/models/sheep/sheep.obj";
+
+    auto model         = RenderResource::loadEntityFromFile(path);
+    auto model_wrapper = [&]() {
+        auto model_entity = std::make_shared<RenderEntity>();
+        model_entity->addEntity("cube", model);
+        return model_entity;
+    };
+
+    const auto scale_coef      = 0.5f;
+    const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
+
+    auto wrapper = [&](glm::mat4 transform, float delta) {
+        return glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ + delta * deltaX)) * transform * normalize_scale;
+    };
+
+    entity->addEntity("ScaledSheep", model_wrapper());
+
+    entity->getEntity("ScaledSheep")->setModelMatrix(wrapper(glm::mat4(1.0f), 1));
+    return entity;
+}
 std::shared_ptr<RenderEntity> RenderResource::loadTree() {
     auto entity = std::make_shared<RenderEntity>();
 
@@ -664,8 +725,8 @@ std::shared_ptr<RenderEntity> RenderResource::loadHouse() {
 std::shared_ptr<RenderEntity> RenderResource::loadCreeper() {
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = 10.0f;
-    float initialY = 0.75f;
+    float initialX = 7.0f;
+    float initialY = 0.25f;
     float initialZ = -3.0f;
     float deltaX   = 3.0f;
 
@@ -678,16 +739,17 @@ std::shared_ptr<RenderEntity> RenderResource::loadCreeper() {
         return model_entity;
     };
 
-    const auto scale_coef      = 1.0f;
+    const auto scale_coef      = 0.5f;
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
     auto wrapper = [&](glm::mat4 transform, float delta) {
         return glm::translate(glm::mat4(1.0f), glm::vec3(initialX, initialY, initialZ + delta * deltaX)) * transform * normalize_scale;
     };
 
-    entity->addEntity("ScaledCreeper", model_wrapper());
+    entity->addEntity("RotatedCreeper", model_wrapper());
 
-    entity->getEntity("ScaledCreeper")->setModelMatrix(wrapper(glm::mat4(1.0f), 1));
+    glm::mat4 rotatedXMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(320.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    entity->getEntity("RotatedCreeper")->setModelMatrix(wrapper(rotatedXMatrix,1));
     return entity;
 }
 void RenderResource::bindKeyboardEvent() {
