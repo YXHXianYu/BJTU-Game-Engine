@@ -606,8 +606,8 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
 std::shared_ptr<RenderEntity> RenderResource::loadSword() {
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = 5.0f;
-    float initialY = 0.25f;
+    float initialX = 6.5f;
+    float initialY = -0.35f;
     float initialZ = 3.0f;
     float deltaX   = 3.0f;
 
@@ -620,7 +620,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadSword() {
         return model_entity;
     };
 
-    const auto scale_coef      = 0.05f;
+    const auto scale_coef      = 0.1f;
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
     auto wrapper = [&](glm::mat4 transform, float delta) {
@@ -629,7 +629,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadSword() {
 
     entity->addEntity("RotatedSword", model_wrapper());
 
-    glm::mat4 rotatedXMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+    glm::mat4 rotatedXMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.5f, 0.8f));
     entity->getEntity("RotatedSword")->setModelMatrix(wrapper(rotatedXMatrix,1));
     return entity;
 }
@@ -726,7 +726,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCreeper() {
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = 7.0f;
-    float initialY = 0.25f;
+    float initialY = 0.3f;
     float initialZ = -3.0f;
     float deltaX   = 3.0f;
 
@@ -739,7 +739,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCreeper() {
         return model_entity;
     };
 
-    const auto scale_coef      = 0.5f;
+    const auto scale_coef      = 0.6f;
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
     auto wrapper = [&](glm::mat4 transform, float delta) {
