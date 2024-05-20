@@ -47,7 +47,7 @@ void WorldManager::tick(float delta_time) {
                 }
             }
             {
-                int x_min = 2;
+                int x_min = -15;
                 int x_max = 15;
                 int y_min = 2;
                 int y_max = 15;

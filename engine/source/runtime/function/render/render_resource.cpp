@@ -373,7 +373,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadWater() {
     // entity
     auto entity = std::make_shared<RenderEntity>();
 
-    for (int i = 2; i <= 15; i++) {
+    for (int i = -15; i <= 15; i++) {
         for (int j = 2; j <= 15; j++) {
             auto face = std::make_shared<RenderEntity>();
             face->addMesh("face", face_mesh);
@@ -460,7 +460,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
     entity->addEntity("rotate", load2DShape());
     entity->addEntity("translate", load2DShape());
     entity->addEntity("combine", load2DShape());
-    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-20.0f, 6.0f, -20.0f)));
+    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-15.0f, 6.0f, -15.0f)));
 
     entity->get("translate")
         ->setModelMatrix(glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f)), glm::vec3(0.0f, 3.0f, 0.0f)));
@@ -489,9 +489,9 @@ std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
 std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = -20.0f;
+    float initialX = -15.0f;
     float initialY = 3.0f;
-    float initialZ = -20.0f;
+    float initialZ = -15.0f;
     float deltaX   = 3.0f;
 
     auto path = "./asset/models/cube/cube.obj";
@@ -543,9 +543,9 @@ std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
 std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
     auto entity = std::make_shared<RenderEntity>();
 
-    float initialX = -20.0f;
+    float initialX = -15.0f;
     float initialY = 3.0f;
-    float initialZ = -20.0f;
+    float initialZ = -15.0f;
     float deltaX   = 3.0f;
 
     auto path = "./asset/models/cat/cat.obj";
@@ -620,7 +620,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadSword() {
         return model_entity;
     };
 
-    const auto scale_coef      = 0.1f;
+    const auto scale_coef      = 0.075f;
     const auto normalize_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale_coef));
 
     auto wrapper = [&](glm::mat4 transform, float delta) {
@@ -630,7 +630,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadSword() {
     entity->addEntity("RotatedSword", model_wrapper());
 
     glm::mat4 rotatedXMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.5f, 0.8f));
-    entity->getEntity("RotatedSword")->setModelMatrix(wrapper(rotatedXMatrix,1));
+    entity->getEntity("RotatedSword")->setModelMatrix(wrapper(rotatedXMatrix, 1));
     return entity;
 }
 std::shared_ptr<RenderEntity> RenderResource::loadSheep() {
@@ -718,7 +718,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadHouse() {
     entity->addEntity("RotatedHouse", model_wrapper());
 
     glm::mat4 rotatedXMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    entity->getEntity("RotatedHouse")->setModelMatrix(wrapper(rotatedXMatrix,1));
+    entity->getEntity("RotatedHouse")->setModelMatrix(wrapper(rotatedXMatrix, 1));
 
     return entity;
 }
@@ -749,7 +749,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCreeper() {
     entity->addEntity("RotatedCreeper", model_wrapper());
 
     glm::mat4 rotatedXMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(320.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    entity->getEntity("RotatedCreeper")->setModelMatrix(wrapper(rotatedXMatrix,1));
+    entity->getEntity("RotatedCreeper")->setModelMatrix(wrapper(rotatedXMatrix, 1));
     return entity;
 }
 void RenderResource::bindKeyboardEvent() {
