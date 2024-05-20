@@ -36,11 +36,13 @@ void WorldManager::tick(float delta_time) {
             auto remove_block = [&](int x, int y, int z) {
                 std::dynamic_pointer_cast<BlockManagerComponent>(m_components[0])->remove_block(x, y, z);
             };
+            auto random = [&](int x, int y) -> int { return std::abs(int(sin(x * 12.9898 + y * 78.233) * 43758.5453)); };
+            auto sign   = [&](int x) -> int { return (x < 0 ? -1 : x > 0); };
 
             int len = 40;
             for (int i = -len; i <= len; i++) {
                 for (int j = -len; j <= len; j++) {
-                    for (int h = -10; h <= -1; h++) {
+                    for (int h = -3; h <= -1; h++) {
                         BlockId id = (h == -1) ? (BlockId::grass) : (h >= -4) ? (BlockId::dirt) : (BlockId::stone);
                         add_block(i, h, j, id);
                     }
@@ -55,6 +57,32 @@ void WorldManager::tick(float delta_time) {
                     for (int j = y_min; j <= y_max; j++) {
                         for (int h = (i == x_min || i == x_max || j == y_min || j == y_max) ? -1 : -2; h <= -1; h++) {
                             remove_block(i, h, j);
+                        }
+                    }
+                }
+            }
+            { // terrain
+                int                           center = 20;
+                int                           M      = len;
+                std::vector<std::vector<int>> height_map(2 * len + 1, std::vector<int>(2 * len + 1, 0));
+                for (int dis = center + 1; dis <= len; dis++) {
+                    for (int i = -dis; i <= dis; i++) {
+                        height_map[M + i][M + dis] = height_map[M + i][M + (dis - 1)] + random(i, dis) % 2;
+                        height_map[M + i][M - dis] = height_map[M + i][M - (dis - 1)] + random(i, -dis) % 2;
+                    }
+                    for (int j = -dis; j <= dis; j++) {
+                        height_map[M + dis][M + j] = height_map[M + (dis - 1)][M + j] + random(dis, j) % 2;
+                        height_map[M - dis][M + j] = height_map[M - (dis - 1)][M + j] + random(-dis, j) % 2;
+                    }
+                }
+
+                for (int i = -len; i <= len; i++) {
+                    for (int j = -len; j <= len; j++) {
+                        for (int h = 0; h < height_map[M + i][M + j]; h++) {
+                            if (h == height_map[M + i][M + j] - 1)
+                                add_block(i, h, j, BlockId::grass);
+                            else
+                                add_block(i, h, j, BlockId::dirt);
                         }
                     }
                 }

@@ -460,7 +460,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadSquareLovekdl() {
     entity->addEntity("rotate", load2DShape());
     entity->addEntity("translate", load2DShape());
     entity->addEntity("combine", load2DShape());
-    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-15.0f, 6.0f, -15.0f)));
+    entity->setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-15.0f, 8.0f, -15.0f)));
 
     entity->get("translate")
         ->setModelMatrix(glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f)), glm::vec3(0.0f, 3.0f, 0.0f)));
@@ -490,7 +490,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCubesFJQ() {
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = -15.0f;
-    float initialY = 3.0f;
+    float initialY = 5.0f;
     float initialZ = -15.0f;
     float deltaX   = 3.0f;
 
@@ -544,7 +544,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCatsCJX() {
     auto entity = std::make_shared<RenderEntity>();
 
     float initialX = -15.0f;
-    float initialY = 3.0f;
+    float initialY = 5.0f;
     float initialZ = -15.0f;
     float deltaX   = 3.0f;
 
