@@ -108,11 +108,11 @@ void main() {
     // vec3 color = origin;
     // vec3 color = blur;
     vec3 color = origin + blur;
-    ColorGrading(color);
-    BSLTonemap(color);
-    ColorSaturation(color);
+    // ColorGrading(color);
+    // BSLTonemap(color);
+    // ColorSaturation(color);
 
-    // color = uncharted2Tonemap(color);
+    color = uncharted2Tonemap(color);
 
     float luminance = color.r * 0.213 + color.g * 0.715 * color.b * 0.072; // luminance is needed in next pass (fxaa)
 
