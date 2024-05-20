@@ -29,7 +29,7 @@ private:
     void draw_shading(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_postprocess(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
-
+    
     glm::mat4 getLightSpaceMatrix();
 
     std::shared_ptr<RenderShader>&      getShader(const char* name);

@@ -118,8 +118,8 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 
     /* Post-process */
     draw_postprocess(resource, camera);
+    
 }
-
 void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     m_gbuffer_framebuffer->bind();
 
