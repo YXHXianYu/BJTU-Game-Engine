@@ -23,6 +23,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+#include "render_resource.h"
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -38,6 +39,7 @@ void RenderResource::initialize() {
 
     m_render_textures["minecraft_texture"]     = loadMinecraftTexture();
     m_render_textures["noise_texture"]         = loadNoiseTexture();
+    m_render_textures["rain_noise_texture"]    = loadRainNoiseTexture();
     m_render_textures["fractal_noise_texture"] = loadFractalNoiseTexture();
 
     m_render_minecraft_blocks_manager = std::make_shared<RenderMinecraftBlocksManager>();
@@ -216,6 +218,10 @@ std::shared_ptr<RenderTextureBase> RenderResource::loadFractalNoiseTexture() {
     return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture>(texture_path, "default", "linear"));
 }
 
+std::shared_ptr<RenderTextureBase> RenderResource::loadRainNoiseTexture() {
+    auto texture_path = "./asset/textures/rain_noise.png";
+    return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture>(texture_path, "default", "linear"));
+}
 /* ===== For Test ===== */
 
 std::shared_ptr<RenderEntity> RenderResource::loadMinecraftBlocks() {

@@ -158,6 +158,7 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
 
         uint32_t id = 0;
         resource->getTexture("noise_texture")->use(shader, "u_noise_texture", id++);
+        resource->getTexture("rain_noise_texture")->use(shader, "u_rain_texture", id++);
 
         shader->setUniform("u_transparent_info", glm::vec4(0.4, 0.6, 1.0, 0.6));
         resource->getEntity("water")->draw(shader, resource);
@@ -277,6 +278,7 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", id++);
         m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", id++);
         resource->getTexture("noise_texture")->use(shader, "u_noise_texture", id++);
+        resource->getTexture("rain_noise_texture")->use(shader, "u_rain_texture", id++);
 
         resource->getEntity("postprocess")->draw(shader, resource);
     }

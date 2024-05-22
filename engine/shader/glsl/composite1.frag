@@ -12,6 +12,7 @@ uniform sampler2D u_depth_texture;
 uniform sampler2D u_gbuffer_position;
 uniform sampler2D u_gbuffer_normal;
 uniform sampler2D u_gbuffer_transparent;
+uniform sampler2D u_rain_texture;
 
 uniform float u_time;
 uniform vec2 u_resolution;
@@ -116,17 +117,44 @@ vec3 water_reflection(vec3 color, vec3 frag_pos, vec3 normal) {
 
 // === Main ===
 
-void main() {
-    vec3 color    = texture(u_color_texture, texcoord).rgb;
+void main(){
+    vec2 texcoord = gl_FragCoord.xy / u_resolution;
+    vec3 color = texture(u_color_texture, texcoord).rgb;
     vec3 frag_pos = texture(u_gbuffer_position, texcoord).xyz;
-    vec3 normal   = texture(u_gbuffer_normal, texcoord).rgb;
-
+    vec3 normal = texture(u_gbuffer_normal, texcoord).rgb;
+    
+    // 反射效果
     float transparent_strength = texture(u_gbuffer_transparent, texcoord).a;
-    if (transparent_strength > 1.0 + EPS) {
+    if (transparent_strength > 1.0 + EPS){
         color = color;
-    } else if (transparent_strength > EPS) {
+    } else if (transparent_strength > EPS){
         color = water_reflection(color, frag_pos, normal);
     }
-
+    
+    // 添加下雨效果
+    // Loop through the different inverse sizes of drops
+    vec2 u = texcoord * u_resolution,
+         n = texture(u_rain_texture, u * 0.1).rg; // Displacement
+    
+    for (float r = 3.0; r > 0.0; r--){
+        vec2 x = u_resolution * r * 0.005, // Number of potential drops (in a grid)
+             p = 6.28 * texcoord * x + (n - 0.5) * 2.0,
+             s = sin(p);
+        
+        // Current drop properties. Coordinates are rounded to ensure a
+        // consistent value among the fragment of a given drop.
+        vec4 d = texture(u_rain_texture, round(texcoord * x - 0.25) / x);
+        
+        // Drop shape and fading
+        float t = (s.x + s.y) * max(0.0, 1.0 - fract(u_time * (d.b + 0.1) + d.g) * 2.0);
+        
+        // d.r -> only x% of drops are kept on, with x depending on the size of drops
+        if (d.r < (5.0 - r) * 0.08 && t > 0.5){
+            vec3 v = normalize(-vec3(cos(p), mix(0.2, 2.0, t - 0.5)));
+            color = mix(color, texture(u_color_texture, texcoord - v.xy * 0.3).rgb, 0.5);
+        }
+    }
+    
     fragcolor = vec4(color, 1.0);
 }
+
