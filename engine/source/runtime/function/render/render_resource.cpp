@@ -219,7 +219,7 @@ std::shared_ptr<RenderTextureBase> RenderResource::loadFractalNoiseTexture() {
 }
 
 std::shared_ptr<RenderTextureBase> RenderResource::loadRainNoiseTexture() {
-    auto texture_path = "./asset/textures/rain_noise.png";
+    auto texture_path = "./asset/textures/noise.png";
     return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture>(texture_path, "default", "linear"));
 }
 /* ===== For Test ===== */

@@ -117,44 +117,44 @@ vec3 water_reflection(vec3 color, vec3 frag_pos, vec3 normal) {
 
 // === Main ===
 
-void main(){
+void main() {
     vec2 texcoord = gl_FragCoord.xy / u_resolution;
     vec3 color = texture(u_color_texture, texcoord).rgb;
     vec3 frag_pos = texture(u_gbuffer_position, texcoord).xyz;
     vec3 normal = texture(u_gbuffer_normal, texcoord).rgb;
-    
+
     // 反射效果
     float transparent_strength = texture(u_gbuffer_transparent, texcoord).a;
-    if (transparent_strength > 1.0 + EPS){
+    if (transparent_strength > 1.0 + EPS) {
         color = color;
-    } else if (transparent_strength > EPS){
+    } else if (transparent_strength > EPS) {
         color = water_reflection(color, frag_pos, normal);
     }
-    
+
     // 添加下雨效果
-    // Loop through the different inverse sizes of drops
-    vec2 u = texcoord * u_resolution,
-         n = texture(u_rain_texture, u * 0.1).rg; // Displacement
-    
-    for (float r = 3.0; r > 0.0; r--){
-        vec2 x = u_resolution * r * 0.005, // Number of potential drops (in a grid)
-             p = 6.28 * texcoord * x + (n - 0.5) * 2.0,
-             s = sin(p);
-        
-        // Current drop properties. Coordinates are rounded to ensure a
-        // consistent value among the fragment of a given drop.
-        vec4 d = texture(u_rain_texture, round(texcoord * x - 0.25) / x);
-        
-        // Drop shape and fading
+    vec2 n = texture(u_rain_texture, texcoord * 0.6).rg; // 位移
+
+    for (float r = 4.0; r > 0.0; r--) {
+        vec2 grid_size = u_resolution * r * 0.005; // 网格中潜在的雨滴数量
+        vec2 p = 6.28 * texcoord * grid_size + (n - 0.5) * 2.0;
+        vec2 s = sin(p);
+
+        // 当前雨滴的属性。坐标被四舍五入，以确保给定雨滴片段的一致值。
+        vec4 d = texture(u_rain_texture, round(texcoord * grid_size - 0.25) / grid_size);
+
+        // 雨滴形状和淡出
         float t = (s.x + s.y) * max(0.0, 1.0 - fract(u_time * (d.b + 0.1) + d.g) * 2.0);
-        
-        // d.r -> only x% of drops are kept on, with x depending on the size of drops
-        if (d.r < (5.0 - r) * 0.08 && t > 0.5){
+
+        // d.r -> 只有x%的雨滴保留，x取决于雨滴的大小
+        if (d.r < (5.0 - r) * 0.08 && t > 0.5) {
             vec3 v = normalize(-vec3(cos(p), mix(0.2, 2.0, t - 0.5)));
-            color = mix(color, texture(u_color_texture, texcoord - v.xy * 0.3).rgb, 0.5);
+            vec2 offsetTexcoord = texcoord - v.xy * 0.3;
+            vec3 dropColor = texture(u_color_texture, offsetTexcoord).rgb;
+
+            // 混合雨滴颜色和基础颜色，增加透明度效果
+            color = mix(color, dropColor, 0.5);
         }
     }
-    
+
     fragcolor = vec4(color, 1.0);
 }
-
