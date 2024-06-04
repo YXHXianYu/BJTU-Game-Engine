@@ -730,7 +730,7 @@ std::shared_ptr<RenderEntity> RenderResource::loadCreeper() {
     float initialZ = -3.0f;
     float deltaX   = 3.0f;
 
-    auto path = "./asset/models/creeper/Creeper.obj";
+    auto path = "./asset/models/creeper/creeper.obj";
 
     auto model         = RenderResource::loadEntityFromFile(path);
     auto model_wrapper = [&]() {
