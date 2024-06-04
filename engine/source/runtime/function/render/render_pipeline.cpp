@@ -5,6 +5,7 @@
 #include "runtime/function/render/framebuffer/render_framebuffer.h"
 #include "runtime/function/render/framebuffer/render_gbuffer_framebuffer.h"
 #include "runtime/function/render/framebuffer/render_shadow_framebuffer.h"
+#include "runtime/function/render/framebuffer/render_rsm_framebuffer.h"
 #include "runtime/function/render/lighting/render_direction_light.h"
 #include "runtime/function/render/lighting/render_spot_light.h"
 #include "runtime/function/render/mesh/render_mesh.h"
@@ -27,6 +28,11 @@
 #include <gbuffer_textured_vert.h>
 #include <gbuffer_transparent_frag.h>
 #include <gbuffer_transparent_vert.h>
+// rsm
+#include <rsm_block_frag.h>
+#include <rsm_block_vert.h>
+#include <rsm_textured_frag.h>
+#include <rsm_textured_vert.h>
 // shading
 #include <shading_frag.h>
 #include <shading_vert.h>
@@ -57,6 +63,10 @@ void RenderPipeline::initialize() {
     m_render_shaders["gbuffer_textured"] = std::make_shared<RenderShader>(GBUFFER_TEXTURED_VERT, GBUFFER_TEXTURED_FRAG, "gbuffer_textured");
     m_render_shaders["gbuffer_transparent"] =
         std::make_shared<RenderShader>(GBUFFER_TRANSPARENT_VERT, GBUFFER_TRANSPARENT_FRAG, "gbuffer_transparent");
+
+    // rsm
+    m_render_shaders["rsm_block"]    = std::make_shared<RenderShader>(RSM_BLOCK_VERT, RSM_BLOCK_FRAG, "rsm_block");
+    m_render_shaders["rsm_textured"] = std::make_shared<RenderShader>(RSM_TEXTURED_VERT, RSM_TEXTURED_FRAG, "rsm_textured");
 
     // shading
     m_render_shaders["shading"] = std::make_shared<RenderShader>(SHADING_VERT, SHADING_FRAG, "shading");
@@ -91,6 +101,9 @@ void RenderPipeline::initialize() {
     // shadow map
     m_shadow_framebuffer = std::make_shared<RenderShadowFramebuffer>(m_shadow_map_width, m_shadow_map_height);
 
+    // rsm
+    m_rsm_framebuffer = std::make_shared<RenderRsmFramebuffer>(m_rsm_width, m_rsm_height);
+
     // === Key bind ===
     bindKeyboardEvent();
 }
@@ -112,6 +125,9 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 
     /* G Buffer */
     draw_gbuffer(resource, camera);
+
+    /* RSM */
+    draw_rsm(resource, camera);
 
     /* Shading */
     draw_shading(resource, camera);
@@ -166,6 +182,41 @@ void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std:
     m_gbuffer_framebuffer->unbind();
 }
 
+void RenderPipeline::draw_rsm(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
+    if (!m_is_enable_rsm) return;
+
+    glViewport(0, 0, m_rsm_width, m_rsm_height);
+    m_rsm_framebuffer->bind();
+    glCullFace(GL_FRONT); // to fix peter panning
+
+    // draw characters
+    if (m_render_character || m_render_assignments || m_render_light) {
+        auto shader = getShader("rsm_textured");
+        shader->use();
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
+
+        // TODO ===============
+
+        if (m_render_character) { resource->getEntity("characters")->draw(shader, resource); }
+        if (m_render_assignments) { resource->getEntity("assignments")->draw(shader, resource); }
+        if (m_render_light) { /* NO NEED */ }
+    }
+
+    // draw minecraft blocks
+    if (m_render_block) {
+        auto shader = getShader("rsm_block");
+        shader->use();
+        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
+        resource->getEntity("minecraft_blocks")->draw(shader, resource);
+    }
+
+    if (m_render_transparent) { /* NO NEED */ }
+
+    glCullFace(GL_BACK); // to fix peter panning
+    m_rsm_framebuffer->unbind();
+    glViewport(0, 0, g_runtime_global_context.m_window_system->getWidth(), g_runtime_global_context.m_window_system->getHeight());
+}
+
 void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     getFramebuffer("shading")->bind();
 
@@ -187,7 +238,8 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         shader->setUniform("u_camera_position", camera->getPosition());
 
         // settings
-        shader->setUniform("u_is_enable_depth_rendering", m_render_by_depth);
+        shader->setUniform("u_is_enable_depth_rendering", m_render_by_depth); // TODO: Broken
+        shader->setUniform("u_is_enable_rsm", m_is_enable_rsm); // TODO: add other uniform variables
 
         // lights
         uint32_t i = 0;
