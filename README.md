@@ -69,3 +69,4 @@ just
    * Press `M` to switch FXAA mode
    * Press `R/T` to control the position of the sun
    * Press `Z/X` to control the thickness of the cloud
+   * Press `C` to control whether to enable Reflective Shadow Map

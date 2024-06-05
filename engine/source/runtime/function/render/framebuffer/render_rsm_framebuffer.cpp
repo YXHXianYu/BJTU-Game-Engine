@@ -1,4 +1,4 @@
-#include "runtime/function/render/framebuffer/render_shadow_framebuffer.h"
+#include "runtime/function/render/framebuffer/render_rsm_framebuffer.h"
 
 #include "runtime/function/global/global_context.h"
 #include "runtime/function/render/render_shader.h"

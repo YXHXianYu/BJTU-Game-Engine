@@ -50,8 +50,8 @@ private:
     uint32_t m_shadow_map_width{2048 * 4};
     uint32_t m_shadow_map_height{2048 * 4};
     
-    uint32_t m_rsm_width{256};
-    uint32_t m_rsm_height{256};
+    uint32_t m_rsm_width{64};
+    uint32_t m_rsm_height{64};
 
     bool m_render_block{true};
     bool m_render_character{true};

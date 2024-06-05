@@ -193,9 +193,7 @@ void RenderPipeline::draw_rsm(std::shared_ptr<RenderResource> resource, std::sha
     if (m_render_character || m_render_assignments || m_render_light) {
         auto shader = getShader("rsm_textured");
         shader->use();
-        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
-
-        // TODO ===============
+        shader->setUniform("u_view_projection", resource->getLightSpaceMatrix());
 
         if (m_render_character) { resource->getEntity("characters")->draw(shader, resource); }
         if (m_render_assignments) { resource->getEntity("assignments")->draw(shader, resource); }
@@ -206,7 +204,8 @@ void RenderPipeline::draw_rsm(std::shared_ptr<RenderResource> resource, std::sha
     if (m_render_block) {
         auto shader = getShader("rsm_block");
         shader->use();
-        shader->setUniform("u_view_projection", camera->getViewProjectionMatrix(m_use_ortho));
+        shader->setUniform("u_view_projection", resource->getLightSpaceMatrix());
+
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
@@ -224,12 +223,22 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         auto shader = getShader("shading");
         shader->use();
 
+        uint32_t texture_id = 0;
+
         // gbuffer
-        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", 0);
-        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", 1);
-        m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", 2);
-        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", 3);
-        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 4);
+        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", texture_id++);
+        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", texture_id++);
+        m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", texture_id++);
+        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", texture_id++);
+        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", texture_id++);
+
+        // rsm
+        shader->setUniform("u_is_enable_rsm", m_is_enable_rsm);
+        shader->setUniform("u_rsm_width", m_rsm_framebuffer->getWidth());
+        shader->setUniform("u_rsm_height", m_rsm_framebuffer->getHeight());
+        m_rsm_framebuffer->usePositionTexture(shader, "u_rsm_position_texture", texture_id++);
+        m_rsm_framebuffer->useNormalTexture(shader, "u_rsm_normal_texture", texture_id++);
+        m_rsm_framebuffer->useColorTexture(shader, "u_rsm_color_texture", texture_id++);
 
         // uniform
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
@@ -237,9 +246,8 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
                            static_cast<float>(g_runtime_global_context.m_window_system->getHeight()));
         shader->setUniform("u_camera_position", camera->getPosition());
 
-        // settings
+        // rendering mode
         shader->setUniform("u_is_enable_depth_rendering", m_render_by_depth); // TODO: Broken
-        shader->setUniform("u_is_enable_rsm", m_is_enable_rsm); // TODO: add other uniform variables
 
         // lights
         uint32_t i = 0;
@@ -263,7 +271,7 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         // shadow
         shader->setUniform("u_is_enable_shadow_map", m_is_enable_shadow_map);
         shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
-        m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
+        m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", texture_id++);
 
         // render
         resource->getEntity("postprocess")->draw(shader, resource);
@@ -516,6 +524,10 @@ void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
                     m_cloud_thickness -= 0.05f;
                     m_sky_color -= glm::vec3(0.04, 0.02, 0);
                 }
+                break;
+            }
+            case GLFW_KEY_C: {
+                m_is_enable_rsm ^= 1;
                 break;
             }
 
