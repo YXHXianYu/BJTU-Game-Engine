@@ -170,10 +170,7 @@ vec3 shading() {
             }
         }
 
-        rsm_ambient *= RSM_STRENGTH;
-
-        // ambient = mix(ambient, rsm_ambient, RSM_PROPORTION);
-        ambient += rsm_ambient;
+        ambient = ambient + rsm_ambient * RSM_STRENGTH;
     }
 
     float shadow = calc_shadow(u_light_space_matrix * vec4(frag_pos, 1.0));
