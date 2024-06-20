@@ -8,4 +8,4 @@
 #define SHADOW_MAP_EPS (1e-3)
 
 // Minecraft
-#define MATERIAL_ID_SUM (9)
+#define MATERIAL_ID_SUM (11)

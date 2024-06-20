@@ -78,9 +78,9 @@ uniform sampler2D u_rsm_position_texture;
 uniform sampler2D u_rsm_normal_texture;
 uniform sampler2D u_rsm_color_texture;
 
-#define RSM_STRENGTH 0.05
+#define RSM_STRENGTH 0.15
 #define RSM_ANGLE_THRESHOLD 0.01
-#define RSM_DISTANCE_ATTENUATION 0.75
+#define RSM_DISTANCE_ATTENUATION 1.25
 
 // === Main ===
 
@@ -134,6 +134,7 @@ vec3 shading() {
         diffuse += diffuse_light;
         specular += specular_light;
     }
+
     // RSM
     if (u_is_enable_rsm >= 1) {
         vec3 rsm_ambient = vec3(0.0);

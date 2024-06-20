@@ -89,36 +89,71 @@ void WorldManager::tick(float delta_time) {
             }
 
             // building
-            int sx = -10; // start x
-            int sz = -10; // start z
-            for (int y = 0; y <= 3; y++) {
-                add_block(sx, y, sz, BlockId::oak_log);
-                add_block(sx, y, sz + 5, BlockId::oak_log);
-                add_block(sx + 5, y, sz, BlockId::oak_log);
-                add_block(sx + 5, y, sz + 5, BlockId::oak_log);
+            {
+                int sx = -10; // start x
+                int sz = -10; // start z
+                for (int y = 0; y <= 3; y++) {
+                    add_block(sx, y, sz, BlockId::oak_log);
+                    add_block(sx, y, sz + 5, BlockId::oak_log);
+                    add_block(sx + 5, y, sz, BlockId::oak_log);
+                    add_block(sx + 5, y, sz + 5, BlockId::oak_log);
 
+                    for (int x = sx + 1; x <= sx + 4; x++)
+                        add_block(x, y, sz, BlockId::oak_planks);
+                    for (int x = sx + 1; x <= sx + 4; x++)
+                        add_block(x, y, sz + 5, BlockId::oak_planks);
+                    for (int z = sz + 1; z <= sz + 4; z++)
+                        add_block(sx, y, z, BlockId::oak_planks);
+                    for (int z = sz + 1; z <= sz + 4; z++)
+                        add_block(sx + 5, y, z, BlockId::oak_planks);
+                }
                 for (int x = sx + 1; x <= sx + 4; x++)
-                    add_block(x, y, sz, BlockId::oak_planks);
-                for (int x = sx + 1; x <= sx + 4; x++)
-                    add_block(x, y, sz + 5, BlockId::oak_planks);
-                for (int z = sz + 1; z <= sz + 4; z++)
-                    add_block(sx, y, z, BlockId::oak_planks);
-                for (int z = sz + 1; z <= sz + 4; z++)
-                    add_block(sx + 5, y, z, BlockId::oak_planks);
+                    for (int z = sz + 1; z <= sz + 4; z++)
+                        add_block(x, 3, z, BlockId::oak_planks);
+
+                // door
+                remove_block(sx + 2, 0, sz + 5);
+                remove_block(sx + 2, 1, sz + 5);
+                remove_block(sx + 3, 0, sz + 5);
+                remove_block(sx + 3, 1, sz + 5);
             }
-            for (int x = sx + 1; x <= sx + 4; x++)
-                for (int z = sz + 1; z <= sz + 4; z++)
-                    add_block(x, 3, z, BlockId::oak_planks);
 
-            // door
-            remove_block(sx + 2, 0, sz + 5);
-            remove_block(sx + 2, 1, sz + 5);
-            remove_block(sx + 3, 0, sz + 5);
-            remove_block(sx + 3, 1, sz + 5);
+            // building 2 (for highlighting Global Illumination)
+            {
+                int sx = -2;  // start x
+                int sz = -11; // start z
+                int ty = 3;
 
-            // test
+                int lx          = 6;
+                int lz          = 6;
+                int window_size = 3;
+
+                for (int y = 0; y < ty; y++) {
+                    add_block(sx, y, sz, BlockId::oak_log);
+                    for (int x = sx + 1; x <= sx + lx; x++)
+                        add_block(x, y, sz, BlockId::oak_planks);
+                    for (int z = sz + 1; z <= sz + lz; z++)
+                        add_block(sx, y, z, BlockId::oak_planks);
+                    for (int x = sx + 1; x <= sx + lx; x++)
+                        add_block(x, y, sz + lz, BlockId::oak_planks);
+                    for (int z = sz + 1; z < sz + lz; z++)
+                        add_block(sx + lx, y, z, BlockId::oak_planks);
+                }
+                for (int x = sx; x <= sx + lx; x++)
+                    for (int z = sz; z <= sz + lz; z++) {
+                        add_block(x, ty, z, BlockId::oak_planks);
+                        remove_block(x, -1, z);
+                        add_block(x, -1, z, BlockId::red_wool_brighter);
+                    }
+
+                for (int x = sx + lx - window_size; x < sx + lx; x++)
+                    for (int z = sz + lz - window_size; z < sz + lz; z++)
+                        remove_block(x, ty, z);
+            }
+
+            // test all blocks
             for (uint32_t i = 0; i < static_cast<uint32_t>(BlockId::block_id_count); i++) {
-                add_block(5, 0, -10 + i, BlockId(i));
+                add_block(10, 0, -10 + i, BlockId(i));
             }
         }
     }

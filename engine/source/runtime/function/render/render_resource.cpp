@@ -199,6 +199,13 @@ std::shared_ptr<RenderEntity> RenderResource::loadEntityFromFile(const std::stri
     return result;
 }
 
+/**
+ * If you want to add a minecraft texture, please modify the following code:
+ * 1. RenderResource::loadMinecraftTexture()
+ * 2. BlockId, add a new block id before "water" field (in function/framework/component/block_manager/block_manager_component.h)
+ * 3. BlockManagerComponent.m_block_properties (in the same file)
+ * 4. GLSL Definition: MATERIAL_ID_SUM (in shader/include/config.glsl)
+ */
 std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
     auto textures_path = std::vector<std::string>{
         "",
@@ -209,6 +216,8 @@ std::shared_ptr<RenderTextureBase> RenderResource::loadMinecraftTexture() {
         "./asset/textures/blocks/oak_planks.png",
         "./asset/textures/blocks/oak_log.png",
         "./asset/textures/blocks/oak_leaves.png",
+        "./asset/textures/blocks/red_wool.png",
+        "./asset/textures/blocks/red_wool_brighter.png",
         "",
     };
     return std::shared_ptr<RenderTextureBase>(std::make_shared<RenderTexture3D>(textures_path));
