@@ -56,17 +56,33 @@ void calc_light(
 uniform int u_is_enable_shadow_map;
 uniform sampler2D u_shadow_texture;
 uniform mat4 u_light_space_matrix;
+uniform float u_shadow_map_width;
+uniform float u_shadow_map_height;
+
+#define IS_ENABLE_PCF true
+#define PCF_FILTER_SIZE 9
 
 float calc_shadow(vec4 frag_pos_light_space) {
     vec3 projection_pos = frag_pos_light_space.xyz / frag_pos_light_space.w;
     projection_pos = projection_pos * 0.5 + 0.5;
 
     if (projection_pos.z > 1.0) { return 0.0; }
-
-    float depth_in_shadow_map = texture(u_shadow_texture, projection_pos.xy).r;
     float depth_in_frag = projection_pos.z;
-    float shadow = ((depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) ? 1.0 : 0.0);
-    return shadow;
+    vec2 shadow_map_size = vec2(u_shadow_map_width, u_shadow_map_height);
+
+    int filter_size = IS_ENABLE_PCF ? PCF_FILTER_SIZE : 1;
+    int filter_min = -filter_size / 2;
+    int filter_max = filter_size / 2;
+
+    float shadow = 0.0;
+    for (int i = filter_min; i <= filter_max; i++) {
+        for (int j = filter_min; j <= filter_max; j++) {
+            float depth_in_shadow_map = texture(u_shadow_texture, (projection_pos.xy) + vec2(i, j) / shadow_map_size).r;
+            shadow += ((depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) ? 1.0 : 0.0);
+        }
+    }
+
+    return shadow / float(filter_size * filter_size);
 }
 
 // === Main ===

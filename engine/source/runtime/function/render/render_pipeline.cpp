@@ -118,7 +118,6 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 
     /* Post-process */
     draw_postprocess(resource, camera);
-    
 }
 void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     m_gbuffer_framebuffer->bind();
@@ -211,6 +210,8 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         // shadow
         shader->setUniform("u_is_enable_shadow_map", m_is_enable_shadow_map);
         shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
+        shader->setUniform("u_shadow_map_width", static_cast<float>(m_shadow_map_width));
+        shader->setUniform("u_shadow_map_height", static_cast<float>(m_shadow_map_height));
         m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
 
         // render
