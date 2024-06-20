@@ -411,9 +411,9 @@ std::shared_ptr<RenderEntity> RenderResource::loadAssignments() {
     auto entity = std::make_shared<RenderEntity>();
     entity->addEntity("drj", loadSquareLovekdl());
     entity->addEntity("fjq", loadCubesFJQ());
-    entity->addEntity("cjx", loadCatsCJX());
+    // entity->addEntity("cjx", loadCatsCJX());
     entity->addEntity("creeper", loadCreeper());
-    entity->addEntity("house", loadHouse());
+    // entity->addEntity("house", loadHouse());
     entity->addEntity("tree", loadTree());
     entity->addEntity("sheep", loadSheep());
     entity->addEntity("sword", loadSword());

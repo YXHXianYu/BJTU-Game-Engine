@@ -53,13 +53,12 @@ void calc_light(
 
 // === Shadow Map ===
 
-uniform int u_is_enable_shadow_map;
+uniform int u_shadow_mode;
 uniform sampler2D u_shadow_texture;
 uniform mat4 u_light_space_matrix;
 uniform float u_shadow_map_width;
 uniform float u_shadow_map_height;
 
-#define IS_ENABLE_PCF true
 #define PCF_FILTER_SIZE 9
 
 float calc_shadow(vec4 frag_pos_light_space) {
@@ -70,19 +69,24 @@ float calc_shadow(vec4 frag_pos_light_space) {
     float depth_in_frag = projection_pos.z;
     vec2 shadow_map_size = vec2(u_shadow_map_width, u_shadow_map_height);
 
-    int filter_size = IS_ENABLE_PCF ? PCF_FILTER_SIZE : 1;
-    int filter_min = -filter_size / 2;
-    int filter_max = filter_size / 2;
+    if (u_shadow_mode == 1 || u_shadow_mode == 2) {
+        int filter_size = u_shadow_mode == 2 ? PCF_FILTER_SIZE : 1;
+        int filter_min = -filter_size / 2;
+        int filter_max = filter_size / 2;
 
-    float shadow = 0.0;
-    for (int i = filter_min; i <= filter_max; i++) {
-        for (int j = filter_min; j <= filter_max; j++) {
-            float depth_in_shadow_map = texture(u_shadow_texture, (projection_pos.xy) + vec2(i, j) / shadow_map_size).r;
-            shadow += ((depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) ? 1.0 : 0.0);
+        float shadow = 0.0;
+        for (int i = filter_min; i <= filter_max; i++) {
+            for (int j = filter_min; j <= filter_max; j++) {
+                float depth_in_shadow_map = texture(u_shadow_texture, (projection_pos.xy) + vec2(i, j) / shadow_map_size).r;
+                shadow += ((depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) ? 1.0 : 0.0);
+            }
         }
-    }
 
-    return shadow / float(filter_size * filter_size);
+        return shadow / float(filter_size * filter_size);
+    } else {
+        return 0.0;
+        // return shadow / float(filter_size * filter_size);
+    }
 }
 
 // === Main ===
@@ -131,11 +135,18 @@ vec3 shading() {
         specular += specular_light;
     }
 
-    float shadow = calc_shadow(u_light_space_matrix * vec4(frag_pos, 1.0));
+    float shadow;
+    if (u_shadow_mode == 0) {
+        shadow = 0.0;
+    } else {
+        shadow = calc_shadow(u_light_space_matrix * vec4(frag_pos, 1.0));
+    }
 
     return ambient + (1.0 - shadow) * (kd * diffuse * DIFFUSE_STRENGTH + ks * specular);
 }
 
 void main() {
     fragcolor = vec4(shading(), 1.0);
+    // float depth = textureLod(u_shadow_texture, texcoord, 5.0).r;
+    // fragcolor = vec4(vec3(depth), 1.0);
 }

@@ -173,11 +173,12 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         shader->use();
 
         // gbuffer
-        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", 0);
-        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", 1);
-        m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", 2);
-        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", 3);
-        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 4);
+        size_t id = 0;
+        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", id++);
+        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", id++);
+        m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", id++);
+        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", id++);
+        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", id++);
 
         // uniform
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
@@ -208,11 +209,11 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         shader->setUniform("u_dirlights_cnt", i);
 
         // shadow
-        shader->setUniform("u_is_enable_shadow_map", m_is_enable_shadow_map);
+        shader->setUniform("u_shadow_mode", m_shadow_mode);
         shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
         shader->setUniform("u_shadow_map_width", static_cast<float>(m_shadow_map_width));
         shader->setUniform("u_shadow_map_height", static_cast<float>(m_shadow_map_height));
-        m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
+        m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", id++);
 
         // render
         resource->getEntity("postprocess")->draw(shader, resource);
@@ -451,6 +452,10 @@ void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
             }
             case GLFW_KEY_M: {
                 m_fxaa_mode = (m_fxaa_mode + 1) % 5; // 0: off; 1: blend; 2: edge blend; 3: 十字滤波; 4: 彩色十字滤波
+                break;
+            }
+            case GLFW_KEY_COMMA: {
+                m_shadow_mode = (m_shadow_mode + 1) % 3; // 0: off; 1: hard shadow; 2: soft shadow (PCF)
                 break;
             }
             case GLFW_KEY_Z: {

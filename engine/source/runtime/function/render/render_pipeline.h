@@ -29,7 +29,7 @@ private:
     void draw_shading(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_postprocess(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
-    
+
     glm::mat4 getLightSpaceMatrix();
 
     std::shared_ptr<RenderShader>&      getShader(const char* name);
@@ -60,6 +60,7 @@ private:
 
     uint32_t  m_water_mode{3};
     uint32_t  m_fxaa_mode{2};
+    uint32_t  m_shadow_mode{1};
     float     m_cloud_thickness{0.6};
     glm::vec3 m_sky_color{0.47, 0.66, 1.00};
 };
