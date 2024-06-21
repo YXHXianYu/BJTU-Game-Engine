@@ -17,6 +17,83 @@ uniform vec3 u_camera_position;
 
 uniform int u_is_enable_depth_rendering;
 
+// PBR Material in RTR
+
+#define PI 3.14159265359
+
+struct Material {
+    vec3 albedo;
+    float metallic;
+    float roughness;
+    float ao; // ambient occlusion
+};
+
+float DistributionGGX(vec3 N, vec3 H, float roughness) {
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+
+    float num = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+
+    return num / denom;
+}
+float GeometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0);
+    float k = (r * r) / 8.0;
+
+    float num = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+
+    return num / denom;
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+vec3 PBR_Shading(Material material, vec3 N, vec3 V, vec3 L, vec3 FragPos, vec3 lightPos, vec3 lightColor) {
+    vec3 F0 = vec3(0.04); 
+    F0 = mix(F0, material.albedo, material.metallic);
+
+    vec3 H = normalize(V + L);
+    float distance = length(lightPos - FragPos);
+    float attenuation = 1.0 / (distance * distance);
+    vec3 radiance = lightColor * attenuation;
+
+    float NDF = DistributionGGX(N, H, material.roughness);        
+    float G = GeometrySmith(N, V, L, material.roughness);      
+    vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+    vec3 numerator = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
+    vec3 specular = numerator / denominator;
+
+    vec3 kS = F;
+    vec3 kD = vec3(1.0) - kS;
+    kD *= 1.0 - material.metallic;  
+
+    float NdotL = max(dot(N, L), 0.0);
+    vec3 Lo = (kD * material.albedo / PI + specular) * radiance * NdotL; 
+
+    vec3 ambient = vec3(0.03) * material.albedo * material.ao;
+    vec3 color = ambient + Lo;
+    
+    color = color / (color + vec3(1.0));
+    color = pow(color, vec3(1.0/2.2)); 
+    return color;
+}
+
 // === Lights ===
 
 struct SpotLight {
@@ -92,32 +169,25 @@ vec3 shading() {
     }
 
     vec3 ambient  = AMBIENT_STRENGTH * kd * u_dirlights[0].color; // u_dirlights[0] is the sun
-    vec3 diffuse  = vec3(0.0);
-    vec3 specular = vec3(0.0);
+
+    vec3 N = normal;
+    vec3 V = normalize(u_camera_position - frag_pos);
+    vec3 color = vec3(0.0);
+    Material material = Material(kd, 0.0, 0.5, 1.0);
 
     for (int i = 0; i < u_dirlights_cnt; i++) {
-        vec3 diffuse_light, specular_light;
-
-        calc_light(frag_pos, normal, -u_dirlights[i].dir, u_dirlights[i].color, diffuse_light, specular_light);
-
-        diffuse += diffuse_light;
-        specular += specular_light;
+        vec3 L = -u_dirlights[i].dir;
+        color += PBR_Shading(material, N, V, L, frag_pos, frag_pos - u_dirlights[i].dir * 1.0, u_dirlights[i].color);
     }
     for (int i = 0; i < u_spotlights_cnt; i++) {
-        vec3 diffuse_light, specular_light;
-
-        vec3 light_dir = normalize(u_spotlights[i].pos - frag_pos);
-        float dis = length(u_spotlights[i].pos - frag_pos);
-        float attenuation = 1.0 / (1 + 0.09 * dis + 0.032 * (dis * dis)); 
-        calc_light(frag_pos, normal, light_dir, u_spotlights[i].color * attenuation, diffuse_light, specular_light);
-
-        diffuse += diffuse_light;
-        specular += specular_light;
+        vec3 L = normalize(u_spotlights[i].pos - frag_pos);
+        // color += PBR_Shading(material, N, V, L, frag_pos, u_spotlights[i].pos, u_spotlights[i].color);
     }
 
     float shadow = calc_shadow(u_light_space_matrix * vec4(frag_pos, 1.0));
 
-    return ambient + (1.0 - shadow) * (kd * diffuse * DIFFUSE_STRENGTH + ks * specular);
+    return ambient + (1.0 - shadow) * (color);
+    // return (1.0 - shadow) * color;
 }
 
 void main() {
