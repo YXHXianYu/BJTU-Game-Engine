@@ -60,6 +60,11 @@ void RenderMesh::draw(std::shared_ptr<RenderShader> shader, std::shared_ptr<Rend
     // assert(m_textures.size() == 1); // TODO: what is this for?
     // Answer: 为了避免在shader中使用了多个纹理，但是没有设置uniform texture...的情况
 
+    shader->setUniform("u_material.albedo", m_diffuse_color);
+    shader->setUniform("u_material.metallic", m_material.metallic);
+    shader->setUniform("u_material.roughness", m_material.roughness);
+    shader->setUniform("u_material.ao", m_material.ao);
+
     glBindVertexArray(m_vao);
     if (m_ebo > 0) {
         glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "runtime/function/render/mesh/render_mesh_base.h"
+#include "runtime/function/render/render_material.h"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -50,6 +51,8 @@ private:
     uint32_t m_vao{0};
     uint32_t m_vbo{0};
     uint32_t m_ebo{0};
+
+    RenderMaterial m_material;
 };
 
 } // namespace BJTUGE

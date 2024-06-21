@@ -118,7 +118,6 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 
     /* Post-process */
     draw_postprocess(resource, camera);
-    
 }
 void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     m_gbuffer_framebuffer->bind();
@@ -174,11 +173,13 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         shader->use();
 
         // gbuffer
-        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", 0);
-        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", 1);
-        m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", 2);
-        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", 3);
-        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", 4);
+        size_t id = 0;
+        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", id++);
+        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", id++);
+        m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", id++);
+        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", id++);
+        m_gbuffer_framebuffer->useGBufferPBR(shader, "u_gbuffer_material", id++);
+        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", id++);
 
         // uniform
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
@@ -211,7 +212,7 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         // shadow
         shader->setUniform("u_is_enable_shadow_map", m_is_enable_shadow_map);
         shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
-        m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", 10);
+        m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", id++);
 
         // render
         resource->getEntity("postprocess")->draw(shader, resource);

@@ -9,6 +9,7 @@ layout (location = 0) out vec3 gbuffer_position;
 layout (location = 1) out vec3 gbuffer_normal;
 layout (location = 2) out vec4 gbuffer_color;
 layout (location = 3) out vec4 gbuffer_transparent;
+layout (location = 4) out vec4 gbuffer_material;
 
 #ifdef BLOCK_SHADER
 layout (location = 3) flat in int material_id;
@@ -21,6 +22,14 @@ uniform int u_texture_cnt;
 uniform sampler2D u_texture_diffuse;
 // uniform sampler2D u_texture_specular;
 uniform vec3 u_diffuse_color;
+
+struct Material {
+    vec3 albedo;
+    float metallic;
+    float roughness;
+    float ao;
+};
+uniform Material u_material;
 #endif
 
 #ifdef TRANSPARENT_SHADER
@@ -55,16 +64,36 @@ void main() {
 #ifdef BLOCK_SHADER
     gbuffer_color.rgb = texture(u_block_texture, vec3(texcoord, float(material_id) / float(MATERIAL_ID_SUM - 1))).rgb;
     gbuffer_color.a = 0.4; // TODO: customized specular
+
+    // TODO: according to material_id, set metallic, roughness, ao (for drj)
+    if (material_id == 1) { // stone
+        gbuffer_material.rgb = vec3(0.8, 0.2, 0.5);
+    } else if (material_id == 2) { // grass
+        gbuffer_material.rgb = vec3(1.0, 0.9, 0.5);
+    } else if (material_id == 3) { // dirt
+        gbuffer_material.rgb = vec3(0.0, 0.8, 1.0);
+    } else if (material_id == 4) { // rock
+        gbuffer_material.rgb = vec3(0.6, 0.6, 0.8);
+    } else if (material_id == 5) { // wood planks
+        gbuffer_material.rgb = vec3(0.0, 0.5, 1.0);
+    } else if (material_id == 6) { // wood logs
+        gbuffer_material.rgb = vec3(0.0, 0.7, 1.0);
+    } else {
+        gbuffer_material.rgb = vec3(0.0, 0.5, 1.0);
+    }
 #endif
 
 #ifdef MODEL_SHADER
     if (u_texture_cnt == 0) {
-        gbuffer_color.rgb = u_diffuse_color;
-        gbuffer_color.rgb = clamp(gbuffer_color.rgb, 0.0, 1.0);
+        gbuffer_color.rgb = clamp(u_material.albedo.rgb, 0.0, 1.0);
     } else {
         gbuffer_color.rgb = texture(u_texture_diffuse, texcoord).rgb;
     }
     gbuffer_color.a = 0.4; // TODO: customized specular
+
+    gbuffer_material.r = u_material.metallic;
+    gbuffer_material.g = u_material.roughness;
+    gbuffer_material.b = u_material.ao;
 #endif
 
 #ifdef TRANSPARENT_SHADER

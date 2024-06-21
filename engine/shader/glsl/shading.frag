@@ -10,6 +10,7 @@ uniform sampler2D u_gbuffer_position;
 uniform sampler2D u_gbuffer_normal;
 uniform sampler2D u_gbuffer_color;
 uniform sampler2D u_gbuffer_transparent;
+uniform sampler2D u_gbuffer_material;
 uniform sampler2D u_depth_texture;
 
 uniform float u_time;
@@ -27,6 +28,8 @@ struct Material {
     float roughness;
     float ao; // ambient occlusion
 };
+
+uniform Material u_material;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness) {
     float a = roughness * roughness;
@@ -153,6 +156,7 @@ vec3 shading() {
     vec3  normal   = texture(u_gbuffer_normal, texcoord).rgb;
     vec3  kd       = texture(u_gbuffer_color, texcoord).rgb;
     float ks       = texture(u_gbuffer_color, texcoord).a;
+    vec3  mat      = texture(u_gbuffer_material, texcoord).rgb;
     float depth    = texture(u_depth_texture, texcoord).r;
     if (depth == 1.0) {
         return vec3(0.0);
@@ -173,7 +177,7 @@ vec3 shading() {
     vec3 N = normal;
     vec3 V = normalize(u_camera_position - frag_pos);
     vec3 color = vec3(0.0);
-    Material material = Material(kd, 0.0, 0.5, 1.0);
+    Material material = Material(kd, mat.r, mat.g, mat.b);
 
     for (int i = 0; i < u_dirlights_cnt; i++) {
         vec3 L = -u_dirlights[i].dir;
