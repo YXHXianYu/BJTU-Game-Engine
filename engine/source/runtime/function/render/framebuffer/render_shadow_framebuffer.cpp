@@ -70,7 +70,6 @@ void RenderShadowFramebuffer::bind() const {
 
 void RenderShadowFramebuffer::unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // Generate MIPMAP
     glBindTexture(GL_TEXTURE_2D, m_color_texture);
     glGenerateMipmap(GL_TEXTURE_2D); // Because RenderShadowFramebuffer is generated every frame, so we can generate MIPMAP here!
 }

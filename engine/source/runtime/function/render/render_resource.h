@@ -81,6 +81,8 @@ public:
      * @brief Get a modifiable RenderDirectionLights
      */
     const glm::mat4 getLightSpaceMatrix() const { return m_light_space_matrix; }
+    const float     getLightSpaceNear() const { return m_light_space_near; }
+    const float     getLightSpaceFar() const { return m_light_space_far; }
 
     /**
      * @brief Load a RenderEntity from a file.
@@ -137,6 +139,8 @@ private:
     glm::vec3 m_sun_light_direction{-1.0 / sqrt(5), -2.0 / sqrt(5), -1.0 / sqrt(5)};
     float     m_sun_light_intensity{1.0f};
     glm::mat4 m_light_space_matrix; // update by constructor in initialization; update by onKey() while gaming
+    float     m_light_space_near{1.0f};
+    float     m_light_space_far{30.0f};
 };
 
 } // namespace BJTUGE

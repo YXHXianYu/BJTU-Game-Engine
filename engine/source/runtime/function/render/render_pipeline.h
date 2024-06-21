@@ -56,11 +56,10 @@ private:
     bool m_render_assignments{true};
 
     bool m_render_by_depth{false};
-    bool m_is_enable_shadow_map{true};
 
     uint32_t  m_water_mode{3};
     uint32_t  m_fxaa_mode{2};
-    uint32_t  m_shadow_mode{1};
+    uint32_t  m_shadow_mode{4};
     float     m_cloud_thickness{0.6};
     glm::vec3 m_sky_color{0.47, 0.66, 1.00};
 };

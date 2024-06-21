@@ -95,9 +95,29 @@ void RenderFramebuffer::updateFramebufferSize(uint32_t width, uint32_t height) {
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer is not complete!" << std::endl;
+        checkFramebufferStatus();
         assert(false);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void RenderFramebuffer::checkFramebufferStatus() const {
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    switch (status) {
+        case GL_FRAMEBUFFER_COMPLETE: std::cout << "Framebuffer is complete." << std::endl; break;
+        case GL_FRAMEBUFFER_UNDEFINED: std::cout << "Framebuffer undefined." << std::endl; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: std::cout << "Framebuffer incomplete: Attachment is not complete." << std::endl; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+            std::cout << "Framebuffer incomplete: No image is attached to FBO." << std::endl;
+            break;
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: std::cout << "Framebuffer incomplete: Draw buffer." << std::endl; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: std::cout << "Framebuffer incomplete: Read buffer." << std::endl; break;
+        case GL_FRAMEBUFFER_UNSUPPORTED: std::cout << "Unsupported framebuffer format." << std::endl; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: std::cout << "Framebuffer incomplete: Multisample." << std::endl; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: std::cout << "Framebuffer incomplete: Layer targets." << std::endl; break;
+        default: std::cout << "Unknown framebuffer error." << std::endl; break;
+    }
+    assert(status == GL_FRAMEBUFFER_COMPLETE);
 }
 
 } // namespace BJTUGE
