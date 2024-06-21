@@ -87,6 +87,15 @@ void WorldManager::tick(float delta_time) {
                     }
                 }
             }
+            { // building (for showing soft shadow)
+                int sx = -10;
+                int sz = -1;
+                int sy = 0;
+                int ey = 20;
+                for (int y = sy; y <= ey; y++) {
+                    add_block(sx, y, sz, BlockId::oak_log);
+                }
+            }
 
             // building
             int sx = -10; // start x

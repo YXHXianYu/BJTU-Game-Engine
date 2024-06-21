@@ -59,7 +59,7 @@ private:
 
     uint32_t  m_water_mode{3};
     uint32_t  m_fxaa_mode{2};
-    uint32_t  m_shadow_mode{4};
+    uint32_t  m_shadow_mode{3};
     float     m_cloud_thickness{0.6};
     glm::vec3 m_sky_color{0.47, 0.66, 1.00};
 };
