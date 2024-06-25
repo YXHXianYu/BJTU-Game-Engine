@@ -4,8 +4,8 @@
 #include "runtime/function/input/input_system.h"
 #include "runtime/function/render/framebuffer/render_framebuffer.h"
 #include "runtime/function/render/framebuffer/render_gbuffer_framebuffer.h"
-#include "runtime/function/render/framebuffer/render_shadow_framebuffer.h"
 #include "runtime/function/render/framebuffer/render_rsm_framebuffer.h"
+#include "runtime/function/render/framebuffer/render_shadow_framebuffer.h"
 #include "runtime/function/render/lighting/render_direction_light.h"
 #include "runtime/function/render/lighting/render_spot_light.h"
 #include "runtime/function/render/mesh/render_mesh.h"
@@ -121,7 +121,7 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
     }
 
     /* Shadow Map */
-    if (m_is_enable_shadow_map) { draw_shadow_map(resource, camera); }
+    if (m_shadow_mode != 0) { draw_shadow_map(resource, camera); }
 
     /* G Buffer */
     draw_gbuffer(resource, camera);
@@ -134,7 +134,6 @@ void RenderPipeline::draw(std::shared_ptr<RenderResource> resource, std::shared_
 
     /* Post-process */
     draw_postprocess(resource, camera);
-    
 }
 void RenderPipeline::draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera) {
     m_gbuffer_framebuffer->bind();
@@ -197,7 +196,8 @@ void RenderPipeline::draw_rsm(std::shared_ptr<RenderResource> resource, std::sha
 
         if (m_render_character) { resource->getEntity("characters")->draw(shader, resource); }
         if (m_render_assignments) { resource->getEntity("assignments")->draw(shader, resource); }
-        if (m_render_light) { /* NO NEED */ }
+        if (m_render_light) { /* NO NEED */
+        }
     }
 
     // draw minecraft blocks
@@ -209,7 +209,8 @@ void RenderPipeline::draw_rsm(std::shared_ptr<RenderResource> resource, std::sha
         resource->getEntity("minecraft_blocks")->draw(shader, resource);
     }
 
-    if (m_render_transparent) { /* NO NEED */ }
+    if (m_render_transparent) { /* NO NEED */
+    }
 
     glCullFace(GL_BACK); // to fix peter panning
     m_rsm_framebuffer->unbind();
@@ -223,22 +224,24 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         auto shader = getShader("shading");
         shader->use();
 
-        uint32_t texture_id = 0;
+        size_t id = 0;
 
         // gbuffer
-        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", texture_id++);
-        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", texture_id++);
-        m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", texture_id++);
-        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", texture_id++);
-        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", texture_id++);
+        m_gbuffer_framebuffer->useGBufferPosition(shader, "u_gbuffer_position", id++);
+        m_gbuffer_framebuffer->useGBufferNormal(shader, "u_gbuffer_normal", id++);
+        m_gbuffer_framebuffer->useGBufferColor(shader, "u_gbuffer_color", id++);
+        m_gbuffer_framebuffer->useGBufferTransparent(shader, "u_gbuffer_transparent", id++);
+        m_gbuffer_framebuffer->useDepthTexture(shader, "u_depth_texture", id++);
 
         // rsm
         shader->setUniform("u_is_enable_rsm", m_is_enable_rsm);
-        shader->setUniform("u_rsm_width", m_rsm_framebuffer->getWidth());
-        shader->setUniform("u_rsm_height", m_rsm_framebuffer->getHeight());
-        m_rsm_framebuffer->usePositionTexture(shader, "u_rsm_position_texture", texture_id++);
-        m_rsm_framebuffer->useNormalTexture(shader, "u_rsm_normal_texture", texture_id++);
-        m_rsm_framebuffer->useColorTexture(shader, "u_rsm_color_texture", texture_id++);
+        if (m_is_enable_rsm) {
+            shader->setUniform("u_rsm_width", m_rsm_framebuffer->getWidth());
+            shader->setUniform("u_rsm_height", m_rsm_framebuffer->getHeight());
+            m_rsm_framebuffer->usePositionTexture(shader, "u_rsm_position_texture", id++);
+            m_rsm_framebuffer->useNormalTexture(shader, "u_rsm_normal_texture", id++);
+            m_rsm_framebuffer->useColorTexture(shader, "u_rsm_color_texture", id++);
+        }
 
         // uniform
         shader->setUniform("u_time", static_cast<float>(glfwGetTime()));
@@ -269,9 +272,14 @@ void RenderPipeline::draw_shading(std::shared_ptr<RenderResource> resource, std:
         shader->setUniform("u_dirlights_cnt", i);
 
         // shadow
-        shader->setUniform("u_is_enable_shadow_map", m_is_enable_shadow_map);
+        shader->setUniform("u_shadow_mode", m_shadow_mode);
+        m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", id++);
+        shader->setUniform("u_shadow_map_width", static_cast<float>(m_shadow_map_width));
+        shader->setUniform("u_shadow_map_height", static_cast<float>(m_shadow_map_height));
+
         shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
-        m_shadow_framebuffer->useDepthTexture(shader, "u_shadow_texture", texture_id++);
+        shader->setUniform("u_light_space_near", resource->getLightSpaceNear());
+        shader->setUniform("u_light_space_far", resource->getLightSpaceFar());
 
         // render
         resource->getEntity("postprocess")->draw(shader, resource);
@@ -292,6 +300,8 @@ void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, s
         shader->use();
 
         shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
+        shader->setUniform("u_near", resource->getLightSpaceNear());
+        shader->setUniform("u_far", resource->getLightSpaceFar());
 
         if (m_render_character) { resource->getEntity("characters")->draw(shader, resource); }
         if (m_render_assignments) { resource->getEntity("assignments")->draw(shader, resource); }
@@ -302,6 +312,8 @@ void RenderPipeline::draw_shadow_map(std::shared_ptr<RenderResource> resource, s
         shader->use();
 
         shader->setUniform("u_light_space_matrix", resource->getLightSpaceMatrix());
+        shader->setUniform("u_near", resource->getLightSpaceNear());
+        shader->setUniform("u_far", resource->getLightSpaceFar());
 
         if (m_render_block) { resource->getEntity("minecraft_blocks")->draw(shader, resource); }
     }
@@ -465,12 +477,6 @@ void RenderPipeline::tick(uint32_t GameCommand, std::shared_ptr<RenderResource> 
         m_render_by_depth = false;
     }
 
-    if (GameCommand & static_cast<uint32_t>(GameCommand::IS_ENABLE_SHADOW_MAP)) {
-        m_is_enable_shadow_map = false;
-    } else {
-        m_is_enable_shadow_map = true;
-    }
-
     draw(resource, camera);
 }
 
@@ -510,6 +516,11 @@ void RenderPipeline::onKey(int key, int scancode, int action, int mods) {
             }
             case GLFW_KEY_M: {
                 m_fxaa_mode = (m_fxaa_mode + 1) % 5; // 0: off; 1: blend; 2: edge blend; 3: 十字滤波; 4: 彩色十字滤波
+                break;
+            }
+            case GLFW_KEY_COMMA: {
+                m_shadow_mode =
+                    (m_shadow_mode + 1) % 5; // 0: off; 1: hard shadow; 2: soft shadow (PCF); 3: soft shadow (PCSS); 4: soft shadow (VSM)
                 break;
             }
             case GLFW_KEY_Z: {

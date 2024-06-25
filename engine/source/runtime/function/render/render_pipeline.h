@@ -31,7 +31,7 @@ private:
     void draw_shading(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_postprocess(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
-    
+
     glm::mat4 getLightSpaceMatrix();
 
     std::shared_ptr<RenderShader>&      getShader(const char* name);
@@ -47,9 +47,10 @@ private:
     std::shared_ptr<RenderRsmFramebuffer>                               m_rsm_framebuffer;
     std::shared_ptr<RenderGBufferFramebuffer>                           m_gbuffer_framebuffer;
 
-    uint32_t m_shadow_map_width{2048 * 4};
-    uint32_t m_shadow_map_height{2048 * 4};
-    
+    uint32_t m_shadow_map_width{2048 * 2};
+    uint32_t m_shadow_map_height{2048 * 2};
+
+    bool     m_is_enable_rsm{false};
     uint32_t m_rsm_width{64};
     uint32_t m_rsm_height{64};
 
@@ -58,15 +59,12 @@ private:
     bool m_render_light{true};
     bool m_render_transparent{true};
     bool m_use_ortho{true};
-
     bool m_render_assignments{true};
-
     bool m_render_by_depth{false};
-    bool m_is_enable_shadow_map{true};
-    bool m_is_enable_rsm{true};
 
     uint32_t  m_water_mode{3};
     uint32_t  m_fxaa_mode{2};
+    uint32_t  m_shadow_mode{4};
     float     m_cloud_thickness{0.6};
     glm::vec3 m_sky_color{0.47, 0.66, 1.00};
 };

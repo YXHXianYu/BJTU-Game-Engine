@@ -54,20 +54,156 @@ void calc_light(
 
 // === Shadow Map ===
 
-uniform int u_is_enable_shadow_map;
+uniform int u_shadow_mode;
 uniform sampler2D u_shadow_texture;
+uniform float u_shadow_map_width;
+uniform float u_shadow_map_height;
+
 uniform mat4 u_light_space_matrix;
+uniform float u_light_space_near;
+uniform float u_light_space_far;
+
+#define PCF_FILTER_SIZE 13
+#define PCSS_BLOCKER_SEARCH_SIZE 41
+#define PCSS_W_LIGHT_SIZE 50.0
+#define PCSS_SAMPLE_STEP_MULTIPLIER 0.25
+#define PCSS_PENUMBRA_LIMIT 21.0
+#define VSM_BLOCKER_SEARCH_SIZE_LOG2 2.0 // (2^2)^2 = 4 * 4
+#define VSM_W_LIGHT_SIZE 50.0
+
+float rand(float x, float y) {
+    return fract(sin(12.9898 * x + 78.233 * y) * 43758.5453);
+}
 
 float calc_shadow(vec4 frag_pos_light_space) {
     vec3 projection_pos = frag_pos_light_space.xyz / frag_pos_light_space.w;
     projection_pos = projection_pos * 0.5 + 0.5;
-
     if (projection_pos.z > 1.0) { return 0.0; }
+    projection_pos.z = depth_linearize(projection_pos.z, u_light_space_near, u_light_space_far);
 
-    float depth_in_shadow_map = texture(u_shadow_texture, projection_pos.xy).r;
     float depth_in_frag = projection_pos.z;
-    float shadow = ((depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) ? 1.0 : 0.0);
-    return shadow;
+    vec2 shadow_map_size = vec2(u_shadow_map_width, u_shadow_map_height);
+
+    if (u_shadow_mode == 1 || u_shadow_mode == 2) {
+        int filter_size = u_shadow_mode == 2 ? PCF_FILTER_SIZE : 1;
+        int filter_min = -filter_size / 2;
+        int filter_max = filter_size / 2;
+
+        float shadow = 0.0;
+        for (int i = filter_min; i <= filter_max; i++) {
+            for (int j = filter_min; j <= filter_max; j++) {
+                float depth_in_shadow_map = texture(u_shadow_texture, (projection_pos.xy) + vec2(i, j) / shadow_map_size).r;
+                shadow += ((depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) ? 1.0 : 0.0);
+            }
+        }
+
+        return shadow / float(filter_size * filter_size);
+    } else if (u_shadow_mode == 3) { // PCSS, Percentage Closer Soft Shadows
+        // Step 1 - Blocker Search
+        int filter_size = PCSS_BLOCKER_SEARCH_SIZE;
+        int filter_min = -filter_size / 2;
+        int filter_max = filter_size / 2;
+        float z_occ = 0.0;
+        float z_occ_cnt = 0.0;
+        float z_unocc = 0.0;
+        float z_unocc_cnt = 0.0;
+        for (int i = filter_min; i <= filter_max; i++) {
+            for (int j = filter_min; j <= filter_max; j++) {
+                float depth_in_shadow_map
+                    = texture(u_shadow_texture, (projection_pos.xy) + vec2(i, j) / shadow_map_size).r;
+                if (depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) {
+                    // occluded
+                    z_occ += depth_in_shadow_map;
+                    z_occ_cnt += 1.0;
+                } else {
+                    // unoccluded
+                    z_unocc += depth_in_shadow_map;
+                    z_unocc_cnt += 1.0;
+                }
+            }
+        }
+        if (z_occ_cnt < SHADOW_MAP_EPS) {   // all unoccluded
+            return 0.0;
+        }
+        if (z_unocc_cnt < SHADOW_MAP_EPS) { // all occluded
+            return 1.0;
+        }
+        z_occ /= z_occ_cnt;
+        z_unocc /= z_unocc_cnt;
+        if (z_unocc < z_occ) {
+            return 0.0;
+        }
+
+        // Step 2 - Penumbra Estimation
+        float w_penumbra = max(min((z_unocc - z_occ) * PCSS_W_LIGHT_SIZE / z_occ, PCSS_PENUMBRA_LIMIT) / PCSS_SAMPLE_STEP_MULTIPLIER, 1.0);
+
+        // return w_penumbra / 25.0;
+
+        // Step 3 - PCF
+        filter_size = int(w_penumbra - 1.0) / 2 * 2 + 1;
+        filter_max = filter_size / 2 + 1;
+        filter_min = -filter_max;
+
+        // used to normalize the shadow value
+        float penumbra_coef_numer = w_penumbra * w_penumbra - float(filter_size * filter_size);
+        float penumbra_coef_denom = float((filter_size + 2) * (filter_size + 2) - filter_size * filter_size);
+        float penumbra_coef = penumbra_coef_numer / penumbra_coef_denom;
+        // float penumbra_coef = w_penumbra * w_penumbra / float((filter_size + 2) * (filter_size + 2));
+
+        float shadow = 0.0;
+        for (int i = filter_min; i <= filter_max; i++) {
+            for (int j = filter_min; j <= filter_max; j++) {
+                float depth_in_shadow_map
+                    = texture(u_shadow_texture, (projection_pos.xy) + vec2(i, j) / shadow_map_size * PCSS_SAMPLE_STEP_MULTIPLIER).r;
+                shadow += ( (depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) ? (
+                        (i == filter_min || i == filter_max || j == filter_min || j == filter_max)
+                        ? penumbra_coef
+                        : 1.0
+                        // penumbra_coef
+                    ) : 0.0
+                );
+            }
+        }
+        shadow = shadow / (w_penumbra * w_penumbra);
+        return shadow;
+
+    } else if (u_shadow_mode == 4) { // VSM, Variance Shadow Mapping
+        // Core: N1/N * z_unocc + N2/N * z_occ = z_avg
+        // Chebychev's inequality: (Let t > mu)
+        //     P(x > t) <= sigma^2 / (sigma^2 + (t - mu)^2)
+
+        // Step 1 - Blocker Search (VSM)
+        vec2 depInfo = textureLod(u_shadow_texture, projection_pos.xy, VSM_BLOCKER_SEARCH_SIZE_LOG2).rg;
+
+        float z_unocc = projection_pos.z;
+        float z_avg = depInfo.x;
+        if (!(z_unocc > z_avg + SHADOW_MAP_EPS)) {
+            return 0.0;
+        }
+        // z_unocc > z_avg
+        float var = depInfo.y - depInfo.x * depInfo.x;
+        // if (var <= 0) {
+        //     return 1.0;
+        // }
+        float N1N = var / (var + (projection_pos.z - depInfo.x) * (projection_pos.z - depInfo.x));
+        float N2N = 1.0 - N1N;
+        float z_occ = (z_avg - N1N * z_unocc) / N2N;
+        if (z_occ >= z_avg) {
+            return 1.0;
+        }
+
+        // Step 2 - Penumbra Estimation
+        float w_penumbra = max((z_unocc - z_occ) * VSM_W_LIGHT_SIZE / z_occ, 1.5);
+
+        // Step 3 - PCF (VSM)
+        vec2 depInfo2 = textureLod(u_shadow_texture, projection_pos.xy, log2(w_penumbra)).rg;
+        float var2 = depInfo2.y - depInfo2.x * depInfo2.x;
+        float shadow = 1.0 - var2 / (var2 + (projection_pos.z - depInfo2.x) * (projection_pos.z - depInfo2.x));
+        
+        return shadow;
+    } else {
+        return 0.0;
+    }
 }
 
 // === Reflective Shadow Map ===
@@ -78,7 +214,7 @@ uniform sampler2D u_rsm_position_texture;
 uniform sampler2D u_rsm_normal_texture;
 uniform sampler2D u_rsm_color_texture;
 
-#define RSM_STRENGTH 0.15
+#define RSM_STRENGTH 0.05
 #define RSM_ANGLE_THRESHOLD 0.01
 #define RSM_DISTANCE_ATTENUATION 1.25
 
@@ -174,11 +310,18 @@ vec3 shading() {
         ambient = ambient + rsm_ambient * RSM_STRENGTH;
     }
 
-    float shadow = calc_shadow(u_light_space_matrix * vec4(frag_pos, 1.0));
+    float shadow;
+    if (u_shadow_mode == 0) {
+        shadow = 0.0;
+    } else {
+        shadow = calc_shadow(u_light_space_matrix * vec4(frag_pos, 1.0));
+    }
 
     return ambient + (1.0 - shadow) * (kd * diffuse * DIFFUSE_STRENGTH + ks * specular);
 }
 
 void main() {
     fragcolor = vec4(shading(), 1.0);
+    // float depth = textureLod(u_shadow_texture, texcoord, 0.0).r;
+    // fragcolor = vec4(vec3(depth), 1.0);
 }

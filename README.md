@@ -4,11 +4,11 @@
 
 ## Preview
 
-![image-20240423225209826](./notes/README/image-20240423225209826.png)
+![image-20240524130031509](./notes/README/image-20240524130031509.png)
 
-![image-20240423225038748](./notes/README/image-20240423225038748.png)
+![image-20240524132016230](./notes/README/image-20240524132016230.png)
 
-![image-20240423225310094](./notes/README/image-20240423225310094.png)
+![image-20240611182305341](./notes/README/image-20240611182305341.png)
 
 ## Prerequisites
 
@@ -66,6 +66,7 @@ just
    * Press `Shift + O` to control whether to use the orthogonal projection
    * Press `N` to switch water mode
    * Press `M` to switch FXAA mode
+   * Press `,` to switch shadow mode
    * Press `R/T` to control the position of the sun
    * Press `Z/X` to control the thickness of the cloud
    * Press `C` to control whether to enable Reflective Shadow Map (Default Off)
