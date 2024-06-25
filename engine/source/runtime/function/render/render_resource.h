@@ -140,7 +140,7 @@ private:
     float     m_sun_light_intensity{1.0f};
     glm::mat4 m_light_space_matrix; // update by constructor in initialization; update by onKey() while gaming
     float     m_light_space_near{1.0f};
-    float     m_light_space_far{30.0f};
+    float     m_light_space_far{20.0f};
 };
 
 } // namespace BJTUGE

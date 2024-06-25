@@ -64,11 +64,12 @@ uniform float u_light_space_near;
 uniform float u_light_space_far;
 
 #define PCF_FILTER_SIZE 13
-#define PCSS_BLOCKER_SEARCH_SIZE 21
-#define PCSS_W_LIGHT_SIZE 200.0
+#define PCSS_BLOCKER_SEARCH_SIZE 41
+#define PCSS_W_LIGHT_SIZE 50.0
 #define PCSS_SAMPLE_STEP_MULTIPLIER 0.25
-#define VSM_BLOCKER_SEARCH_SIZE_LOG2 2.0 // 2^3 = 8
-#define VSM_W_LIGHT_SIZE 50.0
+#define PCSS_PENUMBRA_LIMIT 21.0
+#define VSM_BLOCKER_SEARCH_SIZE_LOG2 4.0 // (2^2)^2 = 4 * 4
+#define VSM_W_LIGHT_SIZE 10.0
 
 float rand(float x, float y) {
     return fract(sin(12.9898 * x + 78.233 * y) * 43758.5453);
@@ -109,7 +110,7 @@ float calc_shadow(vec4 frag_pos_light_space) {
         for (int i = filter_min; i <= filter_max; i++) {
             for (int j = filter_min; j <= filter_max; j++) {
                 float depth_in_shadow_map
-                    = texture(u_shadow_texture, (projection_pos.xy) + vec2(i, j) / shadow_map_size * PCSS_SAMPLE_STEP_MULTIPLIER).r;
+                    = texture(u_shadow_texture, (projection_pos.xy) + vec2(i, j) / shadow_map_size).r;
                 if (depth_in_frag > depth_in_shadow_map + SHADOW_MAP_EPS) {
                     // occluded
                     z_occ += depth_in_shadow_map;
@@ -134,9 +135,9 @@ float calc_shadow(vec4 frag_pos_light_space) {
         }
 
         // Step 2 - Penumbra Estimation
-        float w_penumbra = max((z_unocc - z_occ) * PCSS_W_LIGHT_SIZE / z_occ, 1.0);
+        float w_penumbra = max(min((z_unocc - z_occ) * PCSS_W_LIGHT_SIZE / z_occ, PCSS_PENUMBRA_LIMIT) / PCSS_SAMPLE_STEP_MULTIPLIER, 1.0);
 
-        // return w_penumbra / 5.0;
+        // return w_penumbra / 25.0;
 
         // Step 3 - PCF
         filter_size = int(w_penumbra - 1.0) / 2 * 2 + 1;
@@ -181,10 +182,15 @@ float calc_shadow(vec4 frag_pos_light_space) {
         }
         // z_unocc > z_avg
         float var = depInfo.y - depInfo.x * depInfo.x;
+        if (var <= 0) {
+            return 1.0;
+        }
+
         float N1N = var / (var + (projection_pos.z - depInfo.x) * (projection_pos.z - depInfo.x));
         float N2N = 1.0 - N1N;
         float z_occ = (z_avg - N1N * z_unocc) / N2N;
-        if (z_occ >= z_avg) {
+
+        if (z_occ + SHADOW_MAP_EPS >= z_avg) {
             return 1.0;
         }
 
@@ -260,6 +266,6 @@ vec3 shading() {
 
 void main() {
     fragcolor = vec4(shading(), 1.0);
-    // float depth = textureLod(u_shadow_texture, texcoord, 5.0).r;
+    // float depth = textureLod(u_shadow_texture, texcoord, 0.0).r;
     // fragcolor = vec4(vec3(depth), 1.0);
 }
