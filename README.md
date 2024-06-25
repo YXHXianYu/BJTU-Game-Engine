@@ -4,17 +4,31 @@
 
 ## Preview
 
+* Overview
+
 ![image-20240524130031509](./notes/README/image-20240524130031509.png)
+
+* Water Reflection (using Screen Space Reflection)
 
 ![image-20240524132016230](./notes/README/image-20240524132016230.png)
 
+* Cloud (using Ray Marching)
+
 ![image-20240611182305341](./notes/README/image-20240611182305341.png)
+
+* Soft Shadow (using VSM)
+
+![总览-4-modified-updated](./notes/README/%E6%80%BB%E8%A7%88-4-modified-updated.png)
+
+* Simple Global Illumination (using RSM)
+
+![dc4e8fcee14d041b30ec93505a2aa6d](./notes/README/dc4e8fcee14d041b30ec93505a2aa6d.jpg)
 
 ## Prerequisites
 
 * C++ Compiler
   * GCC >= 13
-  * MSVC (Visual Studio >= 2022)
+  * Or, MSVC (Visual Studio >= 2022)
 * CMake >= 3.19
 * Git >= 2.1
 * Python >= 3.9
@@ -71,3 +85,13 @@ just
    * Press `Z/X` to control the thickness of the cloud
    * Press `C` to control whether to enable Reflective Shadow Map (Default Off)
      * You can also press `R/T` to observe the effect of RSM
+
+## Contributors
+
+<a href="https://github.com/yxhxianyu/bjtu-game-engine/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=yxhxianyu/bjtu-game-engine" />
+</a>
+
+## License
+
+BJTU Game Engine is open source software licensed as [MIT](./LICENSE).
