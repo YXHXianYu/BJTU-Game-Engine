@@ -411,9 +411,9 @@ std::shared_ptr<RenderEntity> RenderResource::loadAssignments() {
     auto entity = std::make_shared<RenderEntity>();
     entity->addEntity("drj", loadSquareLovekdl());
     entity->addEntity("fjq", loadCubesFJQ());
-    entity->addEntity("cjx", loadCatsCJX());
+    // entity->addEntity("cjx", loadCatsCJX());
     entity->addEntity("creeper", loadCreeper());
-    entity->addEntity("house", loadHouse());
+    // entity->addEntity("house", loadHouse());
     entity->addEntity("tree", loadTree());
     entity->addEntity("sheep", loadSheep());
     entity->addEntity("sword", loadSword());
@@ -758,8 +758,8 @@ void RenderResource::bindKeyboardEvent() {
 }
 
 void RenderResource::updateLightSpaceMatrix() { // Change shadow map matrix in this place
-    glm::mat4 light_projection = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 50.0f);
-    glm::mat4 light_view       = glm::lookAt(glm::vec3((-m_sun_light_direction) * 15.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 light_projection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, m_light_space_near, m_light_space_far);
+    glm::mat4 light_view       = glm::lookAt(glm::vec3((-m_sun_light_direction) * 10.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_light_space_matrix       = light_projection * light_view;
 }
 

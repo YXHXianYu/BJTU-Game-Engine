@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
 #include <memory>
+#include <string>
 
 namespace BJTUGE {
 
@@ -26,6 +26,7 @@ private:
 
     uint32_t m_framebuffer;
     uint32_t m_depth_texture;
+    uint32_t m_color_texture;
 };
 
-}
+} // namespace BJTUGE
