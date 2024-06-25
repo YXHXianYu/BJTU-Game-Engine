@@ -25,7 +25,7 @@ set(ENGINE_ROOT_DIR "${ROOT_DIR}/engine")
 set(BINARY_ROOT_DIR "${ROOT_DIR}/bin")
 set(CMAKE_INSTALL_PREFIX "${ROOT_DIR}/bin")
 
-set(THIRD_PARTY_DIR "/3rdparty")
+set(THIRD_PARTY_DIR "${ROOT_DIR}/3rdparty")
 set(ENGINE_ASSET_DIR "/asset")
 
 # Add Subdirectories
