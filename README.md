@@ -64,9 +64,9 @@ just
    * Press `Shift + J` to control whether to render the block
    * Press `Shift + L` to control whether to render the light mesh
    * Press `Shift + O` to control whether to use the orthogonal projection
-   * Press `Shift + P` to control whether to render scene by depth (z-buffer)
    * Press `N` to switch water mode
    * Press `M` to switch FXAA mode
    * Press `R/T` to control the position of the sun
    * Press `Z/X` to control the thickness of the cloud
-   * Press `C` to control whether to enable Reflective Shadow Map
+   * Press `C` to control whether to enable Reflective Shadow Map (Default Off)
+     * You can also press `R/T` to observe the effect of RSM
