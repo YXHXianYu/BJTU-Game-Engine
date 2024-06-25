@@ -206,7 +206,21 @@ float calc_shadow(vec4 frag_pos_light_space) {
     }
 }
 
+// === Reflective Shadow Map ===
+uniform int u_is_enable_rsm;
+uniform int u_rsm_width;
+uniform int u_rsm_height;
+uniform sampler2D u_rsm_position_texture;
+uniform sampler2D u_rsm_normal_texture;
+uniform sampler2D u_rsm_color_texture;
+
+#define RSM_STRENGTH 0.05
+#define RSM_ANGLE_THRESHOLD 0.01
+#define RSM_DISTANCE_ATTENUATION 1.25
+
 // === Main ===
+
+#define ATTENUATION_THRESHOLD 0.2
 
 vec3 shading() {
     vec3  frag_pos = texture(u_gbuffer_position, texcoord).rgb;
@@ -232,6 +246,7 @@ vec3 shading() {
     vec3 diffuse  = vec3(0.0);
     vec3 specular = vec3(0.0);
 
+    // directional lights
     for (int i = 0; i < u_dirlights_cnt; i++) {
         vec3 diffuse_light, specular_light;
 
@@ -240,16 +255,59 @@ vec3 shading() {
         diffuse += diffuse_light;
         specular += specular_light;
     }
+    // spot lights
     for (int i = 0; i < u_spotlights_cnt; i++) {
         vec3 diffuse_light, specular_light;
 
         vec3 light_dir = normalize(u_spotlights[i].pos - frag_pos);
         float dis = length(u_spotlights[i].pos - frag_pos);
         float attenuation = 1.0 / (1 + 0.09 * dis + 0.032 * (dis * dis)); 
+        
+        if (attenuation <= ATTENUATION_THRESHOLD) continue;
+
         calc_light(frag_pos, normal, light_dir, u_spotlights[i].color * attenuation, diffuse_light, specular_light);
 
         diffuse += diffuse_light;
         specular += specular_light;
+    }
+
+    // RSM
+    if (u_is_enable_rsm >= 1) {
+        vec3 rsm_ambient = vec3(0.0);
+
+        vec3 diffuse_light, specular_light;
+        vec3 light_dir = -u_dirlights[0].dir;
+        vec3 light_color = u_dirlights[0].color;
+
+        float di = 1.0 / float(u_rsm_width);
+        float dj = 1.0 / float(u_rsm_height);
+
+        for (float i = 0.0; i < 1.0; i += di) {
+           for (float j = 0.0; j < 1.0; j += dj) {
+                vec3 rsm_position = texture(u_rsm_position_texture, vec2(i, j)).rgb;
+                float dis2 = abs2(rsm_position - frag_pos);
+                float attenuation = 1.0 / (1 + RSM_DISTANCE_ATTENUATION * dis2); 
+                if (attenuation < ATTENUATION_THRESHOLD) continue;
+
+                vec3 rsm_normal = texture(u_rsm_normal_texture, vec2(i, j)).rgb;
+                if (dot(rsm_normal, normal) >= RSM_ANGLE_THRESHOLD) continue;
+
+                vec3 rsm_light_dir = normalize(rsm_position - frag_pos);
+                if (dot(rsm_normal, -rsm_light_dir) <= RSM_ANGLE_THRESHOLD) continue;
+                if (dot(normal, rsm_light_dir) <= RSM_ANGLE_THRESHOLD) continue;
+
+                vec4 rsm_color_raw = texture(u_rsm_color_texture, vec2(i, j)).rgba;
+
+                vec3 rsm_color = light_color * rsm_color_raw.rgb * attenuation;
+                rsm_color *= max(dot(rsm_normal, light_dir), 0.0); // 1-st time reflect
+
+                calc_light(frag_pos, normal, rsm_light_dir, rsm_color, diffuse_light, specular_light); 
+
+                rsm_ambient += diffuse_light;
+            }
+        }
+
+        ambient = ambient + rsm_ambient * RSM_STRENGTH;
     }
 
     float shadow;

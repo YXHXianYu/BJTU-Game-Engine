@@ -27,6 +27,8 @@ enum class BlockId : uint32_t {
     oak_planks,
     oak_log,
     oak_leaves,
+    red_wool,
+    red_wool_brighter,
     water,
     block_id_count,
 };
@@ -70,6 +72,8 @@ private:
         BlockProperty{TransparentType::opaque},             // oak_planks
         BlockProperty{TransparentType::opaque},             // oak_log
         BlockProperty{TransparentType::leaves_transparent}, // oak_leaves
+        BlockProperty{TransparentType::opaque},             // red_wool
+        BlockProperty{TransparentType::opaque},             // red_wool_brighter
         BlockProperty{TransparentType::water_transparent},  // water
     };
 };

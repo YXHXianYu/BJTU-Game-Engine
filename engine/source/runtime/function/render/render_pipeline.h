@@ -13,6 +13,7 @@ class RenderCamera;
 class RenderShader;
 class RenderFramebuffer;
 class RenderShadowFramebuffer;
+class RenderRsmFramebuffer;
 class RenderGBufferFramebuffer;
 
 class RenderPipeline {
@@ -26,6 +27,7 @@ public:
 
 private:
     void draw_gbuffer(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
+    void draw_rsm(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_shading(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_shadow_map(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
     void draw_postprocess(std::shared_ptr<RenderResource> resource, std::shared_ptr<RenderCamera> camera);
@@ -42,19 +44,22 @@ private:
     std::unordered_map<std::string, std::shared_ptr<RenderShader>>      m_render_shaders;
     std::unordered_map<std::string, std::shared_ptr<RenderFramebuffer>> m_render_framebuffers;
     std::shared_ptr<RenderShadowFramebuffer>                            m_shadow_framebuffer;
+    std::shared_ptr<RenderRsmFramebuffer>                               m_rsm_framebuffer;
     std::shared_ptr<RenderGBufferFramebuffer>                           m_gbuffer_framebuffer;
 
     uint32_t m_shadow_map_width{2048 * 2};
     uint32_t m_shadow_map_height{2048 * 2};
+
+    bool     m_is_enable_rsm{false};
+    uint32_t m_rsm_width{64};
+    uint32_t m_rsm_height{64};
 
     bool m_render_block{true};
     bool m_render_character{true};
     bool m_render_light{true};
     bool m_render_transparent{true};
     bool m_use_ortho{true};
-
     bool m_render_assignments{true};
-
     bool m_render_by_depth{false};
 
     uint32_t  m_water_mode{3};
