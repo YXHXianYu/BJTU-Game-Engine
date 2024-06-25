@@ -758,7 +758,7 @@ void RenderResource::bindKeyboardEvent() {
 }
 
 void RenderResource::updateLightSpaceMatrix() { // Change shadow map matrix in this place
-    glm::mat4 light_projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, m_light_space_near, m_light_space_far);
+    glm::mat4 light_projection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, m_light_space_near, m_light_space_far);
     glm::mat4 light_view       = glm::lookAt(glm::vec3((-m_sun_light_direction) * 10.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     m_light_space_matrix       = light_projection * light_view;
 }

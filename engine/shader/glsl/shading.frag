@@ -68,8 +68,8 @@ uniform float u_light_space_far;
 #define PCSS_W_LIGHT_SIZE 50.0
 #define PCSS_SAMPLE_STEP_MULTIPLIER 0.25
 #define PCSS_PENUMBRA_LIMIT 21.0
-#define VSM_BLOCKER_SEARCH_SIZE_LOG2 4.0 // (2^2)^2 = 4 * 4
-#define VSM_W_LIGHT_SIZE 10.0
+#define VSM_BLOCKER_SEARCH_SIZE_LOG2 2.0 // (2^2)^2 = 4 * 4
+#define VSM_W_LIGHT_SIZE 50.0
 
 float rand(float x, float y) {
     return fract(sin(12.9898 * x + 78.233 * y) * 43758.5453);
@@ -182,20 +182,18 @@ float calc_shadow(vec4 frag_pos_light_space) {
         }
         // z_unocc > z_avg
         float var = depInfo.y - depInfo.x * depInfo.x;
-        if (var <= 0) {
-            return 1.0;
-        }
-
+        // if (var <= 0) {
+        //     return 1.0;
+        // }
         float N1N = var / (var + (projection_pos.z - depInfo.x) * (projection_pos.z - depInfo.x));
         float N2N = 1.0 - N1N;
         float z_occ = (z_avg - N1N * z_unocc) / N2N;
-
-        if (z_occ + SHADOW_MAP_EPS >= z_avg) {
+        if (z_occ >= z_avg) {
             return 1.0;
         }
 
         // Step 2 - Penumbra Estimation
-        float w_penumbra = max((z_unocc - z_occ) * VSM_W_LIGHT_SIZE / z_occ, 1.0);
+        float w_penumbra = max((z_unocc - z_occ) * VSM_W_LIGHT_SIZE / z_occ, 1.5);
 
         // Step 3 - PCF (VSM)
         vec2 depInfo2 = textureLod(u_shadow_texture, projection_pos.xy, log2(w_penumbra)).rg;
