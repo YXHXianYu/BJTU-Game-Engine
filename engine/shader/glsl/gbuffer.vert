@@ -1,4 +1,5 @@
 #include "./include/config.glsl"
+#include "./include/utils.glsl"
 
 // Input
 
@@ -76,10 +77,12 @@ void main() {
     normal = v_normal;
     texcoord = v_texcoord;
 
-    if (u_water_mode == 3 || u_water_mode == 4) {
+    if (u_water_mode == 3 || u_water_mode == 4 || u_water_mode == 5) {
         if (normal.y >= 1.0 - EPS) {
             float t = u_time * 0.1;
-            vec2 uv = (u_model * vec4(pos, 1.0)).xz + vec2(sin(t), cos(t));
+            vec2 pos_world = (u_model * vec4(pos, 1.0)).xz;
+            vec2 uv = pos_world + vec2(sin(t), cos(t));
+
             pos.y += -0.4 + 0.4 * texture(u_noise_texture, uv * 0.05).x;
 
             float x0y = 0.4 * texture(u_noise_texture, (uv + vec2(-0.1, 0.0)) * 0.05).x;
@@ -88,10 +91,21 @@ void main() {
             float z1y = 0.4 * texture(u_noise_texture, (uv + vec2(0.0, 0.1)) * 0.05).x;
 
             float dx = x1y - x0y;
+            float dy = 1.0;
             float dz = z1y - z0y;
 
+            if (u_water_mode == 5) {
+                vec2 wave_center = vec2(-5.0, 2.0);
+                float wave_distance = distance(wave_center, uv);
+                // TODO: the following strength is linear, should be squared
+                float wave_strength = WAVE_STRENGTH * max(0.0, (WAVE_MAX_DISTANCE - wave_distance) / WAVE_MAX_DISTANCE);
+                pos.y += wave_strength * sin(wave_distance * WAVE_DENSITY);
+                dy += wave_strength * sin(wave_distance * WAVE_DENSITY);
+                // Fail: 无法实现一个高密度的波浪，原因是曲面密度不够！可惜，以后有机会再实现吧。
+            }
+
             float coef = -0.125;
-            normal = normalize(vec3(dx * coef, 1.0, dz * coef)); // 这里的系数应该是5.0(1.0/0.2)，但效果不好，故改为经验值
+            normal = normalize(vec3(dx * coef, dy, dz * coef)); // 这里的系数coef应该是5.0(1.0/0.2)，但效果不好，故改为经验值
         }
     }
 #endif
