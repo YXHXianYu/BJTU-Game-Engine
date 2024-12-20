@@ -440,6 +440,7 @@ void RenderPipeline::draw_postprocess(std::shared_ptr<RenderResource> resource, 
         shader->setUniform("u_fxaa_mode", m_fxaa_mode);
 
         uint32_t id = 0;
+        // m_gbuffer_framebuffer->useDepthTexture(shader, "u_color_texture", id++);
         getFramebuffer("final")->useColorTexture(shader, "u_color_texture", id++);
 
         resource->getEntity("postprocess")->draw(shader, resource);

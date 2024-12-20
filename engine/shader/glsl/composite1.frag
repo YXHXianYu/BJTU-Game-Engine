@@ -100,6 +100,9 @@ vec3 water_ray_tracing(vec3 color, vec3 start_point, vec3 direction, float fresn
         hit_color = water_sample_color(uv);
     }
 
+    float v = hit ? 0.0f : 1.0f;
+    return vec3(v);
+
     return mix(color, hit_color.rgb, hit_color.a * fresnel);
 }
 
